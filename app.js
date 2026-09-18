@@ -325,14 +325,15 @@ function viewFeed() {
   const own = store.jobs();
   const all = [...own, ...DEMO];
   let filtered = all;
-  if (store.kind === "job") filtered = filtered.filter((j) => (j.kind || "job") === "job");
-  if (store.kind === "offer") filtered = filtered.filter((j) => j.kind === "offer");
+  const itemKind = (j) => j.kind === "offer" ? "offer" : "job";
+  if (store.kind === "job") filtered = filtered.filter((j) => itemKind(j) === "job");
+  if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
   const kinds = `
     <div class="filters">
       <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
-      <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterJobs")}</button>
-      <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterOffers")}</button>
+      <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterJobs")}</button>
+      <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterOffers")}</button>
     </div>`;
   const chips = `<div class="filters">` +
     [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
