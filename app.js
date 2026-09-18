@@ -106,6 +106,12 @@ const I18N = {
     profile: "Профиль",
     more: "Ещё",
     all: "Все",
+    filterJobs: "Ищу мастера",
+    filterOffers: "Ищу заказ",
+    badgeJob: "Заказ",
+    badgeOffer: "Мастер свободен",
+    emptyJobs: "Заказов пока нет.",
+    emptyOffers: "Мастера ещё не выставили анкеты.",
     post: "Опубликовать",
     city: "Город",
     trade: "Работа",
@@ -138,7 +144,7 @@ const I18N = {
     changeRole: "Сменить роль",
     seek: "Ищу работу",
     seekHint: "Мастер не публикует объект. Только профессия, что умеет и город.",
-    seekSave: "Сохранить анкету",
+    seekSave: "Выставить в ленту",
     seekingIn: "Ищу работу",
     login: "Вход",
     register: "Регистрация",
@@ -163,6 +169,12 @@ const I18N = {
     profile: "פרופיל",
     more: "עוד",
     all: "הכל",
+    filterJobs: "מחפש מקצוען",
+    filterOffers: "מחפש עבודה",
+    badgeJob: "הזמנה",
+    badgeOffer: "מקצוען פנוי",
+    emptyJobs: "אין הזמנות עדיין.",
+    emptyOffers: "אין עדיין כרטיסי מקצוענים.",
     post: "פרסום",
     city: "עיר",
     trade: "מקצוע",
@@ -210,9 +222,10 @@ const I18N = {
 };
 
 const DEMO = [
-  { id: "d1", trade: "tile", city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", dates: "23–26.09", budget: "₪ 4,800", phone: "0500000001" },
-  { id: "d2", trade: "elec", city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", dates: "на этой неделе", budget: "", phone: "0500000002" },
-  { id: "d3", trade: "reno", city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", dates: "октябрь", budget: "₪ 28,000", phone: "0500000003" },
+  { id: "d1", kind: "job", trade: "tile", city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", dates: "23–26.09", budget: "₪ 4,800", phone: "0500000001" },
+  { id: "d2", kind: "job", trade: "elec", city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", dates: "на этой неделе", budget: "", phone: "0500000002" },
+  { id: "d3", kind: "job", trade: "reno", city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", dates: "октябрь", budget: "₪ 28,000", phone: "0500000003" },
+  { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", phone: "0500000004", name: "Игорь" },
 ];
 
 const store = {
@@ -224,6 +237,8 @@ const store = {
   set tab(v) { localStorage.setItem("bil_tab", v); },
   get filter() { return localStorage.getItem("bil_filter") || "all"; },
   set filter(v) { localStorage.setItem("bil_filter", v); },
+  get kind() { return localStorage.getItem("bil_kind") || "all"; },
+  set kind(v) { localStorage.setItem("bil_kind", v); },
   jobs() { try { return JSON.parse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
   saveJobs(list) { localStorage.setItem("bil_jobs", JSON.stringify(list)); },
   profile() { try { return JSON.parse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
@@ -309,19 +324,35 @@ function render() {
 function viewFeed() {
   const own = store.jobs();
   const all = [...own, ...DEMO];
-  const filtered = store.filter === "all" ? all : all.filter((j) => (j.trades || [j.trade]).includes(store.filter));
-  const chips = [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
-    .concat(TRADES.map(([id]) => `<button class="chip ${store.filter === id ? "on" : ""}" data-filter="${id}">${tradeLabel(id)}</button>`))
-    .join("");
-  if (!filtered.length) return `<div class="filters">${chips}</div><div class="empty">${t("empty")}</div>`;
-  return `<div class="filters">${chips}</div>` + filtered.map((j) => {
+  let filtered = all;
+  if (store.kind === "job") filtered = filtered.filter((j) => (j.kind || "job") === "job");
+  if (store.kind === "offer") filtered = filtered.filter((j) => j.kind === "offer");
+  if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
+  const kinds = `
+    <div class="filters">
+      <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
+      <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterJobs")}</button>
+      <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterOffers")}</button>
+    </div>`;
+  const chips = `<div class="filters">` +
+    [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
+      .concat(TRADES.filter(([id]) => id !== "other").map(([id]) => `<button class="chip ${store.filter === id ? "on" : ""}" data-filter="${id}">${tradeLabel(id)}</button>`))
+      .join("") + `</div>`;
+  if (!filtered.length) {
+    const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
+    return kinds + chips + `<div class="empty">${msg}</div>`;
+  }
+  return kinds + chips + filtered.map((j) => {
+    const offer = j.kind === "offer";
     const title = store.lang === "he" ? (j.titleHe || j.titleRu) : (j.titleRu || j.titleHe);
-    const text = `${title} — ${cityName(j.city)}`;
-    return `<article class="card job">
+    const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
+    const text = `${title} — ${cities}`;
+    return `<article class="card job ${offer ? "offer" : "order"}">
+      <div class="badge ${offer ? "offer" : "order"}">${offer ? ico("worker") + t("badgeOffer") : ico("contractor") + t("badgeJob")}</div>
       <h3>${title}</h3>
-      <div class="meta">${ico("city")}${cityName(j.city)} · ${ico("date")}${j.dates || ""}</div>
-      <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
-      ${j.planData && j.planData.startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="תוכנית" />` : ""}
+      <div class="meta">${j.name ? ico("name") + j.name + " · " : ""}${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}</div>
+      <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
+      ${j.planData && j.planData.startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
       ${j.planName && !(j.planData && j.planData.startsWith("data:image")) ? `<div class="plan-name">${j.planName}</div>` : ""}
       <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
     </article>`;
@@ -443,6 +474,7 @@ function bind() {
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { store.role = b.dataset.role; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { store.tab = b.dataset.tab; render(); });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
+  document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
   document.querySelectorAll("[data-switch]").forEach((b) => {
     b.onclick = () => {
       store.role = b.dataset.switch;
@@ -532,6 +564,7 @@ function bind() {
     const list = store.jobs();
     list.unshift({
       id: "j" + Date.now(),
+      kind: "job",
       trade: trades[0],
       trades,
       city: f.get("city"),
@@ -554,17 +587,38 @@ function bind() {
     const trades = [...seek.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
     const works = [...seek.querySelectorAll("input[name=works]:checked")].map((x) => x.value);
     const cities = [...seek.querySelectorAll("input[name=cities]:checked")].map((x) => x.value);
+    const name = String(f.get("name") || "");
+    const phone = String(f.get("phone") || "");
+    const workLabels = works.map((w) => {
+      const [tr, wid] = String(w).split(":");
+      return workName(tr, wid);
+    });
+    const title = [name, ...workLabels].filter(Boolean).join(" · ") || trades.map(tradeName).join(", ");
     store.saveProfile({
       ...store.profile(),
-      name: f.get("name"),
+      name,
       city: cities[0] || "",
       cities,
-      phone: f.get("phone"),
+      phone,
       trades,
       works,
       seeking: true,
     });
-    store.tab = "profile";
+    const list = store.jobs().filter((j) => !(j.kind === "offer" && j.phone === phone));
+    list.unshift({
+      id: "o" + Date.now(),
+      kind: "offer",
+      trade: trades[0],
+      trades,
+      cities,
+      city: cities[0],
+      titleRu: title,
+      titleHe: title,
+      phone,
+      name,
+    });
+    store.saveJobs(list);
+    store.tab = "feed";
     render();
   };
   const prof = document.getElementById("prof-form");
