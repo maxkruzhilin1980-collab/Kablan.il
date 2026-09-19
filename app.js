@@ -1,94 +1,94 @@
 const CITIES = [
-  ["tlv", "Тель-Авив", "תל אביב"],
-  ["rishon", "Ришон-ле-Цион", "ראשון לציון"],
-  ["netanya", "Нетания", "נתניה"],
-  ["haifa", "Хайфа", "חיפה"],
-  ["jerusalem", "Иерусалим", "ירושלים"],
-  ["petah", "Петах-Тиква", "פתח תקווה"],
-  ["ashdod", "Ашдод", "אשדוד"],
-  ["beer", "Беэр-Шева", "באר שבע"],
-  ["holon", "Холон", "חולון"],
-  ["herzliya", "Герцлия", "הרצליה"],
-  ["rehovot", "Реховот", "רחובות"],
-  ["eilat", "Эйлат", "אילת"],
-  ["ashkelon", "Ашкелон", "אשקלון"],
-  ["kfar", "Кфар-Саба", "כפר סבא"],
-  ["batyam", "Бат-Ям", "בת ים"],
-  ["modiin", "Модиин", "מודיעין"],
+  ["tlv", "Тель-Авив", "תל אביב", "Tel Aviv"],
+  ["rishon", "Ришон-ле-Цион", "ראשון לציון", "Rishon LeZion"],
+  ["netanya", "Нетания", "נתניה", "Netanya"],
+  ["haifa", "Хайфа", "חיפה", "Haifa"],
+  ["jerusalem", "Иерусалим", "ירושלים", "Jerusalem"],
+  ["petah", "Петах-Тиква", "פתח תקווה", "Petah Tikva"],
+  ["ashdod", "Ашдод", "אשדוד", "Ashdod"],
+  ["beer", "Беэр-Шева", "באר שבע", "Beersheba"],
+  ["holon", "Холон", "חולון", "Holon"],
+  ["herzliya", "Герцлия", "הרצליה", "Herzliya"],
+  ["rehovot", "Реховот", "רחובות", "Rehovot"],
+  ["eilat", "Эйлат", "אילת", "Eilat"],
+  ["ashkelon", "Ашкелон", "אשקלון", "Ashkelon"],
+  ["kfar", "Кфар-Саба", "כפר סבא", "Kfar Saba"],
+  ["batyam", "Бат-Ям", "בת ים", "Bat Yam"],
+  ["modiin", "Модиин", "מודיעין", "Modiin"],
 ];
 const TRADES = [
-  ["tile", "Плитка", "ריצוף / קרמיקה"],
-  ["elec", "Электрика", "חשמל"],
-  ["paint", "Малярка", "צבע"],
-  ["plumb", "Сантехника", "אינסטלציה"],
-  ["gypsum", "Гипсокартон", "גבס"],
-  ["ac", "Кондиционеры", "מיזוג"],
-  ["alum", "Алюминий / окна", "אלומיניום"],
-  ["frame", "Каркас", "שלד"],
-  ["reno", "Ремонт под ключ", "שיפוץ כללי"],
-  ["other", "Прочее", "אחר"],
+  ["tile", "Плитка", "ריצוף / קרמיקה", "Tiling"],
+  ["elec", "Электрика", "חשמל", "Electrical"],
+  ["paint", "Малярка", "צבע", "Painting"],
+  ["plumb", "Сантехника", "אינסטלציה", "Plumbing"],
+  ["gypsum", "Гипсокартон", "גבס", "Drywall"],
+  ["ac", "Кондиционеры", "מיזוג", "Air conditioning"],
+  ["alum", "Алюминий / окна", "אלומיניום", "Windows / aluminum"],
+  ["frame", "Каркас", "שלד", "Framing"],
+  ["reno", "Ремонт под ключ", "שיפוץ כללי", "Full renovation"],
+  ["other", "Прочее", "אחר", "Other"],
 ];
 
 const WORKS = {
   tile: [
-    ["floor", "Пол / комната", "ריצוף חדר"],
-    ["bath", "Стены и пол ванной", "ריצוף וחיפוי חדר רחצה"],
-    ["shower", "Душевой поддон / ниша", "מקלחון / נישה"],
-    ["kitchen", "Фартук кухни", "חיפוי מטבח"],
-    ["steps", "Ступени / крыльцо", "מדרגות / כניסה"],
-    ["grout", "Затирка / ремонт швов", "רובה / תיקון מישקים"],
+    ["floor", "Пол / комната", "ריצוף חדר", "Room floor"],
+    ["bath", "Стены и пол ванной", "ריצוף וחיפוי חדר רחצה", "Bathroom tile"],
+    ["shower", "Душевой поддон / ниша", "מקלחון / נישה", "Shower / niche"],
+    ["kitchen", "Фартук кухни", "חיפוי מטבח", "Kitchen backsplash"],
+    ["steps", "Ступени / крыльцо", "מדרגות / כניסה", "Steps / entrance"],
+    ["grout", "Затирка / ремонт швов", "רובה / תיקון מישקים", "Grout repair"],
   ],
   elec: [
-    ["panel", "Щиток", "לוח חשמל"],
-    ["points", "Точки розеток и выключателей", "נקודות חשמל"],
-    ["light", "Освещение / споты", "תאורה"],
-    ["floorheat", "Тёплый пол", "חימום תת רצפתי"],
-    ["weak", "Слаботочка / интернет", "תקשורת"],
+    ["panel", "Щиток", "לוח חשמל", "Electrical panel"],
+    ["points", "Точки розеток и выключателей", "נקודות חשמל", "Outlets and switches"],
+    ["light", "Освещение / споты", "תאורה", "Lighting"],
+    ["floorheat", "Тёплый пол", "חימום תת רצפתי", "Underfloor heating"],
+    ["weak", "Слаботочка / интернет", "תקשורת", "Low voltage / internet"],
   ],
   paint: [
-    ["walls", "Стены", "קירות"],
-    ["ceiling", "Потолок", "תקרה"],
-    ["out", "Фасад / балкон", "חזית / מרפסת"],
-    ["prep", "Шпаклёвка и грунт", "שפכטל והכנה"],
-    ["wallp", "Обои", "טפטים"],
+    ["walls", "Стены", "קירות", "Walls"],
+    ["ceiling", "Потолок", "תקרה", "Ceiling"],
+    ["out", "Фасад / балкон", "חזית / מרפסת", "Facade / balcony"],
+    ["prep", "Шпаклёвка и грунт", "שפכטל והכנה", "Prep and primer"],
+    ["wallp", "Обои", "טפטים", "Wallpaper"],
   ],
   plumb: [
-    ["bath", "Разводка ванной", "אינסטלציה בחדר רחצה"],
-    ["kitchen", "Кухня / мойка", "מטבח / כיור"],
-    ["leak", "Протечка", "נזילה"],
-    ["boiler", "Бойлер", "דוד שמש / חשמל"],
-    ["sewer", "Канализация", "ביוב"],
+    ["bath", "Разводка ванной", "אינסטלציה בחדר רחצה", "Bathroom plumbing"],
+    ["kitchen", "Кухня / мойка", "מטבח / כיור", "Kitchen sink"],
+    ["leak", "Протечка", "נזילה", "Leak"],
+    ["boiler", "Бойлер", "דוד שמש / חשמל", "Water heater"],
+    ["sewer", "Канализация", "ביוב", "Sewage"],
   ],
   gypsum: [
-    ["walls", "Стены / перегородки", "קירות / מחיצות"],
-    ["ceiling", "Потолок", "תקרה"],
-    ["niche", "Ниши и короба", "נישות וארגזים"],
-    ["door", "Откосы дверей", "משקופים"],
-    ["spot", "Потолок под споты", "תקרה לתושבות"],
+    ["walls", "Стены / перегородки", "קירות / מחיצות", "Walls / partitions"],
+    ["ceiling", "Потолок", "תקרה", "Ceiling"],
+    ["niche", "Ниши и короба", "נישות וארגזים", "Niches and boxes"],
+    ["door", "Откосы дверей", "משקופים", "Door frames"],
+    ["spot", "Потолок под споты", "תקרה לתושבות", "Ceiling for spotlights"],
   ],
   ac: [
-    ["split", "Поставить сплит", "התקנת מזגן"],
-    ["multi", "Мультисплит", "מולטי ספליט"],
-    ["service", "Сервис / чистка", "שירות / ניקוי"],
-    ["duct", "Воздуховоды", "תעלות"],
+    ["split", "Поставить сплит", "התקנת מזגן", "Install split AC"],
+    ["multi", "Мультисплит", "מולטי ספליט", "Multi-split"],
+    ["service", "Сервис / чистка", "שירות / ניקוי", "Service / cleaning"],
+    ["duct", "Воздуховоды", "תעלות", "Ducts"],
   ],
   alum: [
-    ["win", "Окна", "חלונות"],
-    ["door", "Двери", "דלתות"],
-    ["shutter", "Рольставни", "תריסים"],
-    ["rail", "Перила балкона", "מעקה מרפסת"],
+    ["win", "Окна", "חלונות", "Windows"],
+    ["door", "Двери", "דלתות", "Doors"],
+    ["shutter", "Рольставни", "תריסים", "Shutters"],
+    ["rail", "Перила балкона", "מעקה מרפסת", "Balcony railing"],
   ],
   frame: [
-    ["wall", "Стены каркаса", "קירות שלד"],
-    ["roof", "Крыша", "גג"],
-    ["conc", "Бетон / стяжка", "בטון / רצפה"],
-    ["open", "Проёмы", "פתחים"],
+    ["wall", "Стены каркаса", "קירות שלד", "Frame walls"],
+    ["roof", "Крыша", "גג", "Roof"],
+    ["conc", "Бетон / стяжка", "בטון / רצפה", "Concrete / screed"],
+    ["open", "Проёмы", "פתחים", "Openings"],
   ],
   reno: [
-    ["full", "Квартира под ключ", "דירה מפתח"],
-    ["bath", "Только санузел", "רק חדר רחצה"],
-    ["kitchen", "Только кухня", "רק מטבח"],
-    ["room", "Одна комната", "חדר אחד"],
+    ["full", "Квартира под ключ", "דירה מפתח", "Turnkey apartment"],
+    ["bath", "Только санузел", "רק חדר רחצה", "Bathroom only"],
+    ["kitchen", "Только кухня", "רק מטבח", "Kitchen only"],
+    ["room", "Одна комната", "חדר אחד", "One room"],
   ],
 };
 
@@ -155,6 +155,30 @@ const I18N = {
     logout: "Выйти",
     hasAccount: "Уже есть вход",
     noAccount: "Нет аккаунта — регистрация",
+    rating: "Рейтинг",
+    reviews: "отзывов",
+    noRating: "Пока нет отзывов",
+    badgePhone: "Телефон подтверждён",
+    badgeDocs: "Документы загружены",
+    badgeIns: "Есть страховка",
+    badgeJobs: "Закрытые объекты",
+    badgeWarn: "Есть жалоба",
+    docsTitle: "Документы доверия",
+    docsHint: "Пока без проверки человеком. Значок появится после загрузки.",
+    addReview: "Отзыв после сдачи работы",
+    reviewText: "Короткий отзыв",
+    reviewSave: "Поставить оценку",
+    stars: "Оценка",
+    closedPlus: "Отметить объект сданным",
+    members: "Участники",
+    ratingBoard: "Рейтинг",
+    boardFeed: "Лента",
+    searchCode: "Код или имя",
+    memberCode: "Код участника",
+    topWorkers: "Лучшие мастера",
+    topContractors: "Лучшие кабланы",
+    uploadDocs: "Загрузить документы",
+    docsList: "Загружено",
   },
   he: {
     brand: "BuildIL",
@@ -218,14 +242,125 @@ const I18N = {
     logout: "יציאה",
     hasAccount: "כבר רשומים",
     noAccount: "אין חשבון — הרשמה",
+    rating: "דירוג",
+    reviews: "ביקורות",
+    noRating: "עדיין אין ביקורות",
+    badgePhone: "טלפון מאומת",
+    badgeDocs: "מסמכים הועלו",
+    badgeIns: "יש ביטוח",
+    badgeJobs: "עבודות שנסגרו",
+    badgeWarn: "יש תלונה",
+    docsTitle: "מסמכי אמון",
+    docsHint: "בינתיים בלי בדיקת אדם. הסימון יופיע אחרי העלאה.",
+    addReview: "ביקורת אחרי מסירת העבודה",
+    reviewText: "ביקורת קצרה",
+    reviewSave: "שמירת ציון",
+    stars: "ציון",
+    closedPlus: "לסמן עבודה כהושלמה",
+    members: "משתתפים",
+    ratingBoard: "דירוג",
+    boardFeed: "לוח",
+    searchCode: "קוד או שם",
+    memberCode: "קוד משתתף",
+    topWorkers: "מקצוענים מובילים",
+    topContractors: "קבלנים מובילים",
+    uploadDocs: "העלאת מסמכים",
+    docsList: "הועלה",
+  },
+  en: {
+    brand: "BuildIL",
+    heroTitle: "Contractors and tradespeople find each other",
+    heroText: "A construction board for Israel. Free for now — post, reply, WhatsApp.",
+    iAmContractor: "I am a contractor",
+    iAmContractorHint: "I need a crew or a tradesperson",
+    iAmWorker: "I am a tradesperson / crew",
+    iAmWorkerHint: "I am looking for jobs nearby",
+    feed: "Feed",
+    newJob: "Post",
+    profile: "Profile",
+    more: "More",
+    all: "All",
+    filterJobs: "Looking for a pro",
+    filterOffers: "Looking for a job",
+    badgeJob: "Job",
+    badgeOffer: "Pro available",
+    emptyJobs: "No jobs yet.",
+    emptyOffers: "No tradespeople posted yet.",
+    post: "Publish",
+    city: "City",
+    trade: "Trade",
+    title: "What needs to be done",
+    works: "Work items",
+    otherText: "Other — type it yourself",
+    desc: "Details",
+    dates: "When",
+    dateFrom: "From",
+    dateTo: "To",
+    budget: "Budget",
+    budgetSum: "Amount",
+    budgetTalk: "To be agreed",
+    plan: "Site plan",
+    planHint: "Photo or PDF of the plan",
+    tradesNeed: "Which trades",
+    pickOne: "Select at least one trade",
+    phone: "WhatsApp",
+    name: "Name / company",
+    save: "Save",
+    empty: "No posts yet.",
+    wa: "WhatsApp",
+    posted: "Posted to the feed",
+    ad: "Material-store ads will go here. The board stays free for contractors and trades.",
+    demo: "Sample posts are in the feed. Your posts stay on this phone for now.",
+    switchWorker: "Switch to tradesperson",
+    switchContractor: "Switch to contractor",
+    nowContractor: "You are a contractor",
+    nowWorker: "You are a tradesperson",
+    changeRole: "Change role",
+    seek: "Looking for work",
+    seekHint: "A tradesperson does not post a site. Only trade, skills and cities.",
+    seekSave: "Post to feed",
+    seekingIn: "Looking for work",
+    login: "Log in",
+    register: "Sign up",
+    password: "Password",
+    who: "Who are you",
+    sphere: "Field",
+    needAuth: "Everyone can see the feed. Sign up to post.",
+    logout: "Log out",
+    hasAccount: "Already have an account",
+    noAccount: "No account — sign up",
+    rating: "Rating",
+    reviews: "reviews",
+    noRating: "No reviews yet",
+    badgePhone: "Phone verified",
+    badgeDocs: "Documents uploaded",
+    badgeIns: "Insured",
+    badgeJobs: "Closed jobs",
+    badgeWarn: "Open complaint",
+    docsTitle: "Trust documents",
+    docsHint: "Not human-checked yet. Badge appears after upload.",
+    addReview: "Review after job is done",
+    reviewText: "Short review",
+    reviewSave: "Submit rating",
+    stars: "Score",
+    closedPlus: "Mark job completed",
+    members: "Members",
+    ratingBoard: "Ranking",
+    boardFeed: "Feed",
+    searchCode: "Code or name",
+    memberCode: "Member code",
+    topWorkers: "Top tradespeople",
+    topContractors: "Top contractors",
+    uploadDocs: "Upload documents",
+    docsList: "Uploaded",
   },
 };
 
 const DEMO = [
-  { id: "d1", kind: "job", trade: "tile", city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", dates: "23–26.09", budget: "₪ 4,800", phone: "0500000001" },
-  { id: "d2", kind: "job", trade: "elec", city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", dates: "на этой неделе", budget: "", phone: "0500000002" },
-  { id: "d3", kind: "job", trade: "reno", city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", dates: "октябрь", budget: "₪ 28,000", phone: "0500000003" },
-  { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", phone: "0500000004", name: "Игорь" },
+  { id: "d1", kind: "job", trade: "tile", city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", titleEn: "Bathroom and floor tile 42 m²", dates: "23–26.09", budget: "₪ 4,800", phone: "0500000001", rating: 4.8, reviews: 14, docs: true },
+  { id: "d2", kind: "job", trade: "elec", city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "this week", budget: "", phone: "0500000002", rating: 4.2, reviews: 6 },
+  { id: "d3", kind: "job", trade: "reno", city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "October", budget: "₪ 28,000", phone: "0500000003", rating: 5, reviews: 3, docs: true, insurance: true },
+  { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0500000004", name: "Igor", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21 },
 ];
 
 const store = {
@@ -239,6 +374,10 @@ const store = {
   set filter(v) { localStorage.setItem("bil_filter", v); },
   get kind() { return localStorage.getItem("bil_kind") || "all"; },
   set kind(v) { localStorage.setItem("bil_kind", v); },
+  get board() { return localStorage.getItem("bil_board") || "feed"; },
+  set board(v) { localStorage.setItem("bil_board", v); },
+  get q() { return localStorage.getItem("bil_q") || ""; },
+  set q(v) { localStorage.setItem("bil_q", v); },
   jobs() { try { return JSON.parse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
   saveJobs(list) { localStorage.setItem("bil_jobs", JSON.stringify(list)); },
   profile() { try { return JSON.parse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
@@ -259,26 +398,99 @@ const ICO = {
 };
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) { return `${ICO[id] || ""} `; }
+function loc(row) {
+  if (!row) return "";
+  if (store.lang === "he") return row[2];
+  if (store.lang === "en") return row[3] || row[1];
+  return row[1];
+}
 function tradeName(id) {
   const row = TRADES.find((x) => x[0] === id);
   if (!row) return id;
-  return store.lang === "he" ? row[2] : row[1];
+  return loc(row);
 }
 function tradeLabel(id) { return `${ico(id)}${tradeName(id)}`; }
 function workName(trade, id) {
   const row = (WORKS[trade] || []).find((x) => x[0] === id);
   if (!row) return id;
-  return store.lang === "he" ? row[2] : row[1];
+  return loc(row);
 }
 function cityName(id) {
   const row = CITIES.find((x) => x[0] === id || x[1] === id || x[2] === id);
   if (!row) return id;
-  return store.lang === "he" ? row[2] : row[1];
+  return loc(row);
 }
 
+const SEED_MEMBERS = [
+  { code: "K-10421", name: "Igor", role: "worker", city: "netanya", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, trades: ["gypsum"] },
+  { code: "K-10802", name: "Dana Build", role: "contractor", city: "tlv", rating: 4.8, reviews: 14, docs: true, closed: 14, trades: ["reno"] },
+  { code: "K-11017", name: "Yossi Electric", role: "worker", city: "rishon", rating: 4.6, reviews: 9, docs: true, insurance: true, closed: 9, trades: ["elec"] },
+];
+
+function nextCode() {
+  const used = new Set(store.users().map((u) => u.code).concat(SEED_MEMBERS.map((m) => m.code)));
+  let n = 10000 + store.users().length;
+  let code = "K-" + n;
+  while (used.has(code)) { n += 1; code = "K-" + n; }
+  return code;
+}
+function ensureCodes() {
+  const users = store.users().map((u) => u.code ? u : { ...u, code: nextCode() });
+  if (JSON.stringify(users) !== JSON.stringify(store.users())) store.saveUsers(users);
+}
+function memberList() {
+  ensureCodes();
+  const fromUsers = store.users().map((u) => {
+    const mine = u.phone === store.session;
+    const p = mine ? store.profile() : {};
+    const r = mine ? myRep() : {};
+    return {
+      code: u.code,
+      name: u.name || p.name || u.phone,
+      role: u.role || "contractor",
+      city: p.city || u.city || "",
+      rating: r.avg || u.rating || 0,
+      reviews: r.count || u.reviews || 0,
+      docs: r.docs || u.docs,
+      insurance: r.insurance || u.insurance,
+      closed: r.closed || u.closed || 0,
+      phone: u.phone,
+      trades: u.trades || p.trades || [],
+    };
+  });
+  return fromUsers.concat(SEED_MEMBERS.filter((s) => !fromUsers.some((u) => u.code === s.code)));
+}
+function myRep() {
+  const p = store.profile();
+  const list = p.reviews || [];
+  const avg = list.length ? list.reduce((s, r) => s + Number(r.stars || 0), 0) / list.length : 0;
+  return {
+    avg: Math.round(avg * 10) / 10,
+    count: list.length,
+    phone: Boolean(store.session || p.phone),
+    docs: Boolean(p.docs),
+    insurance: Boolean(p.insurance),
+    closed: Number(p.closed || 0),
+    warn: Boolean(p.warn),
+  };
+}
+function starsHtml(score, count) {
+  if (!count) return `<span class="meta">${t("noRating")}</span>`;
+  const full = Math.round(score);
+  return `<span class="stars">${"★".repeat(full)}${"☆".repeat(Math.max(0, 5 - full))} <b>${score}</b> · ${count} ${t("reviews")}</span>`;
+}
+function badgesHtml(item) {
+  const bits = [];
+  if (item.phone) bits.push(`<span class="tag">${t("badgePhone")}</span>`);
+  if (item.docs) bits.push(`<span class="tag">${t("badgeDocs")}</span>`);
+  if (item.insurance) bits.push(`<span class="tag">${t("badgeIns")}</span>`);
+  if (item.closed) bits.push(`<span class="tag">${t("badgeJobs")}: ${item.closed}</span>`);
+  if (item.warn) bits.push(`<span class="tag warn">${t("badgeWarn")}</span>`);
+  return bits.join("");
+}
 function setLang(lang) {
   store.lang = lang;
-  document.documentElement.lang = lang === "he" ? "he" : "ru";
+  document.documentElement.lang = lang === "he" ? "he" : lang === "en" ? "en" : "ru";
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.body.dir = lang === "he" ? "rtl" : "ltr";
 }
@@ -296,13 +508,14 @@ function render() {
     <div class="lang">
       <button class="${store.lang === "ru" ? "on" : ""}" data-lang="ru">RU</button>
       <button class="${store.lang === "he" ? "on" : ""}" data-lang="he">עב</button>
+      <button class="${store.lang === "en" ? "on" : ""}" data-lang="en">EN</button>
     </div>`;
 
   const user = store.user();
   if (user && user.role) store.role = user.role;
 
   let main = "";
-  if (store.tab === "feed") main = viewFeed();
+  if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
   else if (store.tab === "new") main = !user ? viewAuth() : (store.role === "worker" ? viewSeek() : viewNew());
   else if (store.tab === "profile") main = user ? viewProfile() : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
@@ -321,6 +534,41 @@ function render() {
   bind();
 }
 
+function boardNav() {
+  return `<div class="filters">
+    <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
+    <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
+    <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
+  </div>`;
+}
+function memberCard(m) {
+  return `<article class="card job ${m.role === "worker" ? "offer" : "order"}">
+    <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
+    <h3>${m.name || m.code}</h3>
+    <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
+    <div>${starsHtml(m.rating || 0, m.reviews || 0)}</div>
+    <div class="tags">${(m.trades || []).map(tradeLabel).join(" ")}${badgesHtml(m)}</div>
+    ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+  </article>`;
+}
+function viewMembers() {
+  const q = store.q.trim().toLowerCase();
+  let list = memberList();
+  if (q) list = list.filter((m) => `${m.code} ${m.name} ${m.phone || ""}`.toLowerCase().includes(q));
+  return boardNav() + `<div class="card">
+    <label>${t("searchCode")}</label>
+    <input id="member-q" value="${store.q}" placeholder="K-10421" />
+  </div>` + (list.map(memberCard).join("") || `<div class="empty">${t("empty")}</div>`);
+}
+function viewRatingBoard() {
+  const list = memberList().filter((m) => m.reviews || m.closed);
+  const workers = list.filter((m) => m.role === "worker").sort((a, b) => (b.rating - a.rating) || (b.closed - a.closed));
+  const contractors = list.filter((m) => m.role !== "worker").sort((a, b) => (b.rating - a.rating) || (b.closed - a.closed));
+  return boardNav() + `<div class="card"><b>${t("topWorkers")}</b></div>` +
+    (workers.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyOffers")}</div>`) +
+    `<div class="card"><b>${t("topContractors")}</b></div>` +
+    (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
+}
 function viewFeed() {
   const own = store.jobs();
   const all = [...own, ...DEMO];
@@ -329,7 +577,7 @@ function viewFeed() {
   if (store.kind === "job") filtered = filtered.filter((j) => itemKind(j) === "job");
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
-  const kinds = `
+  const kinds = boardNav() + `
     <div class="filters">
       <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
       <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterJobs")}</button>
@@ -345,11 +593,13 @@ function viewFeed() {
   }
   return kinds + chips + filtered.map((j) => {
     const offer = j.kind === "offer";
-    const title = store.lang === "he" ? (j.titleHe || j.titleRu) : (j.titleRu || j.titleHe);
+    const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe);
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
     const text = `${title} — ${cities}`;
     return `<article class="card job ${offer ? "offer" : "order"}">
       <div class="badge ${offer ? "offer" : "order"}">${offer ? ico("worker") + t("badgeOffer") : ico("contractor") + t("badgeJob")}</div>
+      <div>${starsHtml(j.rating || 0, j.reviews || 0)}</div>
+      <div class="tags">${badgesHtml(j)}</div>
       <h3>${title}</h3>
       <div class="meta">${j.name ? ico("name") + j.name + " · " : ""}${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
@@ -361,7 +611,7 @@ function viewFeed() {
 }
 
 function viewNew() {
-  const cities = CITIES.map(([id, ru, he]) => `<option value="${id}">${store.lang === "he" ? he : ru}</option>`).join("");
+  const cities = CITIES.map((row) => `<option value="${row[0]}">${loc(row)}</option>`).join("");
   const checks = TRADES.map(([id]) => `<label class="check"><input type="checkbox" name="trades" value="${id}" /> ${tradeLabel(id)}</label>`).join("");
   return `<form class="card" id="job-form">
     <label>${t("tradesNeed")}</label>
@@ -392,7 +642,7 @@ function viewSeek() {
   const picked = p.cities || (p.city ? [p.city] : []);
   const selected = p.trades || [];
   const checks = TRADES.filter(([id]) => id !== "other").map(([id]) => `<label class="check"><input type="checkbox" name="trades" value="${id}" ${selected.includes(id) ? "checked" : ""} /> ${tradeLabel(id)}</label>`).join("");
-  const cityChecks = CITIES.map(([id, ru, he]) => `<label class="check"><input type="checkbox" name="cities" value="${id}" ${picked.includes(id) ? "checked" : ""} /> ${store.lang === "he" ? he : ru}</label>`).join("");
+  const cityChecks = CITIES.map((row) => `<label class="check"><input type="checkbox" name="cities" value="${row[0]}" ${picked.includes(row[0]) ? "checked" : ""} /> ${loc(row)}</label>`).join("");
   return `<form class="card" id="seek-form">
     <p>${t("seekHint")}</p>
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
@@ -448,9 +698,42 @@ function viewAuth() {
   </form>`;
 }
 
+function viewReputation() {
+  const p = store.profile();
+  const r = myRep();
+  const list = (p.reviews || []).map((x) => `<div class="meta">★${x.stars} — ${x.text || ""}</div>`).join("");
+  const code = p.code || (store.user() && store.user().code) || "";
+  const files = (p.docFiles || []).map((n) => `<div class="plan-name">${n}</div>`).join("");
+  return `<div class="card profile-bg">
+    <b>${t("memberCode")}</b>
+    <h3>${code || "—"}</h3>
+    <b>${t("rating")}</b>
+    <div>${starsHtml(r.avg, r.count)}</div>
+    <div class="tags">${badgesHtml(r)}</div>
+    <p class="meta">${t("docsHint")}</p>
+    <label class="check"><input type="checkbox" id="flag-docs" ${p.docs ? "checked" : ""} /> ${t("badgeDocs")}</label>
+    <label class="check"><input type="checkbox" id="flag-ins" ${p.insurance ? "checked" : ""} /> ${t("badgeIns")}</label>
+    <div style="height:8px"></div>
+    <button class="btn ghost" type="button" id="btn-closed">${t("closedPlus")}</button>
+    <label>${t("uploadDocs")}</label>
+    <input type="file" id="doc-file" accept="image/*,.pdf,application/pdf" />
+    <div class="plan-name">${t("docsList")}</div>
+    ${files}
+  </div>
+  <form class="card" id="review-form">
+    <label>${t("addReview")}</label>
+    <label>${t("stars")}</label>
+    <select name="stars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+    <label>${t("reviewText")}</label>
+    <textarea name="text"></textarea>
+    <button class="btn" type="submit">${t("reviewSave")}</button>
+    ${list}
+  </form>`;
+}
+
 function viewProfile() {
   const p = store.profile();
-  const cities = CITIES.map(([id, ru, he]) => `<option value="${id}" ${p.city === id ? "selected" : ""}>${store.lang === "he" ? he : ru}</option>`).join("");
+  const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   return `<form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
@@ -458,6 +741,7 @@ function viewProfile() {
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
+  ${viewReputation()}
   <div class="card">
     <p>${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</p>
     ${store.role === "worker" && store.profile().seeking ? `<p class="ok">${t("seekingIn")}: ${(store.profile().cities || [store.profile().city]).filter(Boolean).map(cityName).join(", ")}</p>` : ""}
@@ -476,6 +760,18 @@ function bind() {
   document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { store.tab = b.dataset.tab; render(); });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
+  document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.tab = "feed"; render(); });
+  const mq = document.getElementById("member-q");
+  if (mq) mq.onchange = mq.onkeyup = () => { store.q = mq.value; }; 
+  if (mq) mq.addEventListener("keydown", (e) => { if (e.key === "Enter") { store.q = mq.value; render(); } });
+  const docFile = document.getElementById("doc-file");
+  if (docFile) docFile.onchange = () => {
+    const f = docFile.files[0];
+    if (!f) return;
+    const p = store.profile();
+    store.saveProfile({ ...p, docs: true, docFiles: (p.docFiles || []).concat([f.name]) });
+    render();
+  };
   document.querySelectorAll("[data-switch]").forEach((b) => {
     b.onclick = () => {
       store.role = b.dataset.switch;
@@ -499,11 +795,12 @@ function bind() {
       password: String(f.get("password") || ""),
       role: String(f.get("role") || "contractor"),
       trades,
+      code: nextCode(),
     };
     store.saveUsers(store.users().concat(user));
     store.session = phone;
     store.role = user.role;
-    store.saveProfile({ ...store.profile(), name: user.name, phone, trades });
+    store.saveProfile({ ...store.profile(), name: user.name, phone, trades, code: user.code });
     store.tab = "feed";
     render();
   };
@@ -517,7 +814,7 @@ function bind() {
     if (!user) { alert(t("login")); return; }
     store.session = phone;
     store.role = user.role;
-    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [] });
+    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || nextCode() });
     store.tab = "feed";
     render();
   };
@@ -571,6 +868,7 @@ function bind() {
       city: f.get("city"),
       titleRu: title,
       titleHe: title,
+      titleEn: title,
       dates,
       budget,
       phone: f.get("phone"),
@@ -615,11 +913,31 @@ function bind() {
       city: cities[0],
       titleRu: title,
       titleHe: title,
+      titleEn: title,
       phone,
       name,
     });
     store.saveJobs(list);
     store.tab = "feed";
+    render();
+  };
+  const docs = document.getElementById("flag-docs");
+  const ins = document.getElementById("flag-ins");
+  if (docs) docs.onchange = () => store.saveProfile({ ...store.profile(), docs: docs.checked });
+  if (ins) ins.onchange = () => store.saveProfile({ ...store.profile(), insurance: ins.checked });
+  const closedBtn = document.getElementById("btn-closed");
+  if (closedBtn) closedBtn.onclick = () => {
+    const p = store.profile();
+    store.saveProfile({ ...p, closed: Number(p.closed || 0) + 1 });
+    render();
+  };
+  const review = document.getElementById("review-form");
+  if (review) review.onsubmit = (e) => {
+    e.preventDefault();
+    const f = new FormData(review);
+    const p = store.profile();
+    const reviews = (p.reviews || []).concat([{ stars: Number(f.get("stars")), text: String(f.get("text") || "") }]);
+    store.saveProfile({ ...p, reviews });
     render();
   };
   const prof = document.getElementById("prof-form");
