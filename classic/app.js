@@ -698,19 +698,21 @@ function jobPhoto(j) {
 }
 function memberCard(m) {
   return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
-    <img class="tt-photo" src="${face(m.name, m.photo)}" alt="" />
-    <div class="tt-body">
-      <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
-      <h3>${m.name || m.code}</h3>
-      <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
-      <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
-      <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
-      <div class="tt-actions">
-        <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
-        ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+    <div class="tt-row">
+      <img class="tt-photo" src="${face(m.name, m.photo)}" alt="" />
+      <div class="tt-body">
+        <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
+        <h3>${m.name || m.code}</h3>
+        <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
+        <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
+        <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
+        <div class="tt-actions">
+          <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
+          ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+        </div>
       </div>
-      ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
     </div>
+    ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
   </article>`;
 }
 function viewMembers() {
@@ -761,19 +763,21 @@ function viewFeed() {
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
     const text = `${title} — ${cities}`;
     return `<article class="card job tt-card ${offer ? "offer" : "order"}">
-      <img class="tt-photo" src="${jobPhoto(j)}" alt="" />
-      <div class="tt-body">
-        <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
-        <h3>${title}</h3>
-        <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
-        <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
-        <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
-        <div class="tt-actions">
-          <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
-          <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
+      <div class="tt-row">
+        <img class="tt-photo" src="${jobPhoto(j)}" alt="" />
+        <div class="tt-body">
+          <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
+          <h3>${title}</h3>
+          <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
+          <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
+          <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
+          <div class="tt-actions">
+            <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
+            <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
+          </div>
         </div>
-        ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       </div>
+      ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
     </article>`;
   }).join("");
 }

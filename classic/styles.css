@@ -186,7 +186,8 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f6b4f; }
 .stats b { display: block; font-size: 20px; }
 .stats span { font-size: 12px; color: var(--muted); }
 
-.tt-card { display: flex; gap: 14px; align-items: flex-start; }
+.tt-card { display: block; }
+.tt-row { display: flex; gap: 14px; align-items: flex-start; }
 .tt-photo {
   width: 88px; height: 88px; min-width: 88px;
   border-radius: 16px; object-fit: cover;
@@ -199,3 +200,23 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f6b4f; }
 
 .compare { max-width: 480px; margin: 0 auto; padding: 10px 16px 0; font-size: 13px; font-weight: 700; }
 .compare a { color: #009fd9; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .card, .hero, .ad {
+    animation: rise .35s ease both;
+  }
+  .card:nth-child(2) { animation-delay: .04s; }
+  .card:nth-child(3) { animation-delay: .08s; }
+  .card:nth-child(4) { animation-delay: .12s; }
+  .card:nth-child(5) { animation-delay: .16s; }
+  .chip, .btn, .nav button {
+    transition: transform .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .btn:active, .chip:active, .nav button:active { transform: scale(.97); }
+  .tt-photo { transition: transform .2s ease; }
+  .tt-card:hover .tt-photo { transform: scale(1.03); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
