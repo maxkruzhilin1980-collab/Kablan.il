@@ -236,3 +236,29 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 }
 .nav .icon.pic { width: 22px; height: 22px; border-radius: 50%; }
 .tag .icon.pic { width: 18px; height: 18px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .icon.pic {
+    animation: bob 2.4s ease-in-out infinite;
+    transform-origin: 50% 80%;
+  }
+  .tag .icon.pic { animation-duration: 2.8s; }
+  .nav .icon.pic { animation: bob 2.6s ease-in-out infinite; }
+  .tt-photo {
+    animation: bob 3.2s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+  .chip:nth-child(2n) .icon.pic { animation-delay: .3s; }
+  .chip:nth-child(3n) .icon.pic { animation-delay: .6s; }
+  .icon.pic:hover, .tt-photo:hover { animation: wave .5s ease; }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-3px) rotate(-2deg); }
+  70% { transform: translateY(1px) rotate(2deg); }
+}
+@keyframes wave {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-8deg) scale(1.08); }
+  75% { transform: rotate(8deg) scale(1.08); }
+}
