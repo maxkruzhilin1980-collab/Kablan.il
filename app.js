@@ -455,14 +455,35 @@ const store = {
 };
 
 const ICO = {
-  tile: "🧱", elec: "⚡", paint: "🎨", plumb: "🚿", gypsum: "🧱",
-  ac: "❄️", alum: "🪟", frame: "🏗️", reno: "🏠", other: "✏️",
-  city: "📍", date: "📅", money: "💰", plan: "📐", phone: "📱",
-  name: "👤", feed: "📋", job: "📝", profile: "👷", more: "☰",
-  contractor: "🏗️", worker: "🛠️",
+  tile: "M4 10l8-6 8 6v10H4V10zm8 2v6",
+  elec: "M13 2L4 14h7l-1 8 9-12h-7l1-8z",
+  paint: "M12 3l7 7-8 8H6v-5l6-10zM5 20h14",
+  plumb: "M7 3h4v8H7zM11 7h6v4H11zM15 11v8M12 19h6",
+  gypsum: "M4 6h16v4H4zM4 12h7v6H4zM13 12h7v6h-7z",
+  ac: "M12 4v16M4 12h16M7 7l10 10M17 7L7 17",
+  alum: "M4 6h16v12H4zM8 6v12M16 6v12",
+  frame: "M3 20h18M6 20V8l6-4 6 4v12M10 20v-6h4v6",
+  reno: "M4 11l8-7 8 7v9H4v-9zm6 9v-6h4v6",
+  other: "M4 20l2-2 12-12 2 2L8 20H4zm12-14l2 2",
+  city: "M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11zm0-8a3 3 0 110-6 3 3 0 010 6z",
+  date: "M7 3v3M17 3v3M4 8h16M5 5h14a1 1 0 011 1v14H4V6a1 1 0 011-1z",
+  money: "M12 3v18M8 7h5a3 3 0 010 6H9a3 3 0 000 6h7",
+  plan: "M4 6l8-3 8 3v12l-8 3-8-3V6zm8-3v18M8 9l8 3M8 13l8 3",
+  phone: "M7 3h10v18H7zM11 18h2",
+  name: "M12 12a4 4 0 100-8 4 4 0 000 8zM5 20a7 7 0 0114 0",
+  feed: "M5 6h14M5 12h14M5 18h10",
+  job: "M8 7V5h8v2M5 7h14v13H5V7z",
+  profile: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-3 4-5 8-5s6.5 2 8 5",
+  more: "M5 12h.01M12 12h.01M19 12h.01",
+  contractor: "M4 20h16M6 20V9l6-5 6 5v11M10 20v-5h4v5",
+  worker: "M14.7 6.3a4 4 0 11-5.4 0M9 10l-5 9h16l-5-9",
 };
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
-function ico(id) { return `${ICO[id] || ""} `; }
+function ico(id) {
+  const d = ICO[id];
+  if (!d) return "";
+  return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+}
 function loc(row) {
   if (!row) return "";
   if (store.lang === "he") return row[2];
