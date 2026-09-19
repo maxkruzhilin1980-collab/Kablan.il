@@ -678,17 +678,39 @@ function inCity(item) {
   const cities = item.cities || (item.city ? [item.city] : []);
   return cities.includes(store.cityFilter);
 }
+
+function face(name, photo) {
+  if (photo) return photo;
+  const n = encodeURIComponent(String(name || "K").slice(0, 24));
+  return "https://ui-avatars.com/api/?name=" + n + "&background=009fd9&color=fff&size=160&bold=true";
+}
+function jobPhoto(j) {
+  if (j.planData && String(j.planData).startsWith("data:image")) return j.planData;
+  if (j.photo) return j.photo;
+  const map = {
+    tile: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=240&h=240&q=60",
+    elec: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=240&h=240&q=60",
+    reno: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=240&h=240&q=60",
+    gypsum: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=240&h=240&q=60",
+    paint: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=240&h=240&q=60"
+  };
+  return map[j.trade] || face(j.name || j.titleRu);
+}
 function memberCard(m) {
-  return `<article class="card job ${m.role === "worker" ? "offer" : "order"}">
-    ${m.photo ? `<img class="avatar" src="${m.photo}" alt="" />` : `<div class="avatar stub">👷</div>`}
-    <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
-    <h3>${m.name || m.code}</h3>
-    <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
-    <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
-    <div class="tags">${(m.trades || []).map(tradeLabel).join(" ")}${badgesHtml(m)}</div>
-    <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
-    ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
-    ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+  return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
+    <img class="tt-photo" src="${face(m.name, m.photo)}" alt="" />
+    <div class="tt-body">
+      <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
+      <h3>${m.name || m.code}</h3>
+      <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
+      <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
+      <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
+      <div class="tt-actions">
+        <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
+        ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+      </div>
+      ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
+    </div>
   </article>`;
 }
 function viewMembers() {
@@ -738,18 +760,20 @@ function viewFeed() {
     const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe);
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
     const text = `${title} — ${cities}`;
-    return `<article class="card job ${offer ? "offer" : "order"}">
-      <div class="badge ${offer ? "offer" : "order"}">${offer ? ico("worker") + t("badgeOffer") : ico("contractor") + t("badgeJob")}</div>
-      <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
-      <div class="tags">${badgesHtml(j)}</div>
-      <h3>${title}</h3>
-      <div class="meta">${j.name ? ico("name") + j.name + " · " : ""}${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}</div>
-      <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
-      ${j.planData && j.planData.startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
-      ${j.planName && !(j.planData && j.planData.startsWith("data:image")) ? `<div class="plan-name">${j.planName}</div>` : ""}
-      <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
-      ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
-      <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
+    return `<article class="card job tt-card ${offer ? "offer" : "order"}">
+      <img class="tt-photo" src="${jobPhoto(j)}" alt="" />
+      <div class="tt-body">
+        <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
+        <h3>${title}</h3>
+        <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
+        <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
+        <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
+        <div class="tt-actions">
+          <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
+          <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
+        </div>
+        ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
+      </div>
     </article>`;
   }).join("");
 }
