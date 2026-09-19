@@ -480,6 +480,8 @@ const ICO = {
 };
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) {
+  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1, contractor:1, worker:1, profile:1 };
+  if (pics[id]) return `<img class="icon pic" src="icons/${id}.jpg" alt="" />`;
   const d = ICO[id];
   if (!d) return "";
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -700,27 +702,24 @@ function inCity(item) {
   return cities.includes(store.cityFilter);
 }
 
-function face(name, photo) {
+function face(name, photo, role) {
   if (photo) return photo;
-  const n = encodeURIComponent(String(name || "K").slice(0, 24));
-  return "https://ui-avatars.com/api/?name=" + n + "&background=009fd9&color=fff&size=160&bold=true";
+  if (role === "worker") return "icons/worker.jpg";
+  if (role === "contractor") return "icons/contractor.jpg";
+  return "icons/profile.jpg";
 }
 function jobPhoto(j) {
   if (j.planData && String(j.planData).startsWith("data:image")) return j.planData;
   if (j.photo) return j.photo;
-  const map = {
-    tile: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=240&h=240&q=60",
-    elec: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=240&h=240&q=60",
-    reno: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=240&h=240&q=60",
-    gypsum: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=240&h=240&q=60",
-    paint: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=240&h=240&q=60"
-  };
-  return map[j.trade] || face(j.name || j.titleRu);
+  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
+  if (j.trade && pics[j.trade]) return "icons/" + j.trade + ".jpg";
+  if (j.kind === "offer") return "icons/worker.jpg";
+  return "icons/contractor.jpg";
 }
 function memberCard(m) {
   return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
     <div class="tt-row">
-      <img class="tt-photo" src="${face(m.name, m.photo)}" alt="" />
+      <img class="tt-photo" src="${face(m.name, m.photo, m.role === "worker" ? "worker" : "contractor")}" alt="" />
       <div class="tt-body">
         <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
         <h3>${m.name || m.code}</h3>
