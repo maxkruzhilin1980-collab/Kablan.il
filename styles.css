@@ -174,3 +174,6 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 6px solid #1d6b4f; }
 .ico { font-style: normal; font-size: 16px; }
 .plan-preview { margin-top: 8px; max-width: 100%; border-radius: 12px; border: 1px solid var(--line); }
 .plan-name { font-size: 13px; color: var(--muted); }
+.reviews { margin: 8px 0; padding: 8px; background: #fff7ee; border-radius: 12px; }
+.review-item { font-size: 13px; margin: 6px 0; color: var(--ink); }
+.review-write textarea { margin: 8px 0; }

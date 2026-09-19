@@ -179,6 +179,14 @@ const I18N = {
     topContractors: "Лучшие кабланы",
     uploadDocs: "Загрузить документы",
     docsList: "Загружено",
+    viewReviews: "Смотреть отзывы",
+    hideReviews: "Скрыть отзывы",
+    writeReview: "Написать отзыв мастеру",
+    writeReviewC: "Написать отзыв каблану",
+    sendReview: "Отправить отзыв",
+    reviewTo: "Отзыв для",
+    needLoginReview: "Чтобы написать отзыв — войдите.",
+    reviewOk: "Отзыв сохранён",
   },
   he: {
     brand: "BuildIL",
@@ -266,6 +274,14 @@ const I18N = {
     topContractors: "קבלנים מובילים",
     uploadDocs: "העלאת מסמכים",
     docsList: "הועלה",
+    viewReviews: "לראות ביקורות",
+    hideReviews: "להסתיר ביקורות",
+    writeReview: "לכתוב ביקורת למקצוען",
+    writeReviewC: "לכתוב ביקורת לקבלן",
+    sendReview: "שליחת ביקורת",
+    reviewTo: "ביקורת עבור",
+    needLoginReview: "כדי לכתוב ביקורת צריך להיכנס.",
+    reviewOk: "הביקורת נשמרה",
   },
   en: {
     brand: "BuildIL",
@@ -353,6 +369,14 @@ const I18N = {
     topContractors: "Top contractors",
     uploadDocs: "Upload documents",
     docsList: "Uploaded",
+    viewReviews: "See reviews",
+    hideReviews: "Hide reviews",
+    writeReview: "Write a review for the pro",
+    writeReviewC: "Write a review for the contractor",
+    sendReview: "Send review",
+    reviewTo: "Review for",
+    needLoginReview: "Log in to write a review.",
+    reviewOk: "Review saved",
   },
 };
 
@@ -378,6 +402,10 @@ const store = {
   set board(v) { localStorage.setItem("bil_board", v); },
   get q() { return localStorage.getItem("bil_q") || ""; },
   set q(v) { localStorage.setItem("bil_q", v); },
+  get openRev() { return localStorage.getItem("bil_openrev") || ""; },
+  set openRev(v) { localStorage.setItem("bil_openrev", v); },
+  extraRevs() { try { return JSON.parse(localStorage.getItem("bil_extra_revs") || "{}"); } catch { return {}; } },
+  saveExtraRevs(map) { localStorage.setItem("bil_extra_revs", JSON.stringify(map)); },
   jobs() { try { return JSON.parse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
   saveJobs(list) { localStorage.setItem("bil_jobs", JSON.stringify(list)); },
   profile() { try { return JSON.parse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
@@ -420,6 +448,42 @@ function cityName(id) {
   if (!row) return id;
   return loc(row);
 }
+
+const DEMO_REVIEWS = {
+  d1: [
+    { stars: 5, name: "Михаил", textRu: "Плитку положил ровно, швы аккуратные.", textHe: "ריצוף ישר ומישקים נקיים.", textEn: "Even tiling, clean joints." },
+    { stars: 5, name: "Ольга", textRu: "Уложились в срок, объект чистый.", textHe: "עמדו בלוח הזמנים, האתר נקי.", textEn: "On time and the site was clean." },
+    { stars: 4, name: "Avi", textRu: "Хорошая работа, чуть задержали материал.", textHe: "עבודה טובה, החומר התעכב קצת.", textEn: "Good work, materials were a bit late." },
+  ],
+  d2: [
+    { stars: 4, name: "Сергей", textRu: "Щиток собрал нормально, объяснил схему.", textHe: "הלוח הורכב בסדר, הסביר את התוכנית.", textEn: "Panel was fine, explained the layout." },
+    { stars: 5, name: "Noa", textRu: "Приехал вовремя, точки где просили.", textHe: "הגיע בזמן, הנקודות במקום.", textEn: "Arrived on time, points where asked." },
+  ],
+  d3: [
+    { stars: 5, name: "Ирина", textRu: "Косметика на высоте, краска без полос.", textHe: "שיפוץ קוסמטי מצוין, הצבע אחיד.", textEn: "Great cosmetic job, even paint." },
+    { stars: 5, name: "David", textRu: "Смета совпала с фактом.", textHe: "ההצעה תאמה את המחיר הסופי.", textEn: "Quote matched the final price." },
+    { stars: 5, name: "Лена", textRu: "Можно рекомендовать.", textHe: "אפשר להמליץ.", textEn: "Would recommend." },
+  ],
+  d4: [
+    { stars: 5, name: "Андрей", textRu: "Потолок и ниши — как в тухните.", textHe: "התקרה והנישות לפי התוכנית.", textEn: "Ceiling and niches match the plan." },
+    { stars: 5, name: "Maya", textRu: "Быстро и без грязи в квартире.", textHe: "מהיר ובלי לכלוך בדירה.", textEn: "Fast and no mess in the flat." },
+    { stars: 4, name: "Павел", textRu: "Короб чуть подровняли на второй день.", textHe: "תיקנו את הארגז ביום השני.", textEn: "Adjusted a box on day two." },
+    { stars: 5, name: "Юлия", textRu: "Игорь знает гипс. Буду звать ещё.", textHe: "איגור מבין בגבס. אזמין שוב.", textEn: "Igor knows drywall. Will hire again." },
+  ],
+  "K-10421": [
+    { stars: 5, name: "Андрей", textRu: "Потолок и ниши — как в тухните.", textHe: "התקרה והנישות לפי התוכנית.", textEn: "Ceiling and niches match the plan." },
+    { stars: 5, name: "Maya", textRu: "Быстро и без грязи в квартире.", textHe: "מהיר ובלי לכלוך בדירה.", textEn: "Fast and no mess in the flat." },
+    { stars: 5, name: "Юлия", textRu: "Игорь знает гипс.", textHe: "איגור מבין בגבס.", textEn: "Igor knows drywall." },
+  ],
+  "K-10802": [
+    { stars: 5, name: "Игорь Г.", textRu: "Каблан платит вовремя, объект понятный.", textHe: "הקבלן משלם בזמן, הפרויקט ברור.", textEn: "Pays on time, clear site." },
+    { stars: 4, name: "Yossi", textRu: "ТЗ нормальное, чуть много правок.", textHe: "המפרט בסדר, קצת יותר מדי תיקונים.", textEn: "Brief was fine, a few extra changes." },
+  ],
+  "K-11017": [
+    { stars: 5, name: "Dana", textRu: "Электрика по стандарту, аккуратно.", textHe: "חשמל לפי התקן, עבודה נקייה.", textEn: "Electrical to code, tidy." },
+    { stars: 4, name: "Роман", textRu: "Приехал на день позже, работу сделал.", textHe: "הגיע באיחור של יום, אבל סיים.", textEn: "A day late, but finished the job." },
+  ],
+};
 
 const SEED_MEMBERS = [
   { code: "K-10421", name: "Igor", role: "worker", city: "netanya", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, trades: ["gypsum"] },
@@ -488,6 +552,28 @@ function badgesHtml(item) {
   if (item.warn) bits.push(`<span class="tag warn">${t("badgeWarn")}</span>`);
   return bits.join("");
 }
+function reviewText(r) {
+  if (store.lang === "he") return r.textHe || r.textRu || r.text || "";
+  if (store.lang === "en") return r.textEn || r.textRu || r.text || "";
+  return r.textRu || r.text || "";
+}
+function reviewsFor(id) {
+  const extra = store.extraRevs()[id] || [];
+  return (DEMO_REVIEWS[id] || []).concat(extra);
+}
+function reviewsBox(id, kind) {
+  const open = store.openRev === id;
+  const list = reviewsFor(id);
+  const shown = list.map((r) => `<div class="review-item"><b>★${r.stars}</b> ${r.name || t("reviews")} — ${reviewText(r)}</div>`).join("");
+  const form = `<form class="review-write" data-rev-target="${id}">
+    <label>${kind === "worker" || kind === "offer" ? t("writeReview") : t("writeReviewC")}</label>
+    <select name="stars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+    <textarea name="text" placeholder="${t("reviewText")}"></textarea>
+    <button class="btn" type="submit">${t("sendReview")}</button>
+  </form>`;
+  return `<button class="btn ghost" type="button" data-open-rev="${id}">${open ? t("hideReviews") : t("viewReviews")}</button>
+    ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}</div>` : ""}`;
+}
 function setLang(lang) {
   store.lang = lang;
   document.documentElement.lang = lang === "he" ? "he" : lang === "en" ? "en" : "ru";
@@ -546,8 +632,9 @@ function memberCard(m) {
     <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
     <h3>${m.name || m.code}</h3>
     <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
-    <div>${starsHtml(m.rating || 0, m.reviews || 0)}</div>
+    <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
     <div class="tags">${(m.trades || []).map(tradeLabel).join(" ")}${badgesHtml(m)}</div>
+    ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
     ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
   </article>`;
 }
@@ -598,13 +685,14 @@ function viewFeed() {
     const text = `${title} — ${cities}`;
     return `<article class="card job ${offer ? "offer" : "order"}">
       <div class="badge ${offer ? "offer" : "order"}">${offer ? ico("worker") + t("badgeOffer") : ico("contractor") + t("badgeJob")}</div>
-      <div>${starsHtml(j.rating || 0, j.reviews || 0)}</div>
+      <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
       <div class="tags">${badgesHtml(j)}</div>
       <h3>${title}</h3>
       <div class="meta">${j.name ? ico("name") + j.name + " · " : ""}${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
       ${j.planData && j.planData.startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
       ${j.planName && !(j.planData && j.planData.startsWith("data:image")) ? `<div class="plan-name">${j.planName}</div>` : ""}
+      ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
     </article>`;
   }).join("");
@@ -761,6 +849,28 @@ function bind() {
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-open-rev]").forEach((b) => b.onclick = () => {
+    store.openRev = store.openRev === b.dataset.openRev ? "" : b.dataset.openRev;
+    render();
+  });
+  document.querySelectorAll("form.review-write").forEach((form) => {
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      if (!store.session) { alert(t("needLoginReview")); store.tab = "profile"; render(); return; }
+      const f = new FormData(form);
+      const id = form.dataset.revTarget;
+      const map = store.extraRevs();
+      map[id] = (map[id] || []).concat([{
+        stars: Number(f.get("stars")),
+        text: String(f.get("text") || ""),
+        textRu: String(f.get("text") || ""),
+        name: store.profile().name || t("reviews"),
+      }]);
+      store.saveExtraRevs(map);
+      store.openRev = id;
+      render();
+    };
+  });
   const mq = document.getElementById("member-q");
   if (mq) mq.onchange = mq.onkeyup = () => { store.q = mq.value; }; 
   if (mq) mq.addEventListener("keydown", (e) => { if (e.key === "Enter") { store.q = mq.value; render(); } });
