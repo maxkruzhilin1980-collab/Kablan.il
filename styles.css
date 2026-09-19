@@ -183,7 +183,8 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .stats b { display: block; font-size: 20px; }
 .stats span { font-size: 12px; color: var(--muted); }
 
-.tt-card { display: flex; gap: 14px; align-items: flex-start; }
+.tt-card { display: block; }
+.tt-row { display: flex; gap: 14px; align-items: flex-start; }
 .tt-photo {
   width: 88px; height: 88px; min-width: 88px;
   border-radius: 16px; object-fit: cover;
