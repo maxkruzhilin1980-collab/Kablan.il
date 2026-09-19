@@ -187,6 +187,17 @@ const I18N = {
     reviewTo: "Отзыв для",
     needLoginReview: "Чтобы написать отзыв — войдите.",
     reviewOk: "Отзыв сохранён",
+    details: "Подробнее",
+    back: "Назад в ленту",
+    postedBy: "Кто выставил",
+    jobDetails: "О заказе",
+    offerDetails: "Об анкете",
+    documents: "Документы",
+    noDocs: "Документов пока нет",
+    worksDone: "Состав работ",
+    photo: "Фото профиля",
+    worksCount: "Работ",
+    myPage: "Личная страница",
   },
   he: {
     brand: "BuildIL",
@@ -282,6 +293,17 @@ const I18N = {
     reviewTo: "ביקורת עבור",
     needLoginReview: "כדי לכתוב ביקורת צריך להיכנס.",
     reviewOk: "הביקורת נשמרה",
+    details: "פרטים",
+    back: "חזרה ללוח",
+    postedBy: "מי פרסם",
+    jobDetails: "על ההזמנה",
+    offerDetails: "על הכרטיס",
+    documents: "מסמכים",
+    noDocs: "אין מסמכים עדיין",
+    worksDone: "פירוט עבודות",
+    photo: "תמונת פרופיל",
+    worksCount: "עבודות",
+    myPage: "עמוד אישי",
   },
   en: {
     brand: "BuildIL",
@@ -377,14 +399,25 @@ const I18N = {
     reviewTo: "Review for",
     needLoginReview: "Log in to write a review.",
     reviewOk: "Review saved",
+    details: "Details",
+    back: "Back to feed",
+    postedBy: "Posted by",
+    jobDetails: "About the job",
+    offerDetails: "About the profile",
+    documents: "Documents",
+    noDocs: "No documents yet",
+    worksDone: "Work items",
+    photo: "Profile photo",
+    worksCount: "Jobs",
+    myPage: "Profile page",
   },
 };
 
 const DEMO = [
-  { id: "d1", kind: "job", trade: "tile", city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", titleEn: "Bathroom and floor tile 42 m²", dates: "23–26.09", budget: "₪ 4,800", phone: "0500000001", rating: 4.8, reviews: 14, docs: true },
-  { id: "d2", kind: "job", trade: "elec", city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "this week", budget: "", phone: "0500000002", rating: 4.2, reviews: 6 },
-  { id: "d3", kind: "job", trade: "reno", city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "October", budget: "₪ 28,000", phone: "0500000003", rating: 5, reviews: 3, docs: true, insurance: true },
-  { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0500000004", name: "Igor", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21 },
+  { id: "d1", kind: "job", trade: "tile", trades: ["tile"], city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", titleEn: "Bathroom and floor tile 42 m²", dates: "23–26.09", budget: "₪ 4,800", phone: "0501110001", name: "Dana Build", posterCode: "K-10802", rating: 4.8, reviews: 14, docs: true, planName: "tohnit-bathroom.pdf", descRu: "Ванная 4.2 м² и пол комнаты. Плитка уже куплена, на объекте с 08:00. Нужен мастер на 3–4 дня.", descHe: "חדר רחצה 4.2 מ״ר ורצפת חדר. האריחים כבר באתר, כניסה מ-08:00. צריך מקצוען ל-3–4 ימים.", descEn: "4.2 m² bathroom plus room floor. Tiles on site, access from 08:00. Need a pro for 3–4 days." },
+  { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "this week", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
+  { id: "d3", kind: "job", trade: "reno", trades: ["reno", "paint"], city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "October", budget: "₪ 28,000", phone: "0501110003", name: "Dana Build", posterCode: "K-10802", rating: 5, reviews: 3, docs: true, insurance: true, planName: "3room-tohnit.pdf", descRu: "Покраска, плинтуса, лёгкий гипс в коридоре. Доступ ежедневно после 16:00.", descHe: "צבע, פנלים, גבס קל במסדרון. כניסה כל יום אחרי 16:00.", descEn: "Paint, skirting, light drywall in the hall. Access daily after 16:00." },
+  { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0501110004", name: "Igor", posterCode: "K-10421", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, planName: "portfolio-gypsum.pdf", descRu: "Стены, потолки, ниши. Работаю Нетания и Герцлия. Есть страховка.", descHe: "קירות, תקרות, נישות. נתניה והרצליה. יש ביטוח.", descEn: "Walls, ceilings, niches. Netanya and Herzliya. Insured." },
 ];
 
 const store = {
@@ -396,6 +429,8 @@ const store = {
   set tab(v) { localStorage.setItem("bil_tab", v); },
   get filter() { return localStorage.getItem("bil_filter") || "all"; },
   set filter(v) { localStorage.setItem("bil_filter", v); },
+  get cityFilter() { return localStorage.getItem("bil_cityf") || "all"; },
+  set cityFilter(v) { localStorage.setItem("bil_cityf", v); },
   get kind() { return localStorage.getItem("bil_kind") || "all"; },
   set kind(v) { localStorage.setItem("bil_kind", v); },
   get board() { return localStorage.getItem("bil_board") || "feed"; },
@@ -404,6 +439,8 @@ const store = {
   set q(v) { localStorage.setItem("bil_q", v); },
   get openRev() { return localStorage.getItem("bil_openrev") || ""; },
   set openRev(v) { localStorage.setItem("bil_openrev", v); },
+  get openJob() { return localStorage.getItem("bil_openjob") || ""; },
+  set openJob(v) { localStorage.setItem("bil_openjob", v); },
   extraRevs() { try { return JSON.parse(localStorage.getItem("bil_extra_revs") || "{}"); } catch { return {}; } },
   saveExtraRevs(map) { localStorage.setItem("bil_extra_revs", JSON.stringify(map)); },
   jobs() { try { return JSON.parse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
@@ -486,9 +523,9 @@ const DEMO_REVIEWS = {
 };
 
 const SEED_MEMBERS = [
-  { code: "K-10421", name: "Igor", role: "worker", city: "netanya", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, trades: ["gypsum"] },
-  { code: "K-10802", name: "Dana Build", role: "contractor", city: "tlv", rating: 4.8, reviews: 14, docs: true, closed: 14, trades: ["reno"] },
-  { code: "K-11017", name: "Yossi Electric", role: "worker", city: "rishon", rating: 4.6, reviews: 9, docs: true, insurance: true, closed: 9, trades: ["elec"] },
+  { code: "K-10421", name: "Igor", role: "worker", city: "netanya", cities: ["netanya", "herzliya"], rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, trades: ["gypsum"], phone: "0501110004", docFiles: ["bituch.pdf", "portfolio-gypsum.pdf"], aboutRu: "Гипсокартон 8 лет. Стены, потолки, ниши.", aboutHe: "גבס 8 שנים. קירות, תקרות, נישות.", aboutEn: "Drywall for 8 years. Walls, ceilings, niches." },
+  { code: "K-10802", name: "Dana Build", role: "contractor", city: "tlv", rating: 4.8, reviews: 14, docs: true, closed: 14, trades: ["reno"], phone: "0501110001", docFiles: ["osek.pdf", "3room-tohnit.pdf"], aboutRu: "Каблан косметики и плитки в центре.", aboutHe: "קבלן שיפוץ קוסמטי וריצוף במרכז.", aboutEn: "Cosmetic and tile contractor in the center." },
+  { code: "K-11017", name: "Yossi Electric", role: "worker", city: "rishon", cities: ["rishon", "holon"], rating: 4.6, reviews: 9, docs: true, insurance: true, closed: 9, trades: ["elec"], phone: "0501110002", docFiles: ["hashmal-license.pdf"], aboutRu: "Электрик мусмах, щитки и точки.", aboutHe: "חשמלאי מוסמך, לוחות ונקודות.", aboutEn: "Licensed electrician, panels and points." },
 ];
 
 function nextCode() {
@@ -520,6 +557,7 @@ function memberList() {
       closed: r.closed || u.closed || 0,
       phone: u.phone,
       trades: u.trades || p.trades || [],
+      photo: p.photo || u.photo || "",
     };
   });
   return fromUsers.concat(SEED_MEMBERS.filter((s) => !fromUsers.some((u) => u.code === s.code)));
@@ -601,7 +639,9 @@ function render() {
   if (user && user.role) store.role = user.role;
 
   let main = "";
-  if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
+  if (store.tab === "feed" && String(store.openJob).startsWith("member:")) main = viewMemberDetail(store.openJob.slice(7));
+  else if (store.tab === "feed" && store.openJob) main = viewJobDetail(store.openJob);
+  else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
   else if (store.tab === "new") main = !user ? viewAuth() : (store.role === "worker" ? viewSeek() : viewNew());
   else if (store.tab === "profile") main = user ? viewProfile() : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
@@ -627,13 +667,26 @@ function boardNav() {
     <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
   </div>`;
 }
+function cityChips() {
+  return `<div class="filters">` +
+    [`<button class="chip ${store.cityFilter === "all" ? "on" : ""}" data-city="all">${ico("city")}${t("all")}</button>`]
+      .concat(CITIES.map((row) => `<button class="chip ${store.cityFilter === row[0] ? "on" : ""}" data-city="${row[0]}">${loc(row)}</button>`))
+      .join("") + `</div>`;
+}
+function inCity(item) {
+  if (store.cityFilter === "all") return true;
+  const cities = item.cities || (item.city ? [item.city] : []);
+  return cities.includes(store.cityFilter);
+}
 function memberCard(m) {
   return `<article class="card job ${m.role === "worker" ? "offer" : "order"}">
+    ${m.photo ? `<img class="avatar" src="${m.photo}" alt="" />` : `<div class="avatar stub">👷</div>`}
     <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
     <h3>${m.name || m.code}</h3>
     <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
     <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
     <div class="tags">${(m.trades || []).map(tradeLabel).join(" ")}${badgesHtml(m)}</div>
+    <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
     ${reviewsBox(m.code || m.name, m.role === "worker" ? "worker" : "contractor")}
     ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
   </article>`;
@@ -642,7 +695,8 @@ function viewMembers() {
   const q = store.q.trim().toLowerCase();
   let list = memberList();
   if (q) list = list.filter((m) => `${m.code} ${m.name} ${m.phone || ""}`.toLowerCase().includes(q));
-  return boardNav() + `<div class="card">
+  list = list.filter(inCity);
+  return boardNav() + cityChips() + `<div class="card">
     <label>${t("searchCode")}</label>
     <input id="member-q" value="${store.q}" placeholder="K-10421" />
   </div>` + (list.map(memberCard).join("") || `<div class="empty">${t("empty")}</div>`);
@@ -664,6 +718,7 @@ function viewFeed() {
   if (store.kind === "job") filtered = filtered.filter((j) => itemKind(j) === "job");
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
+  filtered = filtered.filter(inCity);
   const kinds = boardNav() + `
     <div class="filters">
       <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
@@ -676,9 +731,9 @@ function viewFeed() {
       .join("") + `</div>`;
   if (!filtered.length) {
     const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
-    return kinds + chips + `<div class="empty">${msg}</div>`;
+    return kinds + cityChips() + chips + `<div class="empty">${msg}</div>`;
   }
-  return kinds + chips + filtered.map((j) => {
+  return kinds + cityChips() + chips + filtered.map((j) => {
     const offer = j.kind === "offer";
     const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe);
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
@@ -692,12 +747,93 @@ function viewFeed() {
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${ico("money")}${j.budget}</span>` : ""}</div>
       ${j.planData && j.planData.startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
       ${j.planName && !(j.planData && j.planData.startsWith("data:image")) ? `<div class="plan-name">${j.planName}</div>` : ""}
+      <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
     </article>`;
   }).join("");
 }
 
+function findJob(id) {
+  return store.jobs().concat(DEMO).find((j) => j.id === id) || null;
+}
+function findPoster(job) {
+  if (!job) return null;
+  const list = memberList();
+  return list.find((m) => m.code && m.code === job.posterCode)
+    || list.find((m) => m.phone && job.phone && m.phone === job.phone)
+    || {
+      code: job.posterCode || "—",
+      name: job.name || job.phone || t("postedBy"),
+      role: job.kind === "offer" ? "worker" : "contractor",
+      city: job.city,
+      rating: job.rating || 0,
+      reviews: job.reviews || 0,
+      docs: job.docs,
+      insurance: job.insurance,
+      closed: job.closed || 0,
+      phone: job.phone,
+      trades: job.trades || [job.trade],
+    };
+}
+function viewMemberDetail(code) {
+  const m = memberList().find((x) => x.code === code) || SEED_MEMBERS.find((x) => x.code === code);
+  if (!m) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
+  const worker = m.role === "worker";
+  const about = store.lang === "he" ? (m.aboutHe || m.aboutRu || "") : store.lang === "en" ? (m.aboutEn || m.aboutRu || "") : (m.aboutRu || "");
+  const cities = (m.cities || [m.city]).filter(Boolean).map(cityName).join(", ");
+  const files = m.docFiles || [];
+  const seed = SEED_MEMBERS.find((x) => x.code === code) || {};
+  const allFiles = files.length ? files : (seed.docFiles || []);
+  const text = about || seed.aboutRu || "";
+  return `${boardNav()}
+    <button class="btn ghost" data-close-job="1">${t("back")}</button>
+    <article class="card job ${worker ? "offer" : "order"}">
+      <div class="badge ${worker ? "offer" : "order"}">${m.code}</div>
+      <h3>${m.name}</h3>
+      <div class="meta">${worker ? t("nowWorker") : t("nowContractor")} · ${ico("city")}${cities}</div>
+      <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
+      <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
+      <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
+      <p>${text || t("empty")}</p>
+      <b>${t("documents")}</b>
+      ${allFiles.length ? allFiles.map((n) => `<div class="plan-name">📄 ${n}</div>`).join("") : `<div class="meta">${t("noDocs")}</div>`}
+      ${reviewsBox(m.code, worker ? "worker" : "contractor")}
+      ${m.phone || seed.phone ? `<a class="btn" href="${waLink(m.phone || seed.phone, m.code)}">${t("wa")}</a>` : ""}
+    </article>`;
+}
+function viewJobDetail(id) {
+  const j = findJob(id);
+  if (!j) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
+  const offer = j.kind === "offer";
+  const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
+  const desc = store.lang === "he" ? (j.descHe || j.descRu || j.other || "") : store.lang === "en" ? (j.descEn || j.descRu || j.other || "") : (j.descRu || j.other || "");
+  const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
+  const poster = findPoster(j);
+  const files = []
+    .concat(j.planName ? [j.planName] : [])
+    .concat(j.docFiles || []);
+  return `${boardNav()}
+    <button class="btn ghost" data-close-job="1">${t("back")}</button>
+    <article class="card job ${offer ? "offer" : "order"}">
+      <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
+      <h3>${title}</h3>
+      <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
+      <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + j.budget : ""}</div>
+      <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
+      <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
+      <p>${desc || t("empty")}</p>
+      <b>${t("documents")}</b>
+      ${j.planData && String(j.planData).startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
+      ${files.length ? files.map((n) => `<div class="plan-name">📄 ${n}</div>`).join("") : `<div class="meta">${t("noDocs")}</div>`}
+      ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
+      <a class="btn" href="${waLink(j.phone, title)}">${t("wa")}</a>
+    </article>
+    <div class="card">
+      <b>${t("postedBy")}</b>
+      ${poster ? memberCard(poster) : ""}
+    </div>`;
+}
 function viewNew() {
   const cities = CITIES.map((row) => `<option value="${row[0]}">${loc(row)}</option>`).join("");
   const checks = TRADES.map(([id]) => `<label class="check"><input type="checkbox" name="trades" value="${id}" /> ${tradeLabel(id)}</label>`).join("");
@@ -821,8 +957,23 @@ function viewReputation() {
 
 function viewProfile() {
   const p = store.profile();
+  const r = myRep();
+  const code = p.code || (store.user() && store.user().code) || "";
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
-  return `<form class="card profile-bg" id="prof-form">
+  return `<div class="card profile-bg page-head">
+    ${p.photo ? `<img class="avatar lg" src="${p.photo}" alt="" />` : `<div class="avatar lg stub">👷</div>`}
+    <h2>${p.name || t("myPage")}</h2>
+    <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
+    <div>${starsHtml(r.avg, r.count)}</div>
+    <div class="stats">
+      <div><b>${r.closed}</b><span>${t("worksCount")}</span></div>
+      <div><b>${r.count}</b><span>${t("reviews")}</span></div>
+      <div><b>${r.avg || "—"}</b><span>${t("rating")}</span></div>
+    </div>
+    <label>${t("photo")}</label>
+    <input type="file" id="photo-file" accept="image/*" />
+  </div>
+  <form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
     <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" />
@@ -847,8 +998,20 @@ function bind() {
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { store.role = b.dataset.role; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { store.tab = b.dataset.tab; render(); });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
+  document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; render(); });
+  const photo = document.getElementById("photo-file");
+  if (photo) photo.onchange = () => {
+    const f = photo.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { store.saveProfile({ ...store.profile(), photo: reader.result }); render(); };
+    reader.readAsDataURL(f);
+  };
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
-  document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-close-job]").forEach((b) => b.onclick = () => { store.openJob = ""; render(); });
   document.querySelectorAll("[data-open-rev]").forEach((b) => b.onclick = () => {
     store.openRev = store.openRev === b.dataset.openRev ? "" : b.dataset.openRev;
     render();
@@ -984,6 +1147,12 @@ function bind() {
       phone: f.get("phone"),
       planName,
       planData,
+      other: String(f.get("other") || ""),
+      descRu: String(f.get("other") || ""),
+      posterCode: (store.user() && store.user().code) || store.profile().code || "",
+      name: store.profile().name || "",
+      docs: Boolean(store.profile().docs),
+      insurance: Boolean(store.profile().insurance),
     });
     store.saveJobs(list);
     store.tab = "feed";
@@ -1026,6 +1195,10 @@ function bind() {
       titleEn: title,
       phone,
       name,
+      posterCode: (store.user() && store.user().code) || store.profile().code || "",
+      docs: Boolean(store.profile().docs),
+      insurance: Boolean(store.profile().insurance),
+      closed: Number(store.profile().closed || 0),
     });
     store.saveJobs(list);
     store.tab = "feed";
