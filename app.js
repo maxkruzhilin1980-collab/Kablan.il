@@ -155,6 +155,15 @@ const I18N = {
     sphere: "Сфера",
     needAuth: "Ленту видят все. Разместить заказ или искать работу — только после регистрации.",
     logout: "Выйти",
+    myActive: "Актуальные",
+    myHistory: "История",
+    myActiveHint: "То, что сейчас в ленте",
+    myHistoryHint: "То, что вы уже снимали с ленты",
+    toHistory: "В историю",
+    toActive: "Вернуть в ленту",
+    emptyMine: "Вы ещё ничего не выставляли",
+    emptyHistory: "История пустая",
+    backProfile: "К профилю",
     hasAccount: "Уже есть вход",
     noAccount: "Нет аккаунта — регистрация",
     rating: "Рейтинг",
@@ -263,6 +272,15 @@ const I18N = {
     sphere: "תחום",
     needAuth: "את הלוח רואים כולם. פרסום הזמנה או חיפוש עבודה — רק אחרי הרשמה.",
     logout: "יציאה",
+    myActive: "פעילים",
+    myHistory: "היסטוריה",
+    myActiveHint: "מה שמופיע בלוח עכשיו",
+    myHistoryHint: "מה שהורדתם מהלוח",
+    toHistory: "להיסטוריה",
+    toActive: "להחזיר ללוח",
+    emptyMine: "עדיין לא פרסמתם",
+    emptyHistory: "אין היסטוריה",
+    backProfile: "חזרה לפרופיל",
     hasAccount: "כבר רשומים",
     noAccount: "אין חשבון — הרשמה",
     rating: "דירוג",
@@ -371,6 +389,15 @@ const I18N = {
     sphere: "Field",
     needAuth: "Anyone can browse the feed. Post a job or offer work after sign-up.",
     logout: "Log out",
+    myActive: "Active",
+    myHistory: "History",
+    myActiveHint: "What is live on the feed",
+    myHistoryHint: "What you took off the feed",
+    toHistory: "Move to history",
+    toActive: "Put back on feed",
+    emptyMine: "You have not posted yet",
+    emptyHistory: "History is empty",
+    backProfile: "Back to profile",
     hasAccount: "Already have an account",
     noAccount: "No account — sign up",
     rating: "Rating",
@@ -487,7 +514,7 @@ const ICO = {
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) {
   const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1, contractor:1, worker:1, profile:1 };
-  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.jpg" alt="" /></span>`;
+  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.gif" alt="" /></span>`;
   const d = ICO[id];
   if (!d) return "";
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -673,6 +700,7 @@ function render() {
   else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
+  else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
   else if (store.tab === "profile") main = user ? viewProfile() : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
@@ -684,7 +712,7 @@ function render() {
         <button data-tab="feed" class="${store.tab === "feed" ? "on" : ""}">${ico("feed")}${t("feed")}</button>
         <button data-tab="order" class="${store.tab === "order" || store.tab === "new" ? "on" : ""}">${ico("contractor")}${t("postOrder")}</button>
         <button data-tab="work" class="${store.tab === "work" ? "on" : ""}">${ico("worker")}${t("postWork")}</button>
-        <button data-tab="profile" class="${store.tab === "profile" ? "on" : ""}">${ico("profile")}${t("profile")}</button>
+        <button data-tab="profile" class="${store.tab === "profile" || store.tab === "mine" || store.tab === "history" ? "on" : ""}">${ico("profile")}${t("profile")}</button>
       </nav>
     </div>`;
   bind();
@@ -711,17 +739,17 @@ function inCity(item) {
 
 function face(name, photo, role) {
   if (photo) return photo;
-  if (role === "worker") return "icons/worker.jpg";
-  if (role === "contractor") return "icons/contractor.jpg";
-  return "icons/profile.jpg";
+  if (role === "worker") return "icons/worker.gif";
+  if (role === "contractor") return "icons/contractor.gif";
+  return "icons/profile.gif";
 }
 function jobPhoto(j) {
   if (j.planData && String(j.planData).startsWith("data:image")) return j.planData;
   if (j.photo) return j.photo;
   const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
-  if (j.trade && pics[j.trade]) return "icons/" + j.trade + ".jpg";
-  if (j.kind === "offer") return "icons/worker.jpg";
-  return "icons/contractor.jpg";
+  if (j.trade && pics[j.trade]) return "icons/" + j.trade + ".gif";
+  if (j.kind === "offer") return "icons/worker.gif";
+  return "icons/contractor.gif";
 }
 function memberCard(m) {
   return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
@@ -762,7 +790,7 @@ function viewRatingBoard() {
     (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
 }
 function viewFeed() {
-  const own = store.jobs();
+  const own = store.jobs().filter((j) => !j.archived);
   const all = [...own, ...DEMO];
   let filtered = all;
   const itemKind = (j) => j.kind === "offer" ? "offer" : "job";
@@ -1015,6 +1043,41 @@ function viewReputation() {
   </form>`;
 }
 
+function isMine(j) {
+  const u = store.user() || {};
+  const p = store.profile() || {};
+  const code = u.code || p.code || "";
+  const phone = p.phone || u.phone || "";
+  return Boolean((code && j.posterCode === code) || (phone && j.phone === phone));
+}
+function viewMine(history) {
+  const list = store.jobs().filter((j) => isMine(j) && (history ? j.archived : !j.archived));
+  const cards = list.length
+    ? list.map((j) => {
+        const offer = j.kind === "offer";
+        const title = j.titleRu || j.titleHe || "";
+        return `<article class="card job tt-card ${offer ? "offer" : "order"}">
+          <div class="tt-row">
+            <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
+            <div class="tt-body">
+              <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
+              <h3>${title}</h3>
+              <div class="meta">${(j.cities || [j.city]).filter(Boolean).map(cityName).join(", ")}${j.dates ? " · " + j.dates : ""}</div>
+              <div class="tt-actions">
+                <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
+                <button class="btn" type="button" data-archive="${j.id}" data-arch="${history ? "0" : "1"}">${history ? t("toActive") : t("toHistory")}</button>
+              </div>
+            </div>
+          </div>
+        </article>`;
+      }).join("")
+    : `<div class="empty">${history ? t("emptyHistory") : t("emptyMine")}</div>`;
+  return `<div class="card page-head">
+      <button class="btn ghost" type="button" data-tab="profile">${t("backProfile")}</button>
+      <h2>${history ? t("myHistory") : t("myActive")}</h2>
+      <p class="meta">${history ? t("myHistoryHint") : t("myActiveHint")}</p>
+    </div>${cards}`;
+}
 function viewProfile() {
   const p = store.profile();
   const r = myRep();
@@ -1033,6 +1096,10 @@ function viewProfile() {
     <label class="filebtn">${t("photo")}
       <input type="file" id="photo-file" accept="image/*" />
     </label>
+    <div class="mine-row">
+      <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
+      <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
+    </div>
   </div>
   <form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
@@ -1066,6 +1133,14 @@ function bind() {
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-archive]").forEach((b) => {
+    b.onclick = () => {
+      const id = b.dataset.archive;
+      const on = b.dataset.arch === "1";
+      store.saveJobs(store.jobs().map((j) => j.id === id ? { ...j, archived: on } : j));
+      render();
+    };
+  });
   document.querySelectorAll("[data-close-job]").forEach((b) => b.onclick = () => { store.openJob = ""; render(); });
   document.querySelectorAll("[data-open-rev]").forEach((b) => b.onclick = () => {
     store.openRev = store.openRev === b.dataset.openRev ? "" : b.dataset.openRev;
@@ -1210,9 +1285,10 @@ function bind() {
       name: store.profile().name || "",
       docs: Boolean(store.profile().docs),
       insurance: Boolean(store.profile().insurance),
+      archived: false,
     });
     store.saveJobs(list);
-    store.tab = "feed";
+    store.tab = "mine";
     render();
   };
   const seek = document.getElementById("seek-form");
@@ -1256,9 +1332,10 @@ function bind() {
       docs: Boolean(store.profile().docs),
       insurance: Boolean(store.profile().insurance),
       closed: Number(store.profile().closed || 0),
+      archived: false,
     });
     store.saveJobs(list);
-    store.tab = "feed";
+    store.tab = "mine";
     render();
   };
   const docs = document.getElementById("flag-docs");

@@ -241,7 +241,7 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f6b4f; }
 .tag .icon.pic { width: 18px; height: 18px; }
 
 .icon.pic, .tt-photo {
-  animation: bob 1.6s ease-in-out infinite !important;
+  animation: none !important;
   transform-origin: 50% 90%;
 }
 .icon.pic:hover, .tt-photo:hover { animation: wave .45s ease !important; }
@@ -258,8 +258,8 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f6b4f; }
 .picwrap {
   display: inline-block;
   vertical-align: middle;
-  animation: bob 1.6s ease-in-out infinite;
-  -webkit-animation: bob 1.6s ease-in-out infinite;
+  animation: none;
+  -webkit-animation: none;
   transform-origin: 50% 90%;
   -webkit-transform-origin: 50% 90%;
 }
@@ -280,3 +280,12 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f6b4f; }
 .filebtn { display: block; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; background: #fff; cursor: pointer; }
 .filebtn input { display: none; }
 .avatar.lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px; }
+
+.mine-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.mine-tile {
+  border: 1px solid var(--line); background: #fff; border-radius: 16px;
+  padding: 12px 8px; text-align: center; color: inherit;
+}
+.mine-tile b { display: block; margin: 4px 0 2px; }
+.mine-tile span { display: block; font-size: 11px; color: var(--muted); line-height: 1.2; }
+.mine-tile .icon, .mine-tile .picwrap { margin: 0 auto; }
