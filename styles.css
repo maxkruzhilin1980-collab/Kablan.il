@@ -237,28 +237,43 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .nav .icon.pic { width: 22px; height: 22px; border-radius: 50%; }
 .tag .icon.pic { width: 18px; height: 18px; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .icon.pic {
-    animation: bob 2.4s ease-in-out infinite;
-    transform-origin: 50% 80%;
-  }
-  .tag .icon.pic { animation-duration: 2.8s; }
-  .nav .icon.pic { animation: bob 2.6s ease-in-out infinite; }
-  .tt-photo {
-    animation: bob 3.2s ease-in-out infinite;
-    transform-origin: 50% 90%;
-  }
-  .chip:nth-child(2n) .icon.pic { animation-delay: .3s; }
-  .chip:nth-child(3n) .icon.pic { animation-delay: .6s; }
-  .icon.pic:hover, .tt-photo:hover { animation: wave .5s ease; }
+.icon.pic, .tt-photo {
+  animation: bob 1.6s ease-in-out infinite !important;
+  transform-origin: 50% 90%;
 }
+.icon.pic:hover, .tt-photo:hover { animation: wave .45s ease !important; }
 @keyframes bob {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  40% { transform: translateY(-3px) rotate(-2deg); }
-  70% { transform: translateY(1px) rotate(2deg); }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-4deg); }
 }
 @keyframes wave {
   0%, 100% { transform: rotate(0); }
   25% { transform: rotate(-8deg) scale(1.08); }
   75% { transform: rotate(8deg) scale(1.08); }
 }
+
+.picwrap {
+  display: inline-block;
+  vertical-align: middle;
+  animation: bob 1.6s ease-in-out infinite;
+  -webkit-animation: bob 1.6s ease-in-out infinite;
+  transform-origin: 50% 90%;
+  -webkit-transform-origin: 50% 90%;
+}
+.picwrap.big { display: block; flex-shrink: 0; }
+.picwrap .icon.pic, .picwrap .tt-photo {
+  animation: none !important;
+  -webkit-animation: none !important;
+  display: block;
+}
+@-webkit-keyframes bob {
+  0%, 100% { -webkit-transform: translateY(0) rotate(0deg); transform: translateY(0) rotate(0deg); }
+  50% { -webkit-transform: translateY(-8px) rotate(-4deg); transform: translateY(-8px) rotate(-4deg); }
+}
+
+.stars { white-space: nowrap; display: inline-block; }
+.citypick { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.citypick select { border: 0; background: transparent; font: inherit; padding: 8px 4px; max-width: 140px; }
+.filebtn { display: block; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; background: #fff; cursor: pointer; }
+.filebtn input { display: none; }
+.avatar.lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px; }

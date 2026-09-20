@@ -1,10 +1,10 @@
 self.addEventListener("install", (e) => {
   self.skipWaiting();
-  e.waitUntil(caches.open("buildil-3").then((c) => c.addAll(["./index.html", "./icon.svg"])));
+  e.waitUntil(caches.open("buildil-11").then((c) => c.addAll(["./index.html", "./icon.svg"])));
 });
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== "buildil-3").map((k) => caches.delete(k)))).then(() => self.clients.claim())
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== "buildil-11").map((k) => caches.delete(k)))).then(() => self.clients.claim())
   );
 });
 self.addEventListener("fetch", (e) => {

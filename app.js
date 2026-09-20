@@ -103,6 +103,8 @@ const I18N = {
     iAmWorkerHint: "Ищу объекты рядом",
     feed: "Лента",
     newJob: "Заявка",
+    postOrder: "Заказ",
+    postWork: "Работу",
     profile: "Профиль",
     more: "Ещё",
     all: "Все",
@@ -139,11 +141,11 @@ const I18N = {
     demo: "Примеры заявок уже в ленте. Свои хранятся в этом телефоне.",
     switchWorker: "Войти как мастер",
     switchContractor: "Войти как каблан",
-    nowContractor: "Сейчас вы каблан",
-    nowWorker: "Сейчас вы мастер",
+    nowContractor: "Зарегистрирован как каблан",
+    nowWorker: "Зарегистрирован как мастер",
     changeRole: "Сменить роль",
     seek: "Ищу работу",
-    seekHint: "Мастер не публикует объект. Только профессия, что умеет и город.",
+    seekHint: "Профессия, что умеете и города. И каблан, и мастер могут выставить поиск работы.",
     seekSave: "Выставить в ленту",
     seekingIn: "Ищу работу",
     login: "Вход",
@@ -151,7 +153,7 @@ const I18N = {
     password: "Пароль",
     who: "Кто вы",
     sphere: "Сфера",
-    needAuth: "Ленту видят все. Чтобы выставить заявку — зарегистрируйтесь.",
+    needAuth: "Ленту видят все. Разместить заказ или искать работу — только после регистрации.",
     logout: "Выйти",
     hasAccount: "Уже есть вход",
     noAccount: "Нет аккаунта — регистрация",
@@ -209,6 +211,8 @@ const I18N = {
     iAmWorkerHint: "מחפש עבודות באזור",
     feed: "לוח",
     newJob: "מודעה",
+    postOrder: "הזמנה",
+    postWork: "עבודה",
     profile: "פרופיל",
     more: "עוד",
     all: "הכל",
@@ -245,11 +249,11 @@ const I18N = {
     demo: "יש מודעות לדוגמה. המודעות שלכם נשמרות בטלפון.",
     switchWorker: "כניסה כבעל מקצוע",
     switchContractor: "כניסה כקבלן",
-    nowContractor: "עכשיו אתם קבלן",
-    nowWorker: "עכשיו אתם בעל מקצוע",
+    nowContractor: "נרשם כקבלן",
+    nowWorker: "נרשם כבעל מקצוע",
     changeRole: "החלפת תפקיד",
     seek: "מחפש עבודה",
-    seekHint: "בעל מקצוע לא מפרסם פרויקט. רק מקצוע, מה הוא עושה והעיר.",
+    seekHint: "מקצוע, מה אתם יודעים ואילו ערים. גם קבלן וגם מקצוען יכולים לפרסם חיפוש עבודה.",
     seekSave: "שמירת כרטיס",
     seekingIn: "מחפש עבודה",
     login: "כניסה",
@@ -257,7 +261,7 @@ const I18N = {
     password: "סיסמה",
     who: "מי אתם",
     sphere: "תחום",
-    needAuth: "את הלוח רואים כולם. כדי לפרסם מודעה צריך הרשמה.",
+    needAuth: "את הלוח רואים כולם. פרסום הזמנה או חיפוש עבודה — רק אחרי הרשמה.",
     logout: "יציאה",
     hasAccount: "כבר רשומים",
     noAccount: "אין חשבון — הרשמה",
@@ -315,6 +319,8 @@ const I18N = {
     iAmWorkerHint: "I am looking for jobs nearby",
     feed: "Feed",
     newJob: "Post",
+    postOrder: "Job",
+    postWork: "Work",
     profile: "Profile",
     more: "More",
     all: "All",
@@ -351,11 +357,11 @@ const I18N = {
     demo: "Sample posts are in the feed. Your posts stay on this phone for now.",
     switchWorker: "Switch to tradesperson",
     switchContractor: "Switch to contractor",
-    nowContractor: "You are a contractor",
-    nowWorker: "You are a tradesperson",
+    nowContractor: "Registered as contractor",
+    nowWorker: "Registered as tradesperson",
     changeRole: "Change role",
     seek: "Looking for work",
-    seekHint: "A tradesperson does not post a site. Only trade, skills and cities.",
+    seekHint: "Trade, skills and cities. Both contractors and tradespeople can post this.",
     seekSave: "Post to feed",
     seekingIn: "Looking for work",
     login: "Log in",
@@ -363,7 +369,7 @@ const I18N = {
     password: "Password",
     who: "Who are you",
     sphere: "Field",
-    needAuth: "Everyone can see the feed. Sign up to post.",
+    needAuth: "Anyone can browse the feed. Post a job or offer work after sign-up.",
     logout: "Log out",
     hasAccount: "Already have an account",
     noAccount: "No account — sign up",
@@ -415,8 +421,8 @@ const I18N = {
 
 const DEMO = [
   { id: "d1", kind: "job", trade: "tile", trades: ["tile"], city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", titleEn: "Bathroom and floor tile 42 m²", dates: "23–26.09", budget: "₪ 4,800", phone: "0501110001", name: "Dana Build", posterCode: "K-10802", rating: 4.8, reviews: 14, docs: true, planName: "tohnit-bathroom.pdf", descRu: "Ванная 4.2 м² и пол комнаты. Плитка уже куплена, на объекте с 08:00. Нужен мастер на 3–4 дня.", descHe: "חדר רחצה 4.2 מ״ר ורצפת חדר. האריחים כבר באתר, כניסה מ-08:00. צריך מקצוען ל-3–4 ימים.", descEn: "4.2 m² bathroom plus room floor. Tiles on site, access from 08:00. Need a pro for 3–4 days." },
-  { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "this week", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
-  { id: "d3", kind: "job", trade: "reno", trades: ["reno", "paint"], city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "October", budget: "₪ 28,000", phone: "0501110003", name: "Dana Build", posterCode: "K-10802", rating: 5, reviews: 3, docs: true, insurance: true, planName: "3room-tohnit.pdf", descRu: "Покраска, плинтуса, лёгкий гипс в коридоре. Доступ ежедневно после 16:00.", descHe: "צבע, פנלים, גבס קל במסדרון. כניסה כל יום אחרי 16:00.", descEn: "Paint, skirting, light drywall in the hall. Access daily after 16:00." },
+  { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "на этой неделе", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
+  { id: "d3", kind: "job", trade: "reno", trades: ["reno", "paint"], city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "октябрь", budget: "₪ 28,000", phone: "0501110003", name: "Dana Build", posterCode: "K-10802", rating: 5, reviews: 3, docs: true, insurance: true, planName: "3room-tohnit.pdf", descRu: "Покраска, плинтуса, лёгкий гипс в коридоре. Доступ ежедневно после 16:00.", descHe: "צבע, פנלים, גבס קל במסדרון. כניסה כל יום אחרי 16:00.", descEn: "Paint, skirting, light drywall in the hall. Access daily after 16:00." },
   { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0501110004", name: "Igor", posterCode: "K-10421", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, planName: "portfolio-gypsum.pdf", descRu: "Стены, потолки, ниши. Работаю Нетания и Герцлия. Есть страховка.", descHe: "קירות, תקרות, נישות. נתניה והרצליה. יש ביטוח.", descEn: "Walls, ceilings, niches. Netanya and Herzliya. Insured." },
 ];
 
@@ -471,7 +477,7 @@ const ICO = {
   plan: "M4 6l8-3 8 3v12l-8 3-8-3V6zm8-3v18M8 9l8 3M8 13l8 3",
   phone: "M7 3h10v18H7zM11 18h2",
   name: "M12 12a4 4 0 100-8 4 4 0 000 8zM5 20a7 7 0 0114 0",
-  feed: "M5 6h14M5 12h14M5 18h10",
+  feed: "M8 6h13M8 12h13M8 18h13M4 6v.01M4 12v.01M4 18v.01",
   job: "M8 7V5h8v2M5 7h14v13H5V7z",
   profile: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-3 4-5 8-5s6.5 2 8 5",
   more: "M5 12h.01M12 12h.01M19 12h.01",
@@ -481,7 +487,7 @@ const ICO = {
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) {
   const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1, contractor:1, worker:1, profile:1 };
-  if (pics[id]) return `<img class="icon pic" src="icons/${id}.jpg" alt="" />`;
+  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.jpg" alt="" /></span>`;
   const d = ICO[id];
   if (!d) return "";
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -602,7 +608,7 @@ function myRep() {
 function starsHtml(score, count) {
   if (!count) return `<span class="meta">${t("noRating")}</span>`;
   const full = Math.round(score);
-  return `<span class="stars">${"★".repeat(full)}${"☆".repeat(Math.max(0, 5 - full))} <b>${score}</b> · ${count} ${t("reviews")}</span>`;
+  return `<span class="stars">${"★".repeat(full)}${"☆".repeat(Math.max(0, 5 - full))} <b>${score}</b> · ${count}</span>`;
 }
 function badgesHtml(item) {
   const bits = [];
@@ -665,7 +671,8 @@ function render() {
   if (store.tab === "feed" && String(store.openJob).startsWith("member:")) main = viewMemberDetail(store.openJob.slice(7));
   else if (store.tab === "feed" && store.openJob) main = viewJobDetail(store.openJob);
   else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
-  else if (store.tab === "new") main = !user ? viewAuth() : (store.role === "worker" ? viewSeek() : viewNew());
+  else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
+  else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "profile") main = user ? viewProfile() : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
@@ -675,9 +682,9 @@ function render() {
       ${main}
       <nav class="nav">
         <button data-tab="feed" class="${store.tab === "feed" ? "on" : ""}">${ico("feed")}${t("feed")}</button>
-        <button data-tab="new" class="${store.tab === "new" ? "on" : ""}">${ico("job")}${t("newJob")}</button>
+        <button data-tab="order" class="${store.tab === "order" || store.tab === "new" ? "on" : ""}">${ico("contractor")}${t("postOrder")}</button>
+        <button data-tab="work" class="${store.tab === "work" ? "on" : ""}">${ico("worker")}${t("postWork")}</button>
         <button data-tab="profile" class="${store.tab === "profile" ? "on" : ""}">${ico("profile")}${t("profile")}</button>
-        <button data-tab="more" class="${store.tab === "more" ? "on" : ""}">${ico("more")}${t("more")}</button>
       </nav>
     </div>`;
   bind();
@@ -691,10 +698,10 @@ function boardNav() {
   </div>`;
 }
 function cityChips() {
-  return `<div class="filters">` +
-    [`<button class="chip ${store.cityFilter === "all" ? "on" : ""}" data-city="all">${ico("city")}${t("all")}</button>`]
-      .concat(CITIES.map((row) => `<button class="chip ${store.cityFilter === row[0] ? "on" : ""}" data-city="${row[0]}">${loc(row)}</button>`))
-      .join("") + `</div>`;
+  const opts = [`<option value="all">${t("all")}</option>`]
+    .concat(CITIES.map((row) => `<option value="${row[0]}" ${store.cityFilter === row[0] ? "selected" : ""}>${loc(row)}</option>`))
+    .join("");
+  return `<div class="filters"><label class="citypick">${ico("city")}<select id="city-filter">${opts}</select></label></div>`;
 }
 function inCity(item) {
   if (store.cityFilter === "all") return true;
@@ -719,7 +726,7 @@ function jobPhoto(j) {
 function memberCard(m) {
   return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
     <div class="tt-row">
-      <img class="tt-photo" src="${face(m.name, m.photo, m.role === "worker" ? "worker" : "contractor")}" alt="" />
+      <span class="picwrap big"><img class="tt-photo" src="${face(m.name, m.photo, m.role === "worker" ? "worker" : "contractor")}" alt="" /></span>
       <div class="tt-body">
         <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
         <h3>${m.name || m.code}</h3>
@@ -763,11 +770,16 @@ function viewFeed() {
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
   filtered = filtered.filter(inCity);
-  const kinds = boardNav() + `
+  const kinds = `<div class="filters">
+      <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
+      <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
+      <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
+    </div>
     <div class="filters">
       <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
       <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterJobs")}</button>
       <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterOffers")}</button>
+      <label class="citypick">${ico("city")}<select id="city-filter">${[`<option value="all">${t("all")}</option>`].concat(CITIES.map((row) => `<option value="${row[0]}" ${store.cityFilter === row[0] ? "selected" : ""}>${loc(row)}</option>`)).join("")}</select></label>
     </div>`;
   const chips = `<div class="filters">` +
     [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
@@ -775,16 +787,16 @@ function viewFeed() {
       .join("") + `</div>`;
   if (!filtered.length) {
     const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
-    return kinds + cityChips() + chips + `<div class="empty">${msg}</div>`;
+    return kinds + chips + `<div class="empty">${msg}</div>`;
   }
-  return kinds + cityChips() + chips + filtered.map((j) => {
+  return kinds + chips + filtered.map((j) => {
     const offer = j.kind === "offer";
     const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe);
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
     const text = `${title} — ${cities}`;
     return `<article class="card job tt-card ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <img class="tt-photo" src="${jobPhoto(j)}" alt="" />
+        <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
         <div class="tt-body">
           <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
           <h3>${title}</h3>
@@ -1009,7 +1021,7 @@ function viewProfile() {
   const code = p.code || (store.user() && store.user().code) || "";
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   return `<div class="card profile-bg page-head">
-    ${p.photo ? `<img class="avatar lg" src="${p.photo}" alt="" />` : `<div class="avatar lg stub">👷</div>`}
+    <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor")}" alt="" />
     <h2>${p.name || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -1018,8 +1030,9 @@ function viewProfile() {
       <div><b>${r.count}</b><span>${t("reviews")}</span></div>
       <div><b>${r.avg || "—"}</b><span>${t("rating")}</span></div>
     </div>
-    <label>${t("photo")}</label>
-    <input type="file" id="photo-file" accept="image/*" />
+    <label class="filebtn">${t("photo")}
+      <input type="file" id="photo-file" accept="image/*" />
+    </label>
   </div>
   <form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
@@ -1030,13 +1043,7 @@ function viewProfile() {
   </form>
   ${viewReputation()}
   <div class="card">
-    <p>${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</p>
     ${store.role === "worker" && store.profile().seeking ? `<p class="ok">${t("seekingIn")}: ${(store.profile().cities || [store.profile().city]).filter(Boolean).map(cityName).join(", ")}</p>` : ""}
-    <div class="row">
-      <button class="btn ghost" data-switch="contractor">${ico("contractor")}${t("switchContractor")}</button>
-      <button class="btn ghost" data-switch="worker">${ico("worker")}${t("switchWorker")}</button>
-    </div>
-    <div style="height:10px"></div>
     <button class="btn ghost" data-logout="1">${t("logout")}</button>
   </div>`;
 }
@@ -1082,6 +1089,8 @@ function bind() {
       render();
     };
   });
+  const cf = document.getElementById("city-filter");
+  if (cf) cf.onchange = () => { store.cityFilter = cf.value; render(); };
   const mq = document.getElementById("member-q");
   if (mq) mq.onchange = mq.onkeyup = () => { store.q = mq.value; }; 
   if (mq) mq.addEventListener("keydown", (e) => { if (e.key === "Enter") { store.q = mq.value; render(); } });
