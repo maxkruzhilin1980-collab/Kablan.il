@@ -211,8 +211,8 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
     transition: transform .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
   }
   .btn:active, .chip:active, .nav button:active { transform: scale(.97); }
-  .tt-photo { transition: transform .2s ease; }
-  .tt-card:hover .tt-photo { transform: scale(1.03); }
+  .picwrap.big { transition: transform .2s ease; }
+  .tt-card:hover .picwrap.big { transform: scale(1.03); }
 }
 @keyframes rise {
   from { opacity: 0; transform: translateY(10px); }
@@ -238,38 +238,16 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .nav .icon.pic { width: 22px; height: 22px; border-radius: 50%; }
 .tag .icon.pic { width: 18px; height: 18px; }
 
-.icon.pic, .tt-photo {
-  animation: none !important;
-  transform-origin: 50% 90%;
+.icon.pic, .tt-photo, .avatar {
+  image-rendering: auto;
 }
-.icon.pic:hover, .tt-photo:hover { animation: wave .45s ease !important; }
-@keyframes bob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(-4deg); }
-}
-@keyframes wave {
-  0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(-8deg) scale(1.08); }
-  75% { transform: rotate(8deg) scale(1.08); }
-}
-
 .picwrap {
   display: inline-block;
   vertical-align: middle;
-  animation: none;
-  -webkit-animation: none;
-  transform-origin: 50% 90%;
-  -webkit-transform-origin: 50% 90%;
 }
 .picwrap.big { display: block; flex-shrink: 0; }
 .picwrap .icon.pic, .picwrap .tt-photo {
-  animation: none !important;
-  -webkit-animation: none !important;
   display: block;
-}
-@-webkit-keyframes bob {
-  0%, 100% { -webkit-transform: translateY(0) rotate(0deg); transform: translateY(0) rotate(0deg); }
-  50% { -webkit-transform: translateY(-8px) rotate(-4deg); transform: translateY(-8px) rotate(-4deg); }
 }
 
 .stars { white-space: nowrap; display: inline-block; }
@@ -280,6 +258,8 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .avatar.lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px; }
 
 .mine-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.btn.danger { background: #c62828; color: #fff; border: 0; }
+.tt-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .mine-tile {
   border: 1px solid var(--line); background: #fff; border-radius: 16px;
   padding: 12px 8px; text-align: center; color: inherit;

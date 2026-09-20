@@ -165,6 +165,9 @@ const I18N = {
     toActive: "Вернуть в ленту",
     emptyMine: "Вы ещё ничего не выставляли",
     emptyHistory: "История пустая",
+    deleteJob: "Удалить",
+    confirmDelete: "Удалить заявку навсегда? Её не будет в ленте и в профиле.",
+    deleted: "Заявка удалена",
     backProfile: "К профилю",
     hasAccount: "Уже есть вход",
     noAccount: "Нет аккаунта — регистрация",
@@ -284,6 +287,9 @@ const I18N = {
     toActive: "להחזיר ללוח",
     emptyMine: "עדיין לא פרסמתם",
     emptyHistory: "אין היסטוריה",
+    deleteJob: "מחיקה",
+    confirmDelete: "למחוק את המודעה לצמיתות? היא לא תופיע בלוח ולא בפרופיל.",
+    deleted: "המודעה נמחקה",
     backProfile: "חזרה לפרופיל",
     hasAccount: "כבר רשומים",
     noAccount: "אין חשבון — הרשמה",
@@ -403,6 +409,9 @@ const I18N = {
     toActive: "Put back on feed",
     emptyMine: "You have not posted yet",
     emptyHistory: "History is empty",
+    deleteJob: "Delete",
+    confirmDelete: "Delete this post forever? It will leave the feed and your profile.",
+    deleted: "Post deleted",
     backProfile: "Back to profile",
     hasAccount: "Already have an account",
     noAccount: "No account — sign up",
@@ -547,6 +556,28 @@ async function cloudSave(job) {
     return "";
   }
 }
+async function cloudDelete(cloudId) {
+  if (!cloudId) return false;
+  try {
+    const res = await fetch(CLOUD_URL + "/" + cloudId, { method: "DELETE" });
+    return res.ok || res.status === 404;
+  } catch (e) {
+    return false;
+  }
+}
+async function removeMyJob(id) {
+  if (!id) return;
+  if (!confirm(t("confirmDelete"))) return;
+  const local = store.jobs().find((j) => j.id === id);
+  const cloud = publicJobs().find((j) => j.id === id);
+  const job = local || cloud;
+  if (job && job.cloudId) await cloudDelete(job.cloudId);
+  store.saveJobs(store.jobs().filter((j) => j.id !== id));
+  cloudCache = cloudCache.filter((j) => j && j.id !== id);
+  if (store.openJob === id) store.openJob = "";
+  await cloudLoad();
+  render();
+}
 async function cloudPushLocal() {
   const list = store.jobs();
   let changed = false;
@@ -594,7 +625,7 @@ const ICO = {
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) {
   const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1, contractor:1, worker:1, profile:1 };
-  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.gif" alt="" /></span>`;
+  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.gif?v=24" alt="" /></span>`;
   const d = ICO[id];
   if (!d) return "";
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -844,23 +875,29 @@ function avatarFor(key) {
   for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0;
   return "avatars/a" + (h % 8) + ".jpg";
 }
-function face(name, photo, role) {
+function tradeAvatar(trades, role) {
+  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
+  const first = (trades || []).find((id) => pics[id]);
+  if (first) return "icons/" + first + ".gif?v=24";
+  if (role === "worker") return "icons/worker.gif?v=24";
+  return "icons/contractor.gif?v=24";
+}
+function face(name, photo, role, trades) {
   if (photo) return photo;
-  return avatarFor(name || role || "user");
+  return tradeAvatar(trades, role);
 }
 function jobPhoto(j) {
   if (j.planData && String(j.planData).startsWith("data:image")) return j.planData;
   if (j.photo) return j.photo;
-  if (j.name || j.posterCode) return avatarFor(j.posterCode || j.name);
-  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
-  if (j.trade && pics[j.trade]) return "icons/" + j.trade + ".gif";
-  if (j.kind === "offer") return "icons/worker.gif";
-  return "icons/contractor.gif";
+  const trades = j.trades || (j.trade ? [j.trade] : []);
+  if (trades.length) return tradeAvatar(trades, j.kind === "offer" ? "worker" : "contractor");
+  if (j.kind === "offer") return "icons/worker.gif?v=24";
+  return "icons/contractor.gif?v=24";
 }
 function memberCard(m) {
   return `<article class="card job tt-card ${m.role === "worker" ? "offer" : "order"}">
     <div class="tt-row">
-      <span class="picwrap big"><img class="tt-photo" src="${face(m.name, m.photo, m.role === "worker" ? "worker" : "contractor")}" alt="" /></span>
+      <span class="picwrap big"><img class="tt-photo" src="${face(m.name, m.photo, m.role === "worker" ? "worker" : "contractor", m.trades)}" alt="" /></span>
       <div class="tt-body">
         <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
         <h3>${m.name || m.code}</h3>
@@ -1023,6 +1060,7 @@ function viewJobDetail(id) {
       ${files.length ? files.map((n) => `<div class="plan-name">📄 ${n}</div>`).join("") : `<div class="meta">${t("noDocs")}</div>`}
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       <a class="btn" href="${waLink(j.phone, title)}">${t("wa")}</a>
+      ${isMine(j) ? `<button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>` : ""}
     </article>
     <div class="card">
       <b>${t("postedBy")}</b>
@@ -1146,7 +1184,7 @@ function isMine(j) {
   return Boolean((code && j.posterCode === code) || (phone && j.phone === phone));
 }
 function viewMine(history) {
-  const list = store.jobs().filter((j) => isMine(j) && (history ? j.archived : !j.archived));
+  const list = publicJobs().filter((j) => isMine(j) && (history ? j.archived : !j.archived));
   const cards = list.length
     ? list.map((j) => {
         const offer = j.kind === "offer";
@@ -1161,6 +1199,7 @@ function viewMine(history) {
               <div class="tt-actions">
                 <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
                 <button class="btn" type="button" data-archive="${j.id}" data-arch="${history ? "0" : "1"}">${history ? t("toActive") : t("toHistory")}</button>
+                <button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>
               </div>
             </div>
           </div>
@@ -1179,7 +1218,7 @@ function viewProfile() {
   const code = p.code || (store.user() && store.user().code) || "";
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor")}" alt="" />
+    <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor", p.trades)}" alt="" />
     <h2>${p.name || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -1227,6 +1266,9 @@ function bind() {
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-del-job]").forEach((b) => {
+    b.onclick = () => removeMyJob(b.dataset.delJob);
+  });
   document.querySelectorAll("[data-archive]").forEach((b) => {
     b.onclick = async () => {
       const id = b.dataset.archive;
