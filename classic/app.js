@@ -1013,7 +1013,6 @@ function viewAuth() {
 function viewReputation() {
   const p = store.profile();
   const r = myRep();
-  const list = (p.reviews || []).map((x) => `<div class="meta">★${x.stars} — ${x.text || ""}</div>`).join("");
   const code = p.code || (store.user() && store.user().code) || "";
   const files = (p.docFiles || []).map((n) => `<div class="plan-name">${n}</div>`).join("");
   return `<div class="card profile-bg">
@@ -1025,22 +1024,11 @@ function viewReputation() {
     <p class="meta">${t("docsHint")}</p>
     <label class="check"><input type="checkbox" id="flag-docs" ${p.docs ? "checked" : ""} /> ${t("badgeDocs")}</label>
     <label class="check"><input type="checkbox" id="flag-ins" ${p.insurance ? "checked" : ""} /> ${t("badgeIns")}</label>
-    <div style="height:8px"></div>
-    <button class="btn ghost" type="button" id="btn-closed">${t("closedPlus")}</button>
     <label>${t("uploadDocs")}</label>
     <input type="file" id="doc-file" accept="image/*,.pdf,application/pdf" />
     <div class="plan-name">${t("docsList")}</div>
     ${files}
-  </div>
-  <form class="card" id="review-form">
-    <label>${t("addReview")}</label>
-    <label>${t("stars")}</label>
-    <select name="stars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
-    <label>${t("reviewText")}</label>
-    <textarea name="text"></textarea>
-    <button class="btn" type="submit">${t("reviewSave")}</button>
-    ${list}
-  </form>`;
+  </div>`;
 }
 
 function isMine(j) {
@@ -1110,7 +1098,6 @@ function viewProfile() {
   </form>
   ${viewReputation()}
   <div class="card">
-    ${store.role === "worker" && store.profile().seeking ? `<p class="ok">${t("seekingIn")}: ${(store.profile().cities || [store.profile().city]).filter(Boolean).map(cityName).join(", ")}</p>` : ""}
     <button class="btn ghost" data-logout="1">${t("logout")}</button>
   </div>`;
 }
