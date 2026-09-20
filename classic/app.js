@@ -155,6 +155,8 @@ const I18N = {
     sphere: "Сфера",
     needAuth: "Ленту видят все. Разместить заказ или искать работу — только после регистрации.",
     logout: "Выйти",
+    cloudOn: "Общая лента включена — заявки видят все.",
+    cloudOff: "Нет сети. Пока видны только заявки с этого телефона.",
     myActive: "Актуальные",
     myHistory: "История",
     myActiveHint: "То, что сейчас в ленте",
@@ -272,6 +274,8 @@ const I18N = {
     sphere: "תחום",
     needAuth: "את הלוח רואים כולם. פרסום הזמנה או חיפוש עבודה — רק אחרי הרשמה.",
     logout: "יציאה",
+    cloudOn: "לוח משותף פעיל — כולם רואים את המודעות.",
+    cloudOff: "אין רשת. רואים רק מודעות מהטלפון הזה.",
     myActive: "פעילים",
     myHistory: "היסטוריה",
     myActiveHint: "מה שמופיע בלוח עכשיו",
@@ -389,6 +393,8 @@ const I18N = {
     sphere: "Field",
     needAuth: "Anyone can browse the feed. Post a job or offer work after sign-up.",
     logout: "Log out",
+    cloudOn: "Shared feed is on — everyone can see posts.",
+    cloudOff: "Offline. Only posts from this phone are visible.",
     myActive: "Active",
     myHistory: "History",
     myActiveHint: "What is live on the feed",
@@ -500,6 +506,66 @@ const store = {
   set session(v) { localStorage.setItem("bil_session", v); },
   user() { return this.users().find((u) => u.phone === this.session) || null; },
 };
+const CLOUD_URL = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/jobs";
+let cloudCache = [];
+let cloudOk = false;
+
+function slimJob(j) {
+  const copy = { ...j };
+  delete copy._id;
+  if (copy.planData && String(copy.planData).length > 70000) copy.planData = "";
+  return copy;
+}
+async function cloudLoad() {
+  try {
+    const res = await fetch(CLOUD_URL);
+    if (!res.ok) throw new Error("cloud");
+    const list = await res.json();
+    cloudCache = Array.isArray(list) ? list : [];
+    cloudOk = true;
+  } catch (e) {
+    cloudOk = false;
+  }
+  return cloudCache;
+}
+async function cloudSave(job) {
+  const body = JSON.stringify(slimJob(job));
+  try {
+    if (job.cloudId) {
+      const res = await fetch(CLOUD_URL + "/" + job.cloudId, { method: "PUT", headers: { "Content-Type": "application/json" }, body });
+      if (!res.ok) throw new Error("put");
+      cloudOk = true;
+      return job.cloudId;
+    }
+    const res = await fetch(CLOUD_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+    if (!res.ok) throw new Error("post");
+    const saved = await res.json();
+    cloudOk = true;
+    return saved._id || "";
+  } catch (e) {
+    cloudOk = false;
+    return "";
+  }
+}
+async function cloudPushLocal() {
+  const list = store.jobs();
+  let changed = false;
+  for (let i = 0; i < list.length; i++) {
+    if (!list[i].cloudId) {
+      const id = await cloudSave(list[i]);
+      if (id) { list[i] = { ...list[i], cloudId: id }; changed = true; }
+    }
+  }
+  if (changed) store.saveJobs(list);
+}
+function publicJobs() {
+  const map = {};
+  cloudCache.forEach((j) => { if (j && j.id) map[j.id] = j; });
+  store.jobs().forEach((j) => { map[j.id] = { ...(map[j.id] || {}), ...j }; });
+  return Object.values(map);
+}
+
+
 
 const ICO = {
   tile: "M4 10l8-6 8 6v10H4V10zm8 2v6",
@@ -830,7 +896,7 @@ function viewRatingBoard() {
     (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
 }
 function viewFeed() {
-  const own = store.jobs().filter((j) => !j.archived);
+  const own = publicJobs().filter((j) => !j.archived);
   const all = [...own, ...DEMO];
   let filtered = all;
   const itemKind = (j) => j.kind === "offer" ? "offer" : "job";
@@ -838,7 +904,8 @@ function viewFeed() {
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
   filtered = filtered.filter(inCity);
-  const kinds = `<div class="filters">
+  const cloudNote = `<div class="meta" style="padding:0 4px 8px">${cloudOk ? t("cloudOn") : t("cloudOff")}</div>`;
+  const kinds = cloudNote + `<div class="filters">
       <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
       <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
       <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
@@ -883,7 +950,7 @@ function viewFeed() {
 }
 
 function findJob(id) {
-  return store.jobs().concat(DEMO).find((j) => j.id === id) || null;
+  return publicJobs().concat(DEMO).find((j) => j.id === id) || null;
 }
 function findPoster(job) {
   if (!job) return null;
@@ -1161,10 +1228,18 @@ function bind() {
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-archive]").forEach((b) => {
-    b.onclick = () => {
+    b.onclick = async () => {
       const id = b.dataset.archive;
       const on = b.dataset.arch === "1";
-      store.saveJobs(store.jobs().map((j) => j.id === id ? { ...j, archived: on } : j));
+      const list = store.jobs().map((j) => j.id === id ? { ...j, archived: on } : j);
+      store.saveJobs(list);
+      const job = list.find((j) => j.id === id) || publicJobs().find((j) => j.id === id);
+      if (job) {
+        const cloudId = job.cloudId || await cloudSave({ ...job, archived: on });
+        if (cloudId && !job.cloudId) store.saveJobs(store.jobs().map((j) => j.id === id ? { ...j, cloudId } : j));
+        else if (job.cloudId) await cloudSave({ ...job, archived: on });
+      }
+      await cloudLoad();
       render();
     };
   });
@@ -1315,11 +1390,17 @@ function bind() {
       archived: false,
     });
     store.saveJobs(list);
+    const cloudId = await cloudSave(list[0]);
+    if (cloudId) {
+      list[0].cloudId = cloudId;
+      store.saveJobs(list);
+    }
     store.tab = "mine";
+    await cloudLoad();
     render();
   };
   const seek = document.getElementById("seek-form");
-  if (seek) seek.onsubmit = (e) => {
+  if (seek) seek.onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(seek);
     const trades = [...seek.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
@@ -1331,7 +1412,7 @@ function bind() {
       const [tr, wid] = String(w).split(":");
       return workName(tr, wid);
     });
-    const title = [name, ...workLabels].filter(Boolean).join(" · ") || trades.map(tradeName).join(", ");
+    const title = workLabels.filter(Boolean).join(", ") || trades.map(tradeName).join(", ") || name;
     store.saveProfile({
       ...store.profile(),
       name,
@@ -1362,7 +1443,13 @@ function bind() {
       archived: false,
     });
     store.saveJobs(list);
+    const cloudId = await cloudSave(list[0]);
+    if (cloudId) {
+      list[0].cloudId = cloudId;
+      store.saveJobs(list);
+    }
     store.tab = "mine";
+    await cloudLoad();
     render();
   };
   const docs = document.getElementById("flag-docs");
@@ -1394,4 +1481,8 @@ function bind() {
 }
 
 setLang(store.lang);
-render();
+(async () => {
+  await cloudLoad();
+  await cloudPushLocal();
+  render();
+})();
