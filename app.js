@@ -451,7 +451,21 @@ const DEMO = [
   { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "на этой неделе", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
   { id: "d3", kind: "job", trade: "reno", trades: ["reno", "paint"], city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "октябрь", budget: "₪ 28,000", phone: "0501110003", name: "Dana Build", posterCode: "K-10802", rating: 5, reviews: 3, docs: true, insurance: true, planName: "3room-tohnit.pdf", descRu: "Покраска, плинтуса, лёгкий гипс в коридоре. Доступ ежедневно после 16:00.", descHe: "צבע, פנלים, גבס קל במסדרון. כניסה כל יום אחרי 16:00.", descEn: "Paint, skirting, light drywall in the hall. Access daily after 16:00." },
   { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0501110004", name: "Igor", posterCode: "K-10421", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, planName: "portfolio-gypsum.pdf", descRu: "Стены, потолки, ниши. Работаю Нетания и Герцлия. Есть страховка.", descHe: "קירות, תקרות, נישות. נתניה והרצליה. יש ביטוח.", descEn: "Walls, ceilings, niches. Netanya and Herzliya. Insured." },
-];
+  { id: "d5", kind: "job", trade: "plumb", trades: ["plumb"], city: "haifa", titleRu: "Замена труб кухня + санузел", titleHe: "החלפת צנרת מטבח ושירותים", titleEn: "Replace pipes kitchen and WC", dates: "28–30.09", budget: "₪ 6,200", phone: "0501110005", name: "Haifa Home", posterCode: "K-11230", rating: 4.5, reviews: 8, docs: true, descRu: "Старые трубы на кухне и в туалете. Доступ с 07:30.", descHe: "צנרת ישנה במטבח ובשירותים. כניסה מ-07:30.", descEn: "Old pipes in kitchen and WC. Access from 07:30." },
+  { id: "d6", kind: "job", trade: "paint", trades: ["paint"], city: "holon", titleRu: "Покраска квартиры 80 м²", titleHe: "צביעת דירה 80 מ״ר", titleEn: "Paint 80 m² flat", dates: "1–3.10", budget: "₪ 5,500", phone: "0501110006", name: "Holon Fix", posterCode: "K-11311", rating: 4.7, reviews: 11, descRu: "Две комнаты и коридор. Краска уже куплена.", descHe: "שני חדרים ומסדרון. הצבע כבר נקנה.", descEn: "Two rooms and hall. Paint already bought." },
+  { id: "d7", kind: "job", trade: "ac", trades: ["ac"], city: "ashdod", titleRu: "Поставить 2 кондиционера", titleHe: "התקנת 2 מזגנים", titleEn: "Install 2 AC units", dates: "на этой неделе", budget: "₪ 3,800", phone: "0501110007", name: "Ashdod Build", posterCode: "K-11402", rating: 4.4, reviews: 7, descRu: "Гостиная и спальня. Кронштейны есть.", descHe: "סלון וחדר שינה. התושבות במקום.", descEn: "Living room and bedroom. Brackets on site." },
+  { id: "d8", kind: "job", trade: "alum", trades: ["alum"], city: "petah", titleRu: "Окно + москитная сетка", titleHe: "חלון ורשת נגד יתושים", titleEn: "Window plus fly screen", dates: "5.10", budget: "по договорённости", phone: "0501110008", name: "PT Kablan", posterCode: "K-11540", rating: 4.3, reviews: 5, descRu: "Замена одного окна на балкон.", descHe: "החלפת חלון אחד למרפסת.", descEn: "Replace one balcony window." },
+  { id: "d9", kind: "job", trade: "frame", trades: ["frame"], city: "modiin", titleRu: "Каркас гипсокартона 2 стены", titleHe: "שלד גבס 2 קירות", titleEn: "Drywall frame, 2 walls", dates: "октябрь", budget: "₪ 4,200", phone: "0501110009", name: "Modiin Pro", posterCode: "K-11608", rating: 4.6, reviews: 9, docs: true, descRu: "Две внутренние стены, профиль есть.", descHe: "שני קירות פנים, הפרופיל במקום.", descEn: "Two internal walls, profiles on site." },
+  { id: "d10", kind: "job", trade: "tile", trades: ["tile"], city: "jerusalem", titleRu: "Плитка кухня фартук 7 м²", titleHe: "חיפוי מטבח 7 מ״ר", titleEn: "Kitchen backsplash 7 m²", dates: "8–9.10", budget: "₪ 2,900", phone: "0501110010", name: "Jerusalem Works", posterCode: "K-11721", rating: 4.8, reviews: 16, descRu: "Фартук и столешница. Плитка на объекте.", descHe: "חיפוי ומשטח. האריחים באתר.", descEn: "Backsplash and counter. Tiles on site." },
+  { id: "d11", kind: "offer", trade: "tile", trades: ["tile"], cities: ["tlv", "holon", "batyam"], titleRu: "Плиточник — ванные и полы", titleHe: "רצף — חדרי רחצה ורצפות", titleEn: "Tiler — baths and floors", phone: "0501110011", name: "Sasha Tile", posterCode: "K-11803", rating: 4.9, reviews: 33, docs: true, insurance: true, closed: 33, descRu: "Ванные, полы, фартуки. Тель-Авив и юг Гуша.", descHe: "חדרי רחצה, רצפות, חיפויים. תל אביב ודרום גוש דן.", descEn: "Baths, floors, splashbacks. Tel Aviv and south Gush Dan." },
+  { id: "d12", kind: "offer", trade: "elec", trades: ["elec"], cities: ["haifa", "kfar"], titleRu: "Электрик мусмах — щитки", titleHe: "חשמלאי מוסמך — לוחות", titleEn: "Licensed electrician — panels", phone: "0501110012", name: "Alex Power", posterCode: "K-11944", rating: 4.7, reviews: 18, docs: true, insurance: true, closed: 18, descRu: "Щитки, точки, замена проводки. Хайфа.", descHe: "לוחות, נקודות, החלפת חיווט. חיפה.", descEn: "Panels, points, rewiring. Haifa." },
+  { id: "d13", kind: "offer", trade: "paint", trades: ["paint", "reno"], cities: ["rishon", "rehovot"], titleRu: "Маляр + косметика", titleHe: "צבע + שיפוץ קוסמטי", titleEn: "Painter + cosmetic work", phone: "0501110013", name: "Roma Color", posterCode: "K-12015", rating: 4.6, reviews: 12, closed: 12, descRu: "Покраска, шпаклёвка, мелкий ремонт.", descHe: "צביעה, שפכטל, תיקונים קטנים.", descEn: "Paint, filler, small repairs." },
+  { id: "d14", kind: "offer", trade: "plumb", trades: ["plumb"], cities: ["ashdod", "ashkelon"], titleRu: "Сантехник — трубы и бойлер", titleHe: "אינסטלטור — צנרת ודוד", titleEn: "Plumber — pipes and boiler", phone: "0501110014", name: "Gabi Plumb", posterCode: "K-12109", rating: 4.8, reviews: 22, docs: true, insurance: true, closed: 22, descRu: "Трубы, бойлер, протечки. Ашдод / Ашкелон.", descHe: "צנרת, דוד, נזילות. אשדוד / אשקלון.", descEn: "Pipes, boiler, leaks. Ashdod / Ashkelon." },
+  { id: "d15", kind: "offer", trade: "ac", trades: ["ac"], cities: ["tlv", "herzliya", "netanya"], titleRu: "Кондиционеры — монтаж и сервис", titleHe: "מזגנים — התקנה ושירות", titleEn: "AC — install and service", phone: "0501110015", name: "CoolIL", posterCode: "K-12270", rating: 4.5, reviews: 15, insurance: true, closed: 15, descRu: "Монтаж, заправка, сервис по центру.", descHe: "התקנה, מילוי, שירות במרכז.", descEn: "Install, refill, service in the center." },
+  { id: "d16", kind: "offer", trade: "alum", trades: ["alum"], cities: ["jerusalem", "modiin"], titleRu: "Алюминий и окна", titleHe: "אלומיניום וחלונות", titleEn: "Aluminum and windows", phone: "0501110016", name: "Nir Alum", posterCode: "K-12333", rating: 4.4, reviews: 10, docs: true, closed: 10, descRu: "Окна, двери, москитные сетки.", descHe: "חלונות, דלתות, רשתות.", descEn: "Windows, doors, screens." },
+  { id: "d17", kind: "job", trade: "reno", trades: ["reno", "gypsum", "paint"], city: "beer", titleRu: "Ремонт под ключ 2 комн.", titleHe: "שיפוץ מפתח 2 חדרים", titleEn: "Turnkey renovation, 2 rooms", dates: "ноябрь", budget: "₪ 45,000", phone: "0501110017", name: "Beer Sheva Kablan", posterCode: "K-12480", rating: 4.7, reviews: 13, docs: true, insurance: true, descRu: "Полный косметический ремонт. Есть тухнит.", descHe: "שיפוץ קוסמטי מלא. יש תוכנית.", descEn: "Full cosmetic renovation. Plan ready." },
+  { id: "d18", kind: "offer", trade: "frame", trades: ["frame", "gypsum"], cities: ["eilat"], titleRu: "Каркас и гипс — Эйлат", titleHe: "שלד וגבס — אילת", titleEn: "Framing and drywall — Eilat", phone: "0501110018", name: "Eilat Crew", posterCode: "K-12561", rating: 4.3, reviews: 6, closed: 6, descRu: "Бригада в Эйлате. Каркас, гипс, потолки.", descHe: "צוות באילת. שלד, גבס, תקרות.", descEn: "Crew in Eilat. Frames, drywall, ceilings." },
+]
 
 const store = {
   get lang() { return localStorage.getItem("bil_lang") || "ru"; },
@@ -576,12 +590,33 @@ const DEMO_REVIEWS = {
     { stars: 5, name: "Dana", textRu: "Электрика по стандарту, аккуратно.", textHe: "חשמל לפי התקן, עבודה נקייה.", textEn: "Electrical to code, tidy." },
     { stars: 4, name: "Роман", textRu: "Приехал на день позже, работу сделал.", textHe: "הגיע באיחור של יום, אבל סיים.", textEn: "A day late, but finished the job." },
   ],
+  d11: [
+    { stars: 5, name: "Лена", textRu: "Плитка в ванной идеально.", textHe: "הריצוף בחדר הרחצה מושלם.", textEn: "Bathroom tile is perfect." },
+    { stars: 5, name: "Itay", textRu: "Быстро и чисто.", textHe: "מהיר ונקי.", textEn: "Fast and clean." },
+  ],
+  d14: [
+    { stars: 5, name: "Марина", textRu: "Протечку нашёл сразу.", textHe: "מצא את הנזילה מיד.", textEn: "Found the leak immediately." },
+    { stars: 4, name: "Oren", textRu: "Цена нормальная.", textHe: "המחיר סביר.", textEn: "Fair price." },
+  ],
+  "K-11803": [
+    { stars: 5, name: "Dana", textRu: "Саша кладёт плитку ровно.", textHe: "סשה מרצף ישר.", textEn: "Sasha lays tile straight." },
+  ],
+  "K-12109": [
+    { stars: 5, name: "Avi", textRu: "Габи приехал ночью на протечку.", textHe: "גבי הגיע בלילה לנזילה.", textEn: "Gabi came at night for a leak." },
+  ],
 };
 
 const SEED_MEMBERS = [
   { code: "K-10421", name: "Igor", role: "worker", city: "netanya", cities: ["netanya", "herzliya"], rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, trades: ["gypsum"], phone: "0501110004", docFiles: ["bituch.pdf", "portfolio-gypsum.pdf"], aboutRu: "Гипсокартон 8 лет. Стены, потолки, ниши.", aboutHe: "גבס 8 שנים. קירות, תקרות, נישות.", aboutEn: "Drywall for 8 years. Walls, ceilings, niches." },
   { code: "K-10802", name: "Dana Build", role: "contractor", city: "tlv", rating: 4.8, reviews: 14, docs: true, closed: 14, trades: ["reno"], phone: "0501110001", docFiles: ["osek.pdf", "3room-tohnit.pdf"], aboutRu: "Каблан косметики и плитки в центре.", aboutHe: "קבלן שיפוץ קוסמטי וריצוף במרכז.", aboutEn: "Cosmetic and tile contractor in the center." },
   { code: "K-11017", name: "Yossi Electric", role: "worker", city: "rishon", cities: ["rishon", "holon"], rating: 4.6, reviews: 9, docs: true, insurance: true, closed: 9, trades: ["elec"], phone: "0501110002", docFiles: ["hashmal-license.pdf"], aboutRu: "Электрик мусмах, щитки и точки.", aboutHe: "חשמלאי מוסמך, לוחות ונקודות.", aboutEn: "Licensed electrician, panels and points." },
+  { code: "K-11803", name: "Sasha Tile", role: "worker", city: "tlv", cities: ["tlv", "holon", "batyam"], rating: 4.9, reviews: 33, docs: true, insurance: true, closed: 33, trades: ["tile"], phone: "0501110011", aboutRu: "Плиточник 12 лет. Ванные и полы.", aboutHe: "רצף 12 שנה. חדרי רחצה ורצפות.", aboutEn: "Tiler 12 years. Baths and floors." },
+  { code: "K-11944", name: "Alex Power", role: "worker", city: "haifa", rating: 4.7, reviews: 18, docs: true, insurance: true, closed: 18, trades: ["elec"], phone: "0501110012", aboutRu: "Электрик мусмах, Хайфа.", aboutHe: "חשמלאי מוסמך, חיפה.", aboutEn: "Licensed electrician, Haifa." },
+  { code: "K-12015", name: "Roma Color", role: "worker", city: "rishon", rating: 4.6, reviews: 12, closed: 12, trades: ["paint", "reno"], phone: "0501110013", aboutRu: "Маляр и косметика.", aboutHe: "צבע ושיפוץ קוסמטי.", aboutEn: "Painter and cosmetic work." },
+  { code: "K-12109", name: "Gabi Plumb", role: "worker", city: "ashdod", rating: 4.8, reviews: 22, docs: true, insurance: true, closed: 22, trades: ["plumb"], phone: "0501110014", aboutRu: "Сантехник Ашдод / Ашкелон.", aboutHe: "אינסטלטור אשדוד / אשקלון.", aboutEn: "Plumber Ashdod / Ashkelon." },
+  { code: "K-12270", name: "CoolIL", role: "worker", city: "tlv", rating: 4.5, reviews: 15, insurance: true, closed: 15, trades: ["ac"], phone: "0501110015", aboutRu: "Кондиционеры по центру.", aboutHe: "מזגנים במרכז.", aboutEn: "AC in the center." },
+  { code: "K-11230", name: "Haifa Home", role: "contractor", city: "haifa", rating: 4.5, reviews: 8, docs: true, closed: 8, trades: ["plumb", "reno"], phone: "0501110005", aboutRu: "Каблан Хайфа, сантехника и ремонт.", aboutHe: "קבלן חיפה, אינסטלציה ושיפוץ.", aboutEn: "Haifa contractor, plumbing and reno." },
+  { code: "K-12480", name: "Beer Sheva Kablan", role: "contractor", city: "beer", rating: 4.7, reviews: 13, docs: true, insurance: true, closed: 13, trades: ["reno"], phone: "0501110017", aboutRu: "Ремонт под ключ в Беэр-Шеве.", aboutHe: "שיפוץ מפתח בבאר שבע.", aboutEn: "Turnkey renovation in Beersheba." },
 ];
 
 function nextCode() {
@@ -737,15 +772,20 @@ function inCity(item) {
   return cities.includes(store.cityFilter);
 }
 
+function avatarFor(key) {
+  const s = String(key || "user");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0;
+  return "avatars/a" + (h % 8) + ".jpg";
+}
 function face(name, photo, role) {
   if (photo) return photo;
-  if (role === "worker") return "icons/worker.gif";
-  if (role === "contractor") return "icons/contractor.gif";
-  return "icons/profile.gif";
+  return avatarFor(name || role || "user");
 }
 function jobPhoto(j) {
   if (j.planData && String(j.planData).startsWith("data:image")) return j.planData;
   if (j.photo) return j.photo;
+  if (j.name || j.posterCode) return avatarFor(j.posterCode || j.name);
   const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
   if (j.trade && pics[j.trade]) return "icons/" + j.trade + ".gif";
   if (j.kind === "offer") return "icons/worker.gif";

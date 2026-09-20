@@ -195,8 +195,9 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .tt-actions { display: flex; gap: 8px; margin-top: 8px; }
 .tt-actions .btn { width: auto; flex: 1; padding: 10px 8px; font-size: 13px; }
 
-.compare { max-width: 480px; margin: 0 auto; padding: 10px 16px 0; font-size: 13px; font-weight: 700; }
-.compare a { color: #009fd9; }
+.compare { max-width: 480px; margin: 0 auto; padding: 10px 16px 0; font-size: 13px; font-weight: 700; display: flex; gap: 8px; }
+.compare a { color: #009fd9; border: 1px solid #cfe8f3; background: #fff; border-radius: 999px; padding: 6px 12px; text-decoration: none; }
+.compare a.on { background: #009fd9; color: #fff; border-color: #009fd9; }
 
 @media (prefers-reduced-motion: no-preference) {
   .card, .hero, .ad {
