@@ -274,3 +274,12 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .mine-tile b { display: block; margin: 4px 0 2px; }
 .mine-tile span { display: block; font-size: 11px; color: var(--muted); line-height: 1.2; }
 .mine-tile .icon, .mine-tile .picwrap { margin: 0 auto; }
+
+.logo { display:flex; align-items:center; gap:8px; }
+.brand-face { width:36px; height:36px; border-radius:10px; object-fit:cover; background:#e25a12; }
+.file-open { display:block; width:100%; text-align:left; background:#fff; border:1px solid var(--line); border-radius:14px; padding:8px; cursor:pointer; }
+.file-open .plan-preview { display:block; width:100%; max-height:240px; object-fit:contain; background:#f3f1ea; }
+#lightbox { position:fixed; inset:0; z-index:80; background:rgba(8,16,24,.92); display:flex; align-items:center; justify-content:center; padding:16px; }
+#lightbox[hidden] { display:none !important; }
+#lightbox img, #lightbox iframe { max-width:100%; max-height:92vh; background:#fff; border-radius:8px; }
+#lightbox-x { position:absolute; top:12px; right:12px; width:44px; height:44px; border:0; border-radius:22px; font-size:28px; background:#fff; cursor:pointer; }

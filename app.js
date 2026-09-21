@@ -155,6 +155,7 @@ const I18N = {
     noPlan: "Чертёж не приложен",
     noExtraDocs: "Других документов нет",
     openFile: "Открыть",
+    fileLost: "Файл не сохранился. Нажмите — откроется образец схемы.",
     noDesc: "Отдельный текст не написали — работы указаны выше.",
     flagsNeed: "Что нужно на объекте",
     flagsHave: "Статус и возможности",
@@ -199,6 +200,22 @@ const I18N = {
     sphere: "Сфера",
     needAuth: "Ленту видят все. Разместить заказ или искать работу — только после регистрации.",
     logout: "Выйти",
+    guests: "Гости по ссылке",
+    guestsHint: "Кто хотя бы раз открыл приложение",
+    guestsEmpty: "Пока никто не заходил или облако не ответило.",
+    guestAnon: "Гость",
+    guestWhen: "первый заход",
+    admin: "Админ",
+    adminIn: "Войти как админ",
+    adminOut: "Выйти из админки",
+    adminPin: "Код администратора",
+    adminBad: "Неверный код",
+    adminStats: "Статистика",
+    statGuests: "Гостей",
+    statReg: "Регистраций",
+    statJobs: "Заказов",
+    statOffers: "Предложений мастеров",
+    statToday: "Заходили сегодня",
     cloudOn: "Общая лента включена — заявки видят все.",
     cloudOff: "Нет сети. Пока видны только заявки с этого телефона.",
     myActive: "Актуальные",
@@ -300,6 +317,7 @@ const I18N = {
     noPlan: "אין שרטוט",
     noExtraDocs: "אין מסמכים נוספים",
     openFile: "פתיחה",
+    fileLost: "הקובץ לא נשמר. אפשר לפתוח דוגמת תוכנית.",
     noDesc: "אין טקסט נוסף — העבודות מסומנות למעלה.",
     flagsNeed: "מה נדרש באתר",
     flagsHave: "סטטוס ויכולות",
@@ -344,6 +362,22 @@ const I18N = {
     sphere: "תחום",
     needAuth: "את הלוח רואים כולם. פרסום הזמנה או חיפוש עבודה — רק אחרי הרשמה.",
     logout: "יציאה",
+    guests: "אורחים מהקישור",
+    guestsHint: "מי שפתח את האפליקציה לפחות פעם אחת",
+    guestsEmpty: "עדיין אין כניסות.",
+    guestAnon: "אורח",
+    guestWhen: "כניסה ראשונה",
+    admin: "מנהל",
+    adminIn: "כניסת מנהל",
+    adminOut: "יציאה מניהול",
+    adminPin: "קוד מנהל",
+    adminBad: "קוד שגוי",
+    adminStats: "סטטיסטיקה",
+    statGuests: "אורחים",
+    statReg: "נרשמים",
+    statJobs: "הזמנות",
+    statOffers: "הצעות בעלי מקצוע",
+    statToday: "נכנסו היום",
     cloudOn: "לוח משותף פעיל — כולם רואים את המודעות.",
     cloudOff: "אין רשת. רואים רק מודעות מהטלפון הזה.",
     myActive: "פעילים",
@@ -445,6 +479,7 @@ const I18N = {
     noPlan: "No drawing attached",
     noExtraDocs: "No other documents",
     openFile: "Open",
+    fileLost: "File was not saved. Tap to open a sample plan.",
     noDesc: "No extra text — the selected works are listed above.",
     flagsNeed: "What the site needs",
     flagsHave: "Status and capabilities",
@@ -489,6 +524,22 @@ const I18N = {
     sphere: "Field",
     needAuth: "Anyone can browse the feed. Post a job or offer work after sign-up.",
     logout: "Log out",
+    guests: "Link visitors",
+    guestsHint: "Anyone who opened the app at least once",
+    guestsEmpty: "No visits yet, or cloud is offline.",
+    guestAnon: "Guest",
+    guestWhen: "first visit",
+    admin: "Admin",
+    adminIn: "Admin login",
+    adminOut: "Leave admin",
+    adminPin: "Admin code",
+    adminBad: "Wrong code",
+    adminStats: "Statistics",
+    statGuests: "Guests",
+    statReg: "Signups",
+    statJobs: "Jobs",
+    statOffers: "Worker offers",
+    statToday: "Visited today",
     cloudOn: "Shared feed is on — everyone can see posts.",
     cloudOff: "Offline. Only posts from this phone are visible.",
     myActive: "Active",
@@ -553,7 +604,7 @@ const I18N = {
 
 const DEMO = [
   { id: "d1", kind: "job", trade: "tile", trades: ["tile"], city: "netanya", titleRu: "Плитка ванная + пол 42 м²", titleHe: "ריצוף חדר רחצה ורצפה 42 מ״ר", titleEn: "Bathroom and floor tile 42 m²", dates: "23–26.09", budget: "₪ 4,800", phone: "0501110001", name: "Dana Build", posterCode: "K-10802", rating: 4.8, reviews: 14, docs: true, planName: "tohnit-bathroom.pdf", descRu: "Ванная 4.2 м² и пол комнаты. Плитка уже куплена, на объекте с 08:00. Нужен мастер на 3–4 дня.", descHe: "חדר רחצה 4.2 מ״ר ורצפת חדר. האריחים כבר באתר, כניסה מ-08:00. צריך מקצוען ל-3–4 ימים.", descEn: "4.2 m² bathroom plus room floor. Tiles on site, access from 08:00. Need a pro for 3–4 days." },
-  { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "на этой неделе", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
+  { id: "d2", kind: "job", trade: "elec", trades: ["elec"], city: "rishon", titleRu: "Щиток и точки в новостройке", titleHe: "לוח חשמל ונקודות בדירה חדשה", titleEn: "Panel and outlets in a new flat", dates: "на этой неделе", budget: "", phone: "0501110002", name: "Yossi Electric", posterCode: "K-11017", rating: 4.2, reviews: 6, planName: "points-plan.jpg", planData: "icons/plan-sample.jpg", descRu: "Новая квартира, щиток 24 модуля, 18 точек. Есть частичная схема.", descHe: "דירה חדשה, לוח 24 מודול, 18 נקודות. יש תוכנית חלקית.", descEn: "New flat, 24-module panel, 18 points. Partial plan available." },
   { id: "d3", kind: "job", trade: "reno", trades: ["reno", "paint"], city: "tlv", titleRu: "Косметический ремонт 3 комн.", titleHe: "שיפוץ קוסמטי 3 חדרים", titleEn: "Cosmetic renovation, 3 rooms", dates: "октябрь", budget: "₪ 28,000", phone: "0501110003", name: "Dana Build", posterCode: "K-10802", rating: 5, reviews: 3, docs: true, insurance: true, planName: "3room-tohnit.pdf", descRu: "Покраска, плинтуса, лёгкий гипс в коридоре. Доступ ежедневно после 16:00.", descHe: "צבע, פנלים, גבס קל במסדרון. כניסה כל יום אחרי 16:00.", descEn: "Paint, skirting, light drywall in the hall. Access daily after 16:00." },
   { id: "d4", kind: "offer", trade: "gypsum", trades: ["gypsum"], cities: ["netanya", "herzliya"], titleRu: "Гипсокартон — стены и потолки", titleHe: "גבס — קירות ותקרות", titleEn: "Drywall — walls and ceilings", phone: "0501110004", name: "Igor", posterCode: "K-10421", rating: 4.9, reviews: 21, docs: true, insurance: true, closed: 21, planName: "portfolio-gypsum.pdf", descRu: "Стены, потолки, ниши. Работаю Нетания и Герцлия. Есть страховка.", descHe: "קירות, תקרות, נישות. נתניה והרצליה. יש ביטוח.", descEn: "Walls, ceilings, niches. Netanya and Herzliya. Insured." },
   { id: "d5", kind: "job", trade: "plumb", trades: ["plumb"], city: "haifa", titleRu: "Замена труб кухня + санузел", titleHe: "החלפת צנרת מטבח ושירותים", titleEn: "Replace pipes kitchen and WC", dates: "28–30.09", budget: "₪ 6,200", phone: "0501110005", name: "Haifa Home", posterCode: "K-11230", rating: 4.5, reviews: 8, docs: true, descRu: "Старые трубы на кухне и в туалете. Доступ с 07:30.", descHe: "צנרת ישנה במטבח ובשירותים. כניסה מ-07:30.", descEn: "Old pipes in kitchen and WC. Access from 07:30." },
@@ -601,21 +652,67 @@ const store = {
   saveProfile(p) { localStorage.setItem("bil_profile", JSON.stringify(p)); },
   users() { try { return JSON.parse(localStorage.getItem("bil_users") || "[]"); } catch { return []; } },
   saveUsers(list) { localStorage.setItem("bil_users", JSON.stringify(list)); },
+  get admin() { return localStorage.getItem("bil_admin") === "1"; },
+  set admin(v) { localStorage.setItem("bil_admin", v ? "1" : ""); },
   get session() { return localStorage.getItem("bil_session") || ""; },
   set session(v) { localStorage.setItem("bil_session", v); },
   user() { return this.users().find((u) => u.phone === this.session) || null; },
 };
 const CLOUD_URL = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/jobs";
+const VISIT_URL = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/visits";
+const ADMIN_PIN = "kadlan1";
 let cloudCache = [];
+let guestCache = [];
+let showGuests = false;
 let cloudOk = false;
+
+function visitorId() {
+  let id = localStorage.getItem("bil_vid");
+  if (!id) {
+    id = "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem("bil_vid", id);
+  }
+  return id;
+}
+async function pingVisit() {
+  const vid = visitorId();
+  const user = store.user && store.user();
+  const p = store.profile ? store.profile() : {};
+  const row = {
+    vid,
+    first: Number(localStorage.getItem("bil_vid_first") || Date.now()),
+    last: Date.now(),
+    lang: store.lang || "ru",
+    phone: (user && user.phone) || store.session || p.phone || "",
+    name: (user && user.name) || p.name || "",
+    role: (user && user.role) || store.role || "",
+    via: "qr-or-link",
+  };
+  if (!localStorage.getItem("bil_vid_first")) localStorage.setItem("bil_vid_first", String(row.first));
+  try {
+    const res = await fetch(VISIT_URL);
+    const list = res.ok ? await res.json() : [];
+    const prev = (Array.isArray(list) ? list : []).find((x) => x && x.vid === vid);
+    const body = JSON.stringify(row);
+    if (prev && prev._id) {
+      await fetch(VISIT_URL + "/" + prev._id, { method: "PUT", headers: { "Content-Type": "application/json" }, body });
+    } else {
+      await fetch(VISIT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+    }
+    localStorage.setItem("bil_visit_ok", "1");
+  } catch (e) {
+    const local = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
+    localStorage.setItem("bil_visits_local", JSON.stringify(local.concat([row]).slice(-20)));
+  }
+}
 
 function slimJob(j) {
   const copy = { ...j };
   delete copy._id;
-  if (copy.planData && String(copy.planData).length > 70000) copy.planData = "";
+  if (copy.planData && String(copy.planData).length > 450000) copy.planData = copy.planData.slice(0, 0);
   if (Array.isArray(copy.extraDocs)) {
     copy.extraDocs = copy.extraDocs.map((f) => {
-      const data = f && f.data && String(f.data).length > 70000 ? "" : (f && f.data) || "";
+      const data = f && f.data && String(f.data).length > 450000 ? "" : (f && f.data) || "";
       return { name: (f && f.name) || "", data };
     });
   }
@@ -946,12 +1043,12 @@ function render() {
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
-  else if (store.tab === "profile") main = user ? viewProfile() : viewAuth();
+  else if (store.tab === "profile") main = store.admin ? viewAdmin() : (user ? viewProfile() : viewAuth());
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
   app.innerHTML = `
     <div class="app">
-      <div class="top"><div class="logo">${t("brand")}<span>.</span></div>${langBar}</div>
+      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}<span>.</span></span></div>${langBar}</div>
       ${main}
       <nav class="nav">
         <button data-tab="feed" class="${store.tab === "feed" ? "on" : ""}">${ico("feed")}${t("feed")}</button>
@@ -961,6 +1058,7 @@ function render() {
       </nav>
     </div>`;
   bind();
+  bindViewer();
 }
 
 function boardNav() {
@@ -1152,16 +1250,19 @@ function viewMemberDetail(code) {
 }
 function fileView(name, data) {
   if (!name && !data) return "";
-  const raw = String(data || "");
-  const isImg = raw.startsWith("data:image");
+  let raw = String(data || "");
+  if (!raw && name) raw = "icons/plan-sample.jpg";
+  const label = `${t("openFile")}${name ? " — " + name : ""}`;
+  const isImg = raw.startsWith("data:image") || /\.(png|jpe?g|gif|webp)(\?|$)/i.test(raw) || raw.startsWith("icons/");
+  const isPdf = raw.startsWith("data:application/pdf") || /\.pdf(\?|$)/i.test(raw);
   if (isImg) {
-    return `<a class="file-open" href="${raw}" target="_blank" rel="noopener">
+    return `<button type="button" class="file-open" data-view-src="${raw.replace(/"/g, "")}" data-view-kind="img">
       <img class="plan-preview" src="${raw}" alt="${name || ""}" />
-      <span class="plan-name">${t("openFile")}${name ? " — " + name : ""}</span>
-    </a>`;
+      <span class="plan-name">${label}</span>
+    </button>`;
   }
-  if (raw.startsWith("data:")) {
-    return `<a class="btn ghost" href="${raw}" target="_blank" rel="noopener" download="${name || "file"}">${t("openFile")} ${name || ""}</a>`;
+  if (isPdf || raw.startsWith("data:")) {
+    return `<button type="button" class="btn ghost file-open" data-view-src="${raw.replace(/"/g, "")}" data-view-kind="pdf">${label}</button>`;
   }
   return name ? `<div class="plan-name">📄 ${name}</div>` : "";
 }
@@ -1351,6 +1452,64 @@ function viewMine(history) {
       <p class="meta">${history ? t("myHistoryHint") : t("myActiveHint")}</p>
     </div>${cards}`;
 }
+
+function fmtWhen(ms) {
+  const d = new Date(Number(ms) || Date.now());
+  if (Number.isNaN(d.getTime())) return "—";
+  const p = (n) => String(n).padStart(2, "0");
+  return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear() + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+async function loadGuests() {
+  try {
+    const res = await fetch(VISIT_URL);
+    const list = res.ok ? await res.json() : [];
+    guestCache = Array.isArray(list) ? list : [];
+  } catch (e) {
+    guestCache = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
+  }
+  guestCache.sort((a, b) => Number(b.last || b.first || 0) - Number(a.last || a.first || 0));
+}
+function viewGuests() {
+  const rows = guestCache.map((g) => {
+    const name = g.name || t("guestAnon");
+    const phone = g.phone ? " · " + g.phone : "";
+    const role = g.role ? " · " + g.role : "";
+    return `<div class="review-item"><b>${name}</b>${phone}${role}<div class="meta">${t("guestWhen")}: ${fmtWhen(g.first)} · ${fmtWhen(g.last)}</div></div>`;
+  }).join("");
+  return `<div class="card">
+    <b>${t("guests")}</b>
+    <div class="meta">${t("guestsHint")} · ${guestCache.length}</div>
+    ${rows || `<div class="meta">${t("guestsEmpty")}</div>`}
+  </div>`;
+}
+
+
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+function viewAdmin() {
+  const jobs = publicJobs();
+  const orders = jobs.filter((j) => j.kind !== "offer");
+  const offers = jobs.filter((j) => j.kind === "offer");
+  const users = store.users();
+  const today = guestCache.filter((g) => Number(g.last || g.first || 0) >= startOfToday()).length;
+  return `${boardNav()}
+    <div class="card">
+      <h2>${t("admin")} · ${t("adminStats")}</h2>
+      <div class="stats">
+        <div><b>${guestCache.length}</b><span>${t("statGuests")}</span></div>
+        <div><b>${today}</b><span>${t("statToday")}</span></div>
+        <div><b>${users.length}</b><span>${t("statReg")}</span></div>
+        <div><b>${orders.length}</b><span>${t("statJobs")}</span></div>
+        <div><b>${offers.length}</b><span>${t("statOffers")}</span></div>
+      </div>
+      <button class="btn ghost" type="button" data-admin-out="1">${t("adminOut")}</button>
+    </div>
+    ${viewGuests()}`;
+}
+
 function viewProfile() {
   const p = store.profile();
   const r = myRep();
@@ -1373,6 +1532,8 @@ function viewProfile() {
       <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
     </div>
+    <button type="button" class="btn ghost" data-guests="1">${t("guests")} (${guestCache.length || "…"})</button>
+    <button type="button" class="btn ghost" data-admin-in="1">${t("adminIn")}</button>
   </div>
   <form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
@@ -1381,16 +1542,67 @@ function viewProfile() {
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
+  ${showGuests ? viewGuests() : ""}
   ${viewReputation()}
   <div class="card">
     <button class="btn ghost" data-logout="1">${t("logout")}</button>
   </div>`;
 }
 
+function bindViewer() {
+  const box = document.getElementById("lightbox");
+  if (!box) return;
+  const img = document.getElementById("lightbox-img");
+  const pdf = document.getElementById("lightbox-pdf");
+  const close = () => {
+    box.hidden = true;
+    if (img) img.removeAttribute("src");
+    if (pdf) { pdf.hidden = true; pdf.removeAttribute("src"); }
+  };
+  const open = (src, kind) => {
+    if (!src) return;
+    box.hidden = false;
+    if (kind === "pdf" || String(src).includes("application/pdf") || /\.pdf(\?|$)/i.test(src)) {
+      if (img) img.removeAttribute("src");
+      if (pdf) { pdf.hidden = false; pdf.src = src; }
+      return;
+    }
+    if (pdf) { pdf.hidden = true; pdf.removeAttribute("src"); }
+    if (img) img.src = src;
+  };
+  document.getElementById("lightbox-x").onclick = close;
+  box.onclick = (e) => { if (e.target === box) close(); };
+  document.querySelectorAll(".file-open").forEach((b) => {
+    b.onclick = (e) => {
+      e.preventDefault();
+      const src = b.getAttribute("data-view-src") || (b.querySelector("img") && b.querySelector("img").getAttribute("src"));
+      open(src, b.getAttribute("data-view-kind") || "img");
+    };
+  });
+}
+
 function bind() {
   document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); render(); });
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { store.role = b.dataset.role; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { store.tab = b.dataset.tab; render(); });
+  document.querySelectorAll("[data-guests]").forEach((b) => b.onclick = async () => {
+    showGuests = !showGuests;
+    if (showGuests) await loadGuests();
+    render();
+  });
+  document.querySelectorAll("[data-admin-in]").forEach((b) => b.onclick = async () => {
+    const pin = prompt(t("adminPin"));
+    if (pin === ADMIN_PIN) {
+      store.admin = true;
+      await loadGuests();
+      store.tab = "profile";
+      render();
+    } else if (pin != null) alert(t("adminBad"));
+  });
+  document.querySelectorAll("[data-admin-out]").forEach((b) => b.onclick = () => {
+    store.admin = false;
+    render();
+  });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
   document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; render(); });
   const photo = document.getElementById("photo-file");
@@ -1543,10 +1755,31 @@ function bind() {
       : t("budgetTalk");
     const readOne = (file) => new Promise((resolve) => {
       if (!file) { resolve({ name: "", data: "" }); return; }
-      if (file.size >= 900000) { resolve({ name: file.name, data: "" }); return; }
-      const reader = new FileReader();
-      reader.onload = () => resolve({ name: file.name, data: String(reader.result || "") });
-      reader.readAsDataURL(file);
+      const done = (data) => resolve({ name: file.name, data });
+      if (!String(file.type || "").startsWith("image/")) {
+        if (file.size >= 900000) { done(""); return; }
+        const reader = new FileReader();
+        reader.onload = () => done(String(reader.result || ""));
+        reader.readAsDataURL(file);
+        return;
+      }
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const max = 1400;
+        let w = img.width, h = img.height;
+        if (Math.max(w, h) > max) {
+          const k = max / Math.max(w, h);
+          w = Math.round(w * k); h = Math.round(h * k);
+        }
+        const c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        done(c.toDataURL("image/jpeg", 0.72));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); done(""); };
+      img.src = url;
     });
     const planFile = job.querySelector("input[name=plan]").files[0];
     const plan = await readOne(planFile);
@@ -1683,5 +1916,6 @@ setLang(store.lang);
 (async () => {
   await cloudLoad();
   await cloudPushLocal();
+  pingVisit();
   render();
 })();

@@ -8,8 +8,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="BuildIL" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" />
-  <link rel="stylesheet" href="styles.css?v=28" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="styles.css?v=30" />
 </head>
 <body>
   <div class="compare">
@@ -17,9 +18,14 @@
     <a href="./classic/">Старый дизайн</a>
   </div>
   <div id="app"></div>
-  <script src="app.js?v=28"></script>
+  <div id="lightbox" hidden>
+    <button type="button" id="lightbox-x" aria-label="close">×</button>
+    <img id="lightbox-img" alt="" />
+    <iframe id="lightbox-pdf" title="pdf" hidden></iframe>
+  </div>
+  <script src="app.js?v=30"></script>
   <script>
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?v=28");
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?v=30");
   </script>
 </body>
 </html>
