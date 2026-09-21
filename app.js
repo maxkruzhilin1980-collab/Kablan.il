@@ -26,6 +26,7 @@ const TRADES = [
   ["alum", "Алюминий / окна", "אלומיניום", "Windows / aluminum"],
   ["frame", "Каркас", "שלד", "Framing"],
   ["reno", "Ремонт под ключ", "שיפוץ כללי", "Full renovation"],
+  ["facade", "Фасадные работы", "עבודות חזית", "Facade works"],
   ["other", "Прочее", "אחר", "Other"],
 ];
 
@@ -90,6 +91,26 @@ const WORKS = {
     ["kitchen", "Только кухня", "רק מטבח", "Kitchen only"],
     ["room", "Одна комната", "חדר אחד", "One room"],
   ],
+  facade: [
+    ["paint", "Покраска фасада", "צביעת חזית", "Facade painting"],
+    ["plaster", "Штукатурка / шпаклёвка", "טיח בחזית", "Facade plaster"],
+    ["stone", "Камень / клинкер", "אבן / קלינקר", "Stone / clinker"],
+    ["panels", "Монтаж панелей", "התקנת פאנלים", "Panel installation"],
+    ["insul", "Утепление фасада", "בידוד חזית", "Facade insulation"],
+    ["scaffold", "Леса / высота", "פיגומים / גובה", "Scaffolding / height"],
+    ["clean", "Мойка фасада", "שטיפת חזית", "Facade cleaning"],
+  ],
+};
+
+const FLAG_IDS = ["citizen", "resident", "permit", "height", "tools", "car", "crew"];
+const FLAG_MARK = {
+  citizen: "🇮🇱",
+  resident: "🏠",
+  permit: "📄",
+  height: "🏗️",
+  tools: "🛠️",
+  car: "🚗",
+  crew: "👷",
 };
 
 const I18N = {
@@ -127,8 +148,31 @@ const I18N = {
     budget: "Бюджет",
     budgetSum: "Сумма",
     budgetTalk: "По договорённости",
-    plan: "Схема объекта",
-    planHint: "Фото или PDF схемы",
+    plan: "Чертёж / проект",
+    planHint: "Тухнит или схема объекта — фото или PDF",
+    extraDocs: "Другие документы",
+    extraDocsHint: "Договор, счёт, фото объекта — не чертёж",
+    noPlan: "Чертёж не приложен",
+    noExtraDocs: "Других документов нет",
+    openFile: "Открыть",
+    noDesc: "Отдельный текст не написали — работы указаны выше.",
+    flagsNeed: "Что нужно на объекте",
+    flagsHave: "Статус и возможности",
+    flagsHint: "Нажмите на значок — будет расшифровка.",
+    flag_citizen: "Гражданин",
+    flag_citizen_h: "Гражданин Израиля (эзрах).",
+    flag_resident: "Постоянный житель",
+    flag_resident_h: "Тошав кева — постоянный житель Израиля.",
+    flag_permit: "Есть разрешение на работу",
+    flag_permit_h: "Есть действующий хетер авода / разрешение на работу в Израиле.",
+    flag_height: "Разрешение на высоту",
+    flag_height_h: "Есть ишур авода бе-гова — допуск к работе на высоте.",
+    flag_tools: "Есть инструмент",
+    flag_tools_h: "Свой инструмент на объект.",
+    flag_car: "Есть машина",
+    flag_car_h: "Есть транспорт, может доехать и привезти материал.",
+    flag_crew: "Работаем бригадой",
+    flag_crew_h: "Выходит не один человек, а бригада.",
     tradesNeed: "Какие работы нужны",
     pickOne: "Отметьте хотя бы одну работу",
     phone: "WhatsApp",
@@ -249,8 +293,31 @@ const I18N = {
     budget: "תקציב",
     budgetSum: "סכום",
     budgetTalk: "לפי סיכום",
-    plan: "תוכנית",
-    planHint: "תמונה או PDF של התוכנית",
+    plan: "שרטוט / תוכנית",
+    planHint: "תוכנית או סקיצה — תמונה או PDF",
+    extraDocs: "מסמכים אחרים",
+    extraDocsHint: "חוזה, חשבונית, תמונת האתר — לא שרטוט",
+    noPlan: "אין שרטוט",
+    noExtraDocs: "אין מסמכים נוספים",
+    openFile: "פתיחה",
+    noDesc: "אין טקסט נוסף — העבודות מסומנות למעלה.",
+    flagsNeed: "מה נדרש באתר",
+    flagsHave: "סטטוס ויכולות",
+    flagsHint: "לחצו על הסימון לפרוט.",
+    flag_citizen: "אזרח",
+    flag_citizen_h: "אזרח ישראל.",
+    flag_resident: "תושב קבע",
+    flag_resident_h: "תושב קבע בישראל.",
+    flag_permit: "יש היתר עבודה",
+    flag_permit_h: "יש היתר עבודה בתוקף בישראל.",
+    flag_height: "אישור עבודה בגובה",
+    flag_height_h: "יש אישור עבודה בגובה.",
+    flag_tools: "יש כלים",
+    flag_tools_h: "מגיע עם כלים משלו.",
+    flag_car: "יש רכב",
+    flag_car_h: "יש רכב — הגעה והובלת חומר.",
+    flag_crew: "עובדים כצוות",
+    flag_crew_h: "מגיעה קבוצה / בריגדה, לא אדם אחד.",
     tradesNeed: "אילו עבודות צריך",
     pickOne: "סמנו לפחות מקצוע אחד",
     phone: "וואטסאפ",
@@ -371,8 +438,31 @@ const I18N = {
     budget: "Budget",
     budgetSum: "Amount",
     budgetTalk: "To be agreed",
-    plan: "Site plan",
-    planHint: "Photo or PDF of the plan",
+    plan: "Drawing / project",
+    planHint: "Site plan or drawing — photo or PDF",
+    extraDocs: "Other documents",
+    extraDocsHint: "Contract, invoice, site photo — not the drawing",
+    noPlan: "No drawing attached",
+    noExtraDocs: "No other documents",
+    openFile: "Open",
+    noDesc: "No extra text — the selected works are listed above.",
+    flagsNeed: "What the site needs",
+    flagsHave: "Status and capabilities",
+    flagsHint: "Tap a badge to see what it means.",
+    flag_citizen: "Citizen",
+    flag_citizen_h: "Israeli citizen.",
+    flag_resident: "Permanent resident",
+    flag_resident_h: "Permanent resident of Israel (toshav keva).",
+    flag_permit: "Work permit",
+    flag_permit_h: "Valid Israeli work permit.",
+    flag_height: "Height permit",
+    flag_height_h: "Certified to work at height.",
+    flag_tools: "Has tools",
+    flag_tools_h: "Brings their own tools.",
+    flag_car: "Has a car",
+    flag_car_h: "Has a vehicle for travel and materials.",
+    flag_crew: "Works as a crew",
+    flag_crew_h: "Comes as a crew, not one person.",
     tradesNeed: "Which trades",
     pickOne: "Select at least one trade",
     phone: "WhatsApp",
@@ -523,6 +613,12 @@ function slimJob(j) {
   const copy = { ...j };
   delete copy._id;
   if (copy.planData && String(copy.planData).length > 70000) copy.planData = "";
+  if (Array.isArray(copy.extraDocs)) {
+    copy.extraDocs = copy.extraDocs.map((f) => {
+      const data = f && f.data && String(f.data).length > 70000 ? "" : (f && f.data) || "";
+      return { name: (f && f.name) || "", data };
+    });
+  }
   return copy;
 }
 async function cloudLoad() {
@@ -624,8 +720,11 @@ const ICO = {
 };
 function t(key) { return (I18N[store.lang] || I18N.ru)[key] || key; }
 function ico(id) {
-  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1, contractor:1, worker:1, profile:1 };
-  if (pics[id]) return `<span class="picwrap"><img class="icon pic" src="icons/${id}.gif?v=24" alt="" /></span>`;
+  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, facade:1, other:1, contractor:1, worker:1, profile:1 };
+  if (pics[id]) {
+    const file = id === "facade" ? "paint" : id;
+    return `<span class="picwrap"><img class="icon pic" src="icons/${file}.gif?v=24" alt="" /></span>`;
+  }
   const d = ICO[id];
   if (!d) return "";
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -642,6 +741,19 @@ function tradeName(id) {
   return loc(row);
 }
 function tradeLabel(id) { return `${ico(id)}${tradeName(id)}`; }
+function flagLabel(id) { return t("flag_" + id); }
+function flagHint(id) { return t("flag_" + id + "_h"); }
+function flagsHtml(ids) {
+  return (ids || []).filter((id) => FLAG_MARK[id]).map((id) =>
+    `<button type="button" class="flag" data-flag-info="${id}" title="${flagHint(id)}">${FLAG_MARK[id]} ${flagLabel(id)}</button>`
+  ).join("");
+}
+function flagChecks(name, selected) {
+  const on = selected || [];
+  return FLAG_IDS.map((id) =>
+    `<label class="check"><input type="checkbox" name="${name}" value="${id}" ${on.includes(id) ? "checked" : ""} /> ${FLAG_MARK[id]} ${flagLabel(id)}</label>`
+  ).join("");
+}
 function workName(trade, id) {
   const row = (WORKS[trade] || []).find((x) => x[0] === id);
   if (!row) return id;
@@ -745,6 +857,7 @@ function memberList() {
       closed: r.closed || u.closed || 0,
       phone: u.phone,
       trades: u.trades || p.trades || [],
+      flags: u.flags || p.flags || [],
       photo: p.photo || u.photo || "",
     };
   });
@@ -876,8 +989,9 @@ function avatarFor(key) {
   return "avatars/a" + (h % 8) + ".jpg";
 }
 function tradeAvatar(trades, role) {
-  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, other:1 };
+  const pics = { tile:1, elec:1, paint:1, plumb:1, gypsum:1, ac:1, alum:1, frame:1, reno:1, facade:1, other:1 };
   const first = (trades || []).find((id) => pics[id]);
+  if (first === "facade") return "icons/paint.gif?v=24";
   if (first) return "icons/" + first + ".gif?v=24";
   if (role === "worker") return "icons/worker.gif?v=24";
   return "icons/contractor.gif?v=24";
@@ -904,6 +1018,7 @@ function memberCard(m) {
         <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
         <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
+        <div class="flags">${flagsHtml(m.flags)}</div>
         <div class="tt-actions">
           <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
           ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
@@ -975,6 +1090,7 @@ function viewFeed() {
           <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
           <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
           <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
+          <div class="flags">${flagsHtml(j.flags)}</div>
           <div class="tt-actions">
             <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
             <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
@@ -1034,6 +1150,21 @@ function viewMemberDetail(code) {
       ${m.phone || seed.phone ? `<a class="btn" href="${waLink(m.phone || seed.phone, m.code)}">${t("wa")}</a>` : ""}
     </article>`;
 }
+function fileView(name, data) {
+  if (!name && !data) return "";
+  const raw = String(data || "");
+  const isImg = raw.startsWith("data:image");
+  if (isImg) {
+    return `<a class="file-open" href="${raw}" target="_blank" rel="noopener">
+      <img class="plan-preview" src="${raw}" alt="${name || ""}" />
+      <span class="plan-name">${t("openFile")}${name ? " — " + name : ""}</span>
+    </a>`;
+  }
+  if (raw.startsWith("data:")) {
+    return `<a class="btn ghost" href="${raw}" target="_blank" rel="noopener" download="${name || "file"}">${t("openFile")} ${name || ""}</a>`;
+  }
+  return name ? `<div class="plan-name">📄 ${name}</div>` : "";
+}
 function viewJobDetail(id) {
   const j = findJob(id);
   if (!j) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
@@ -1042,9 +1173,9 @@ function viewJobDetail(id) {
   const desc = store.lang === "he" ? (j.descHe || j.descRu || j.other || "") : store.lang === "en" ? (j.descEn || j.descRu || j.other || "") : (j.descRu || j.other || "");
   const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
   const poster = findPoster(j);
-  const files = []
-    .concat(j.planName ? [j.planName] : [])
-    .concat(j.docFiles || []);
+  const extra = (j.extraDocs || []).concat(j.extraName ? [{ name: j.extraName, data: j.extraData }] : []);
+  const extraHtml = extra.map((f) => fileView(f.name || f, f.data)).filter(Boolean).join("")
+    || (j.docFiles || []).map((n) => `<div class="plan-name">📄 ${n}</div>`).join("");
   return `${boardNav()}
     <button class="btn ghost" data-close-job="1">${t("back")}</button>
     <article class="card job ${offer ? "offer" : "order"}">
@@ -1053,11 +1184,14 @@ function viewJobDetail(id) {
       <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
       <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + j.budget : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
+      <div class="flags">${flagsHtml(j.flags)}</div>
+      ${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}
       <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
-      <p>${desc || t("empty")}</p>
-      <b>${t("documents")}</b>
-      ${j.planData && String(j.planData).startsWith("data:image") ? `<img class="plan-preview" src="${j.planData}" alt="" />` : ""}
-      ${files.length ? files.map((n) => `<div class="plan-name">📄 ${n}</div>`).join("") : `<div class="meta">${t("noDocs")}</div>`}
+      <p>${desc || t("noDesc")}</p>
+      <b>${t("plan")}</b>
+      ${fileView(j.planName, j.planData) || `<div class="meta">${t("noPlan")}</div>`}
+      <b>${t("extraDocs")}</b>
+      ${extraHtml || `<div class="meta">${t("noExtraDocs")}</div>`}
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       <a class="btn" href="${waLink(j.phone, title)}">${t("wa")}</a>
       ${isMine(j) ? `<button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>` : ""}
@@ -1079,6 +1213,9 @@ function viewNew() {
     <label>${ico("plan")}${t("plan")}</label>
     <input type="file" name="plan" accept="image/*,.pdf,application/pdf" />
     <div class="plan-name">${t("planHint")}</div>
+    <label>${t("extraDocs")}</label>
+    <input type="file" name="docs" accept="image/*,.pdf,application/pdf" multiple />
+    <div class="plan-name">${t("extraDocsHint")}</div>
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
     <label>${ico("date")}${t("dateFrom")}</label><input type="date" name="dateFrom" required />
     <label>${ico("date")}${t("dateTo")}</label><input type="date" name="dateTo" />
@@ -1089,6 +1226,9 @@ function viewNew() {
     </div>
     <input name="budget" id="budget-sum" placeholder="₪ 5000" style="display:none" />
     <label>${ico("phone")}${t("phone")}</label><input name="phone" placeholder="050..." required />
+    <label>${t("flagsNeed")}</label>
+    <div class="checkgrid">${flagChecks("flags", [])}</div>
+    <div class="plan-name">${t("flagsHint")}</div>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("post")}</button>
   </form>`;
@@ -1109,6 +1249,9 @@ function viewSeek() {
     <label>${ico("city")}${t("city")}</label>
     <div class="checkgrid">${cityChecks}</div>
     <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" placeholder="050..." />
+    <label>${t("flagsHave")}</label>
+    <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
+    <div class="plan-name">${t("flagsHint")}</div>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("seekSave")}</button>
   </form>`;
@@ -1221,6 +1364,7 @@ function viewProfile() {
     <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor", p.trades)}" alt="" />
     <h2>${p.name || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
+    <div class="flags">${flagsHtml(p.flags)}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
     <div class="stats">
       <div><b>${r.closed}</b><span>${t("worksCount")}</span></div>
@@ -1239,6 +1383,9 @@ function viewProfile() {
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
     <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" />
+    <label>${t("flagsHave")}</label>
+    <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
+    <div class="plan-name">${t("flagsHint")}</div>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
@@ -1266,6 +1413,13 @@ function bind() {
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-flag-info]").forEach((b) => {
+    b.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      alert(FLAG_MARK[b.dataset.flagInfo] + " " + flagLabel(b.dataset.flagInfo) + "\n\n" + flagHint(b.dataset.flagInfo));
+    };
+  });
   document.querySelectorAll("[data-del-job]").forEach((b) => {
     b.onclick = () => removeMyJob(b.dataset.delJob);
   });
@@ -1395,19 +1549,19 @@ function bind() {
     const budget = f.get("budgetType") === "sum" && String(f.get("budget") || "").trim()
       ? String(f.get("budget")).trim()
       : t("budgetTalk");
-    let planName = "";
-    let planData = "";
-    const file = job.querySelector("input[name=plan]").files[0];
-    if (file) {
-      planName = file.name;
-      if (file.size < 900000) {
-        planData = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result || ""));
-          reader.readAsDataURL(file);
-        });
-      }
-    }
+    const readOne = (file) => new Promise((resolve) => {
+      if (!file) { resolve({ name: "", data: "" }); return; }
+      if (file.size >= 900000) { resolve({ name: file.name, data: "" }); return; }
+      const reader = new FileReader();
+      reader.onload = () => resolve({ name: file.name, data: String(reader.result || "") });
+      reader.readAsDataURL(file);
+    });
+    const planFile = job.querySelector("input[name=plan]").files[0];
+    const plan = await readOne(planFile);
+    const extraFiles = [...(job.querySelector("input[name=docs]")?.files || [])];
+    const extraDocs = [];
+    for (const file of extraFiles.slice(0, 4)) extraDocs.push(await readOne(file));
+    const descText = [...workLabels, other].filter(Boolean).join(". ");
     const list = store.jobs();
     list.unshift({
       id: "j" + Date.now(),
@@ -1421,10 +1575,14 @@ function bind() {
       dates,
       budget,
       phone: f.get("phone"),
-      planName,
-      planData,
-      other: String(f.get("other") || ""),
-      descRu: String(f.get("other") || ""),
+      planName: plan.name,
+      planData: plan.data,
+      extraDocs,
+      flags: [...job.querySelectorAll("input[name=flags]:checked")].map((x) => x.value),
+      other,
+      descRu: descText,
+      descHe: descText,
+      descEn: descText,
       posterCode: (store.user() && store.user().code) || store.profile().code || "",
       name: store.profile().name || "",
       docs: Boolean(store.profile().docs),
@@ -1455,6 +1613,7 @@ function bind() {
       return workName(tr, wid);
     });
     const title = workLabels.filter(Boolean).join(", ") || trades.map(tradeName).join(", ") || name;
+    const flags = [...seek.querySelectorAll("input[name=flags]:checked")].map((x) => x.value);
     store.saveProfile({
       ...store.profile(),
       name,
@@ -1463,6 +1622,7 @@ function bind() {
       phone,
       trades,
       works,
+      flags,
       seeking: true,
     });
     const list = store.jobs().filter((j) => !(j.kind === "offer" && j.phone === phone));
@@ -1478,6 +1638,7 @@ function bind() {
       titleEn: title,
       phone,
       name,
+      flags,
       posterCode: (store.user() && store.user().code) || store.profile().code || "",
       docs: Boolean(store.profile().docs),
       insurance: Boolean(store.profile().insurance),
@@ -1517,7 +1678,15 @@ function bind() {
   if (prof) prof.onsubmit = (e) => {
     e.preventDefault();
     const f = new FormData(prof);
-    store.saveProfile({ name: f.get("name"), city: f.get("city"), phone: f.get("phone") });
+    const flags = [...prof.querySelectorAll("input[name=flags]:checked")].map((x) => x.value);
+    store.saveProfile({
+      ...store.profile(),
+      name: f.get("name"),
+      city: f.get("city"),
+      phone: f.get("phone"),
+      flags,
+    });
+    store.saveUsers(store.users().map((u) => u.phone === store.session ? { ...u, flags } : u));
     render();
   };
 }

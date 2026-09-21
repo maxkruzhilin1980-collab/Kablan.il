@@ -169,6 +169,13 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .check input { width: auto; accent-color: var(--brand); }
 .ico { font-style: normal; font-size: 16px; }
 .plan-preview { margin-top: 8px; max-width: 100%; border-radius: 12px; border: 1px solid var(--line); }
+.file-open { display: block; text-decoration: none; color: inherit; }
+.file-open .plan-preview { display: block; width: 100%; }
+.flags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.flag {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px;
+  padding: 4px 8px; font: inherit; font-size: 12px; cursor: pointer;
+}
 .plan-name { font-size: 13px; color: var(--muted); }
 .reviews { margin: 8px 0; padding: 8px; background: #fff7ee; border-radius: 12px; }
 .review-item { font-size: 13px; margin: 6px 0; color: var(--ink); }
