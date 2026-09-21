@@ -1018,7 +1018,7 @@ function memberCard(m) {
         <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
         <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
-        <div class="flags">${flagsHtml(m.flags)}</div>
+        ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
         <div class="tt-actions">
           <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
           ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
@@ -1090,7 +1090,7 @@ function viewFeed() {
           <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
           <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
           <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
-          <div class="flags">${flagsHtml(j.flags)}</div>
+          ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>` : ""}
           <div class="tt-actions">
             <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
             <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
@@ -1184,8 +1184,7 @@ function viewJobDetail(id) {
       <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
       <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + j.budget : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
-      <div class="flags">${flagsHtml(j.flags)}</div>
-      ${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}
+      ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}` : ""}
       <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
       <p>${desc || t("noDesc")}</p>
       <b>${t("plan")}</b>
@@ -1226,9 +1225,6 @@ function viewNew() {
     </div>
     <input name="budget" id="budget-sum" placeholder="₪ 5000" style="display:none" />
     <label>${ico("phone")}${t("phone")}</label><input name="phone" placeholder="050..." required />
-    <label>${t("flagsNeed")}</label>
-    <div class="checkgrid">${flagChecks("flags", [])}</div>
-    <div class="plan-name">${t("flagsHint")}</div>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("post")}</button>
   </form>`;
@@ -1364,7 +1360,6 @@ function viewProfile() {
     <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor", p.trades)}" alt="" />
     <h2>${p.name || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
-    <div class="flags">${flagsHtml(p.flags)}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
     <div class="stats">
       <div><b>${r.closed}</b><span>${t("worksCount")}</span></div>
@@ -1383,9 +1378,6 @@ function viewProfile() {
     <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
     <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" />
-    <label>${t("flagsHave")}</label>
-    <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
-    <div class="plan-name">${t("flagsHint")}</div>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
@@ -1578,7 +1570,6 @@ function bind() {
       planName: plan.name,
       planData: plan.data,
       extraDocs,
-      flags: [...job.querySelectorAll("input[name=flags]:checked")].map((x) => x.value),
       other,
       descRu: descText,
       descHe: descText,
@@ -1678,15 +1669,12 @@ function bind() {
   if (prof) prof.onsubmit = (e) => {
     e.preventDefault();
     const f = new FormData(prof);
-    const flags = [...prof.querySelectorAll("input[name=flags]:checked")].map((x) => x.value);
     store.saveProfile({
       ...store.profile(),
       name: f.get("name"),
       city: f.get("city"),
       phone: f.get("phone"),
-      flags,
     });
-    store.saveUsers(store.users().map((u) => u.phone === store.session ? { ...u, flags } : u));
     render();
   };
 }
