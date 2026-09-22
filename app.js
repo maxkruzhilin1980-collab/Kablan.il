@@ -115,7 +115,7 @@ const FLAG_MARK = {
 
 const I18N = {
   ru: {
-    brand: "BuildIL",
+    brand: "Kadlan",
     heroTitle: "Кабланы и мастера находят друг друга",
     heroText: "Биржа стройки для Израиля. Пока бесплатно — заявка, отклик, WhatsApp.",
     iAmContractor: "Я каблан / заказчик",
@@ -295,7 +295,7 @@ const I18N = {
     myPage: "Личная страница",
   },
   he: {
-    brand: "BuildIL",
+    brand: "Kadlan",
     heroTitle: "קבלנים ומקצוענים מוצאים אחד את השני",
     heroText: "בורסת בנייה לישראל. בינתיים בחינם — מודעה, פנייה, וואטסאפ.",
     iAmContractor: "אני קבלן / מזמין",
@@ -475,7 +475,7 @@ const I18N = {
     myPage: "עמוד אישי",
   },
   en: {
-    brand: "BuildIL",
+    brand: "Kadlan",
     heroTitle: "Contractors and tradespeople find each other",
     heroText: "A construction board for Israel. Free for now — post, reply, WhatsApp.",
     iAmContractor: "I am a contractor",
@@ -1226,7 +1226,7 @@ function render() {
 
   app.innerHTML = `
     <div class="app">
-      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}<span>.</span></span></div>${langBar}</div>
+      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}</div>
       ${main}
       <nav class="nav">
         <button data-tab="feed" class="${store.tab === "feed" ? "on" : ""}">${ico("feed")}${t("feed")}</button>
