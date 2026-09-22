@@ -124,8 +124,8 @@ const I18N = {
     iAmWorkerHint: "Ищу объекты рядом",
     feed: "Лента",
     newJob: "Заявка",
-    postOrder: "Заказ",
-    postWork: "Работу",
+    postOrder: "Есть заказ",
+    postWork: "Ищу работу",
     profile: "Профиль",
     more: "Ещё",
     all: "Все",
@@ -157,7 +157,7 @@ const I18N = {
     pay4: "₪50,000–150,000",
     pay5: "от ₪150,000",
     plan: "Чертёж / проект",
-    planHint: "Тухнит или схема объекта — фото или PDF",
+    planHint: "Только для заказа: фото или PDF чертежа. Видно всем.",
     extraDocs: "Другие документы",
     extraDocsHint: "Договор, счёт, фото объекта — не чертёж",
     noPlan: "Чертёж не приложен",
@@ -288,7 +288,7 @@ const I18N = {
     worksDone: "Состав работ",
     photo: "Фото профиля",
     workPhotos: "Фото работ",
-    workPhotosHint: "До 6 фото. Их увидят в анкете и в ленте.",
+    workPhotosHint: "Фото ваших работ. Видны всем в анкете и в ленте.",
     worksCount: "Работ",
     myPage: "Личная страница",
   },
@@ -302,8 +302,8 @@ const I18N = {
     iAmWorkerHint: "מחפש עבודות באזור",
     feed: "לוח",
     newJob: "מודעה",
-    postOrder: "הזמנה",
-    postWork: "עבודה",
+    postOrder: "יש הזמנה",
+    postWork: "מחפש עבודה",
     profile: "פרופיל",
     more: "עוד",
     all: "הכל",
@@ -480,8 +480,8 @@ const I18N = {
     iAmWorkerHint: "I am looking for jobs nearby",
     feed: "Feed",
     newJob: "Post",
-    postOrder: "Job",
-    postWork: "Work",
+    postOrder: "Has a job",
+    postWork: "Need work",
     profile: "Profile",
     more: "More",
     all: "All",
@@ -755,8 +755,8 @@ async function pingVisit() {
 }
 
 function compressImageFile(file, max, q) {
-  max = max || 1000;
-  q = q || 0.68;
+  max = max || 800;
+  q = q || 0.58;
   return new Promise((resolve) => {
     if (!file || !String(file.type || "").startsWith("image/")) { resolve(""); return; }
     const img = new Image();
@@ -785,13 +785,14 @@ function galleryHtml(photos) {
 function slimJob(j) {
   const copy = { ...j };
   delete copy._id;
-  if (copy.planData && String(copy.planData).length > 450000) copy.planData = copy.planData.slice(0, 0);
+  if (copy.planData && String(copy.planData).length > 350000) copy.planData = "";
   if (Array.isArray(copy.extraDocs)) {
     copy.extraDocs = copy.extraDocs.map((f) => {
-      const data = f && f.data && String(f.data).length > 450000 ? "" : (f && f.data) || "";
+      const data = f && f.data && String(f.data).length > 350000 ? "" : (f && f.data) || "";
       return { name: (f && f.name) || "", data };
     });
   }
+  if (Array.isArray(copy.workPhotos)) copy.workPhotos = copy.workPhotos.filter(Boolean).slice(0, 4);
   return copy;
 }
 async function cloudLoad() {
@@ -1474,10 +1475,8 @@ function viewJobDetail(id) {
       ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}` : ""}
       <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
       <p>${desc || t("noDesc")}</p>
-      <b>${t("plan")}</b>
-      ${fileView(j.planName, j.planData) || `<div class="meta">${t("noPlan")}</div>`}
-      <b>${t("extraDocs")}</b>
-      ${extraHtml || `<div class="meta">${t("noExtraDocs")}</div>`}
+      ${offer ? galleryHtml((j.workPhotos && j.workPhotos.length ? j.workPhotos : ((poster && poster.workPhotos) || []))) : (fileView(j.planName, j.planData) ? `<b>${t("plan")}</b>${fileView(j.planName, j.planData)}` : "")}
+      ${!offer && extraHtml ? `<b>${t("extraDocs")}</b>${extraHtml}` : ""}
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
       <a class="btn" href="${waLink(j.phone, title)}">${t("wa")}</a>
       ${isMine(j) ? `<button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>` : ""}
