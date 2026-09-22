@@ -260,7 +260,9 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .stars { white-space: nowrap; display: inline-block; }
 .citypick { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
 .citypick select { border: 0; background: transparent; font: inherit; padding: 8px 4px; max-width: 140px; }
-.filebtn { display: block; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; background: #fff; cursor: pointer; }
+.filebtn { display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; padding: 14px 16px; text-align: center; background: #009fd9; color: #fff; font-weight: 700; cursor: pointer; }
+.filebtn svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+.filebtn:active { transform: scale(.98); opacity: .92; }
 .filebtn input { display: none; }
 .avatar.lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px; }
 
@@ -283,3 +285,7 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 #lightbox[hidden] { display:none !important; }
 #lightbox img, #lightbox iframe { max-width:100%; max-height:92vh; background:#fff; border-radius:8px; }
 #lightbox-x { position:absolute; top:12px; right:12px; width:44px; height:44px; border:0; border-radius:22px; font-size:28px; background:#fff; cursor:pointer; }
+
+.work-gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0; }
+.work-gallery .file-open { padding:0; }
+.work-gallery img { height:90px; object-fit:cover; width:100%; border-radius:10px; }
