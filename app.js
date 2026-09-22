@@ -287,6 +287,8 @@ const I18N = {
     noDocs: "Документов пока нет",
     worksDone: "Состав работ",
     photo: "Фото профиля",
+    workPhotos: "Фото работ",
+    workPhotosHint: "До 6 фото. Их увидят в анкете и в ленте.",
     worksCount: "Работ",
     myPage: "Личная страница",
   },
@@ -463,6 +465,8 @@ const I18N = {
     noDocs: "אין מסמכים עדיין",
     worksDone: "פירוט עבודות",
     photo: "תמונת פרופיל",
+    workPhotos: "תמונות עבודות",
+    workPhotosHint: "עד 6 תמונות. יופיעו בכרטיס ובלפיד.",
     worksCount: "עבודות",
     myPage: "עמוד אישי",
   },
@@ -639,6 +643,8 @@ const I18N = {
     noDocs: "No documents yet",
     worksDone: "Work items",
     photo: "Profile photo",
+    workPhotos: "Work photos",
+    workPhotosHint: "Up to 6 photos. Shown on the profile and feed.",
     worksCount: "Jobs",
     myPage: "Profile page",
   },
@@ -748,6 +754,34 @@ async function pingVisit() {
   }
 }
 
+function compressImageFile(file, max, q) {
+  max = max || 1000;
+  q = q || 0.68;
+  return new Promise((resolve) => {
+    if (!file || !String(file.type || "").startsWith("image/")) { resolve(""); return; }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (Math.max(w, h) > max) {
+        const k = max / Math.max(w, h);
+        w = Math.round(w * k); h = Math.round(h * k);
+      }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", q));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(""); };
+    img.src = url;
+  });
+}
+function galleryHtml(photos) {
+  const list = (photos || []).filter(Boolean).slice(0, 6);
+  if (!list.length) return "";
+  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g,"")}" data-view-kind="img"><img class="plan-preview" src="${src}" alt="" /></button>`).join("")}</div>`;
+}
 function slimJob(j) {
   const copy = { ...j };
   delete copy._id;
@@ -1020,6 +1054,7 @@ function memberList() {
       trades: u.trades || p.trades || [],
       flags: u.flags || p.flags || [],
       photo: p.photo || u.photo || "",
+      workPhotos: p.workPhotos || u.workPhotos || [],
     };
   });
   return fromUsers.concat(SEED_MEMBERS.filter((s) => !fromUsers.some((u) => u.code === s.code)));
@@ -1388,6 +1423,7 @@ function viewMemberDetail(code) {
       <div class="meta">${worker ? t("nowWorker") : t("nowContractor")} · ${ico("city")}${cities}</div>
       <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
       <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
+      ${galleryHtml(m.workPhotos)}
       <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
       <p>${text || t("empty")}</p>
       <b>${t("boardFeed")}</b>
@@ -1499,6 +1535,10 @@ function viewSeek() {
     <label>${t("flagsHave")}</label>
     <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
     <div class="plan-name">${t("flagsHint")}</div>
+    <label>${t("workPhotos")}</label>
+    <input type="file" name="workPhotos" accept="image/*" multiple />
+    <div class="plan-name">${t("workPhotosHint")}</div>
+    ${galleryHtml(p.workPhotos)}
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("seekSave")}</button>
   </form>`;
@@ -1678,6 +1718,11 @@ function viewProfile() {
     <label class="filebtn">${t("photo")}
       <input type="file" id="photo-file" accept="image/*" />
     </label>
+    <label class="filebtn">${t("workPhotos")}
+      <input type="file" id="work-photos" accept="image/*" multiple />
+    </label>
+    <div class="plan-name">${t("workPhotosHint")}</div>
+    ${galleryHtml(p.workPhotos)}
     <div class="mine-row">
       <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
@@ -1754,12 +1799,39 @@ function bind() {
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
   document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; render(); });
   const photo = document.getElementById("photo-file");
-  if (photo) photo.onchange = () => {
+  if (photo) photo.onchange = async () => {
     const f = photo.files[0];
     if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => { store.saveProfile({ ...store.profile(), photo: reader.result }); render(); };
-    reader.readAsDataURL(f);
+    const data = await compressImageFile(f, 700, 0.7);
+    if (!data) return;
+    store.saveProfile({ ...store.profile(), photo: data });
+    const u = store.user();
+    if (u) {
+      const upd = { ...u, photo: data };
+      store.saveUsers(store.users().map((x) => x.phone === u.phone ? upd : x));
+      await cloudSaveUser(upd);
+    }
+    render();
+  };
+  const workPhotos = document.getElementById("work-photos");
+  if (workPhotos) workPhotos.onchange = async () => {
+    const files = [...(workPhotos.files || [])].slice(0, 6);
+    const shots = [];
+    for (const file of files) {
+      const data = await compressImageFile(file);
+      if (data) shots.push(data);
+    }
+    if (!shots.length) return;
+    const prev = store.profile().workPhotos || [];
+    const next = prev.concat(shots).slice(-6);
+    store.saveProfile({ ...store.profile(), workPhotos: next, photo: store.profile().photo || next[0] });
+    const u = store.user();
+    if (u) {
+      const upd = { ...u, workPhotos: next, photo: u.photo || store.profile().photo || next[0] };
+      store.saveUsers(store.users().map((x) => x.phone === u.phone ? upd : x));
+      await cloudSaveUser(upd);
+    }
+    render();
   };
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
@@ -2003,11 +2075,21 @@ function bind() {
       flags,
       seeking: true,
     });
+    const shotFiles = [...(seek.querySelector("input[name=workPhotos]")?.files || [])].slice(0, 6);
+    const workPhotos = [];
+    for (const file of shotFiles) {
+      const data = await compressImageFile(file);
+      if (data) workPhotos.push(data);
+    }
+    const photos = workPhotos.length ? workPhotos : (store.profile().workPhotos || []);
+    store.saveProfile({ ...store.profile(), workPhotos: photos });
     const list = store.jobs().filter((j) => !(j.kind === "offer" && j.phone === phone));
     list.unshift({
       id: "o" + Date.now(),
       created: Date.now(),
       kind: "offer",
+      workPhotos: photos,
+      photo: photos[0] || store.profile().photo || "",
       trade: trades[0],
       trades,
       cities,
@@ -2029,6 +2111,12 @@ function bind() {
     if (cloudId) {
       list[0].cloudId = cloudId;
       store.saveJobs(list);
+    }
+    const u = store.users().find((x) => normPhone(x.phone) === normPhone(phone));
+    if (u) {
+      const upd = { ...u, name, trades, cities, workPhotos: photos, photo: photos[0] || u.photo || store.profile().photo || "" };
+      store.saveUsers(store.users().map((x) => x.phone === u.phone ? upd : x));
+      await cloudSaveUser(upd);
     }
     store.tab = "mine";
     await cloudLoad();
