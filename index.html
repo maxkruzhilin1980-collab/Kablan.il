@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>BuildIL — кабланы и мастера</title>
+  <meta name="theme-color" content="#009fd9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="BuildIL" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="styles.css?v=30" />
+</head>
+<body>
+  <div class="compare">
+    <a class="on" href="./">Новый дизайн</a>
+    <a href="./classic/">Старый дизайн</a>
+  </div>
+  <div id="app"></div>
+  <div id="lightbox" hidden>
+    <button type="button" id="lightbox-x" aria-label="close">×</button>
+    <img id="lightbox-img" alt="" />
+    <iframe id="lightbox-pdf" title="pdf" hidden></iframe>
+  </div>
+  <script src="app.js?v=30"></script>
+  <script>
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?v=30");
+  </script>
+</body>
+</html>
