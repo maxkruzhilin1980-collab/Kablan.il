@@ -783,10 +783,15 @@ function compressImageFile(file, max, q) {
     img.src = url;
   });
 }
+function photoSrc(p) {
+  if (!p) return "";
+  if (typeof p === "string") return p;
+  return String(p.data || p.src || "");
+}
 function galleryHtml(photos) {
-  const list = (photos || []).filter(Boolean).slice(0, 6);
+  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
   if (!list.length) return "";
-  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g,"")}" data-view-kind="img"><img class="plan-preview" src="${src}" alt="" /></button>`).join("")}</div>`;
+  return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" />`).join("")}</div>`;
 }
 function slimJob(j) {
   const copy = { ...j };
@@ -856,10 +861,13 @@ async function cloudLoadUsers() {
 async function cloudSaveUser(user) {
   if (!user || !user.phone) return;
   try {
+    const slim = { ...user };
+    delete slim.workPhotos;
+    if (slim.photo && String(slim.photo).length > 120000) slim.photo = "";
     await fetch(fb("/users/" + normPhone(user.phone)), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
+      body: JSON.stringify(slim),
     });
   } catch (e) {}
 }
@@ -1203,6 +1211,13 @@ function waLink(phone, text) {
 }
 
 function render() {
+  try { renderSafe(); } catch (e) {
+    const app = document.getElementById("app");
+    if (app) app.innerHTML = "<div class=\"card\"><p>Сбой экрана. Закройте вкладку и откройте kadlan.co.il заново.</p></div>";
+    console.error(e);
+  }
+}
+function renderSafe() {
   const app = document.getElementById("app");
   const langBar = `
     <div class="lang">
