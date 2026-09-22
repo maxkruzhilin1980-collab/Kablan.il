@@ -677,6 +677,7 @@ const DEMO = [
   { id: "d18", kind: "offer", trade: "frame", trades: ["frame", "gypsum"], cities: ["eilat"], titleRu: "Каркас и гипс — Эйлат", titleHe: "שלד וגבס — אילת", titleEn: "Framing and drywall — Eilat", phone: "0501110018", name: "Eilat Crew", posterCode: "K-12561", rating: 4.3, reviews: 6, closed: 6, descRu: "Бригада в Эйлате. Каркас, гипс, потолки.", descHe: "צוות באילת. שלד, גבס, תקרות.", descEn: "Crew in Eilat. Frames, drywall, ceilings." },
 ]
 
+function asList(v) { return Array.isArray(v) ? v : []; }
 function safeParse(raw, fallback) {
   if (fallback === undefined) fallback = [];
   try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
@@ -1031,7 +1032,7 @@ function tradeLabel(id) { return `${ico(id)}${tradeName(id)}`; }
 function flagLabel(id) { return t("flag_" + id); }
 function flagHint(id) { return t("flag_" + id + "_h"); }
 function flagsHtml(ids) {
-  return (ids || []).filter((id) => FLAG_MARK[id]).map((id) =>
+  return asList(ids).filter((id) => FLAG_MARK[id]).map((id) =>
     `<button type="button" class="flag" data-flag-info="${id}" title="${flagHint(id)}">${FLAG_MARK[id]} ${flagLabel(id)}</button>`
   ).join("");
 }
@@ -1185,8 +1186,8 @@ function reviewText(r) {
   return r.textRu || r.text || "";
 }
 function reviewsFor(id) {
-  const extra = store.extraRevs()[id] || [];
-  return (DEMO_REVIEWS[id] || []).concat(extra);
+  const extra = asList((store.extraRevs() || {})[id]);
+  return asList(DEMO_REVIEWS[id]).concat(extra).filter(Boolean);
 }
 function reviewsBox(id, kind) {
   const open = store.openRev === id;
@@ -1240,8 +1241,13 @@ function renderSafe() {
   if (user && user.role) store.role = user.role;
 
   let main = "";
-  if (store.tab === "feed" && String(store.openJob).startsWith("member:")) main = viewMemberDetail(store.openJob.slice(7));
-  else if (store.tab === "feed" && store.openJob) main = viewJobDetail(store.openJob);
+  if (store.tab === "feed" && String(store.openJob).startsWith("member:")) {
+    try { main = viewMemberDetail(store.openJob.slice(7)); }
+    catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
+  } else if (store.tab === "feed" && store.openJob) {
+    try { main = viewJobDetail(store.openJob); }
+    catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
+  }
   else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
@@ -1540,7 +1546,7 @@ function viewMemberDetail(code) {
   const worker = m.role === "worker";
   const about = store.lang === "he" ? (m.aboutHe || m.aboutRu || "") : store.lang === "en" ? (m.aboutEn || m.aboutRu || "") : (m.aboutRu || "");
   const cities = (m.cities || [m.city]).filter(Boolean).map(cityName).join(", ");
-  const files = m.docFiles || [];
+  const files = asList(m.docFiles);
   const seed = SEED_MEMBERS.find((x) => x.code === code) || {};
   const allFiles = files.length ? files : (seed.docFiles || []);
   const text = about || seed.aboutRu || "";
@@ -1599,7 +1605,7 @@ function viewJobDetail(id) {
   const desc = store.lang === "he" ? (j.descHe || j.descRu || j.other || "") : store.lang === "en" ? (j.descEn || j.descRu || j.other || "") : (j.descRu || j.other || "");
   const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
   const poster = findPoster(j);
-  const extra = (j.extraDocs || []).concat(j.extraName ? [{ name: j.extraName, data: j.extraData }] : []);
+  const extra = asList(j.extraDocs).concat(j.extraName ? [{ name: j.extraName, data: j.extraData }] : []);
   const extraHtml = extra.map((f) => fileView(f.name || f, f.data)).filter(Boolean).join("")
     || (j.docFiles || []).map((n) => `<div class="plan-name">📄 ${n}</div>`).join("");
   return `${boardNav()}
@@ -1997,13 +2003,15 @@ function bind() {
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
-  document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = async () => {
+  document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => {
     const code = b.dataset.openMember;
-    const m = memberList().find((x) => x.code === code) || {};
     store.openJob = "member:" + code;
     store.tab = "feed";
-    if (m.phone) { await loadPrivDocs(m.phone); await loadDocReqs(m.phone); }
     render();
+    const m = memberList().find((x) => x.code === code) || {};
+    if (m.phone) {
+      loadPrivDocs(m.phone).then(() => loadDocReqs(m.phone)).then(() => render()).catch(() => {});
+    }
   });
   document.querySelectorAll("[data-doc-ask]").forEach((b) => b.onclick = async () => {
     const owner = b.dataset.docAsk;
