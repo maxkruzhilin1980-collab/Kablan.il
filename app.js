@@ -667,16 +667,14 @@ const store = {
   set session(v) { localStorage.setItem("bil_session", v); },
   user() { return this.users().find((u) => u.phone === this.session) || null; },
 };
-const CLOUD_URL = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/jobs";
-const CLOUD_USERS = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/users";
+const FB = "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app";
+function fb(path) { return FB + path + ".json"; }
 function normPhone(v) {
   let s = String(v || "").replace(/\D/g, "");
   if (s.startsWith("972") && s.length >= 11) s = "0" + s.slice(3);
   if (s.length === 9 && s[0] === "5") s = "0" + s;
   return s;
 }
-
-const VISIT_URL = "https://crudcrud.com/api/b2ae0bb077fd48628c21911d429fa9fc/visits";
 const ADMIN_PIN = "kadlan1";
 let cloudCache = [];
 let guestCache = [];
@@ -707,15 +705,7 @@ async function pingVisit() {
   };
   if (!localStorage.getItem("bil_vid_first")) localStorage.setItem("bil_vid_first", String(row.first));
   try {
-    const res = await fetch(VISIT_URL);
-    const list = res.ok ? await res.json() : [];
-    const prev = (Array.isArray(list) ? list : []).find((x) => x && x.vid === vid);
-    const body = JSON.stringify(row);
-    if (prev && prev._id) {
-      await fetch(VISIT_URL + "/" + prev._id, { method: "PUT", headers: { "Content-Type": "application/json" }, body });
-    } else {
-      await fetch(VISIT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body });
-    }
+    await fetch(fb("/visits/" + vid), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(row) });
     localStorage.setItem("bil_visit_ok", "1");
   } catch (e) {
     const local = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
@@ -737,10 +727,12 @@ function slimJob(j) {
 }
 async function cloudLoad() {
   try {
-    const res = await fetch(CLOUD_URL);
+    const res = await fetch(fb("/jobs"));
     if (!res.ok) throw new Error("cloud");
-    const list = await res.json();
-    cloudCache = Array.isArray(list) ? list : [];
+    const data = await res.json();
+    cloudCache = data && typeof data === "object"
+      ? Object.keys(data).map((k) => ({ ...data[k], cloudId: data[k].cloudId || k }))
+      : [];
     cloudOk = true;
   } catch (e) {
     cloudOk = false;
@@ -748,19 +740,13 @@ async function cloudLoad() {
   return cloudCache;
 }
 async function cloudSave(job) {
-  const body = JSON.stringify(slimJob(job));
+  const id = String(job.cloudId || job.id || ("j" + Date.now()));
+  const body = JSON.stringify({ ...slimJob(job), cloudId: id });
   try {
-    if (job.cloudId) {
-      const res = await fetch(CLOUD_URL + "/" + job.cloudId, { method: "PUT", headers: { "Content-Type": "application/json" }, body });
-      if (!res.ok) throw new Error("put");
-      cloudOk = true;
-      return job.cloudId;
-    }
-    const res = await fetch(CLOUD_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body });
-    if (!res.ok) throw new Error("post");
-    const saved = await res.json();
+    const res = await fetch(fb("/jobs/" + id), { method: "PUT", headers: { "Content-Type": "application/json" }, body });
+    if (!res.ok) throw new Error("put");
     cloudOk = true;
-    return saved._id || "";
+    return id;
   } catch (e) {
     cloudOk = false;
     return "";
@@ -769,11 +755,37 @@ async function cloudSave(job) {
 async function cloudDelete(cloudId) {
   if (!cloudId) return false;
   try {
-    const res = await fetch(CLOUD_URL + "/" + cloudId, { method: "DELETE" });
+    const res = await fetch(fb("/jobs/" + cloudId), { method: "DELETE" });
     return res.ok || res.status === 404;
   } catch (e) {
     return false;
   }
+}
+async function cloudLoadUsers() {
+  try {
+    const res = await fetch(fb("/users"));
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || typeof data !== "object") return;
+    const map = {};
+    store.users().forEach((u) => { map[normPhone(u.phone)] = u; });
+    Object.values(data).forEach((u) => {
+      if (!u || !u.phone) return;
+      const k = normPhone(u.phone);
+      map[k] = { ...(map[k] || {}), ...u, phone: k };
+    });
+    store.saveUsers(Object.values(map));
+  } catch (e) {}
+}
+async function cloudSaveUser(user) {
+  if (!user || !user.phone) return;
+  try {
+    await fetch(fb("/users/" + normPhone(user.phone)), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    });
+  } catch (e) {}
 }
 async function removeMyJob(id) {
   if (!id) return;
@@ -1478,9 +1490,9 @@ function fmtWhen(ms) {
 }
 async function loadGuests() {
   try {
-    const res = await fetch(VISIT_URL);
-    const list = res.ok ? await res.json() : [];
-    guestCache = Array.isArray(list) ? list : [];
+    const res = await fetch(fb("/visits"));
+    const data = res.ok ? await res.json() : null;
+    guestCache = data && typeof data === "object" ? Object.values(data) : [];
   } catch (e) {
     guestCache = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
   }
@@ -1720,6 +1732,7 @@ function bind() {
       code: nextCode(),
     };
     store.saveUsers(store.users().concat(user));
+    cloudSaveUser(user);
     store.session = phone;
     store.role = user.role;
     store.saveProfile({ ...store.profile(), name: user.name, phone, trades, code: user.code });
@@ -1727,11 +1740,12 @@ function bind() {
     render();
   };
   const login = document.getElementById("login-form");
-  if (login) login.onsubmit = (e) => {
+  if (login) login.onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(login);
     const phone = normPhone(f.get("phone"));
     const password = String(f.get("password") || "");
+    await cloudLoadUsers();
     const known = store.users().find((u) => normPhone(u.phone) === phone);
     if (!known) { alert(t("notRegistered")); return; }
     if (String(known.password || "") !== password) { alert(t("badPassword")); return; }
@@ -1931,6 +1945,7 @@ function bind() {
 
 setLang(store.lang);
 (async () => {
+  await cloudLoadUsers();
   await cloudLoad();
   await cloudPushLocal();
   pingVisit();
