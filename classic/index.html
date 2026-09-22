@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>BuildIL Classic</title>
+  <meta name="theme-color" content="#e25a12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="BuildIL" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css?v=22" />
+</head>
+<body>
+  <div class="compare">
+    <a href="../">Новый дизайн</a>
+    <a class="on" href="./">Старый дизайн</a>
+  </div>
+  <div id="app"></div>
+  <script src="app.js?v=22"></script>
+  <script>
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?v=22");
+  </script>
+</body>
+</html>
