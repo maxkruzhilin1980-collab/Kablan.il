@@ -677,6 +677,10 @@ const DEMO = [
   { id: "d18", kind: "offer", trade: "frame", trades: ["frame", "gypsum"], cities: ["eilat"], titleRu: "Каркас и гипс — Эйлат", titleHe: "שלד וגבס — אילת", titleEn: "Framing and drywall — Eilat", phone: "0501110018", name: "Eilat Crew", posterCode: "K-12561", rating: 4.3, reviews: 6, closed: 6, descRu: "Бригада в Эйлате. Каркас, гипс, потолки.", descHe: "צוות באילת. שלד, גבס, תקרות.", descEn: "Crew in Eilat. Frames, drywall, ceilings." },
 ]
 
+function safeParse(raw, fallback) {
+  if (fallback === undefined) fallback = [];
+  try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+}
 const store = {
   get lang() { return localStorage.getItem("bil_lang") || "ru"; },
   set lang(v) { localStorage.setItem("bil_lang", v); },
@@ -700,13 +704,13 @@ const store = {
   set openRev(v) { localStorage.setItem("bil_openrev", v); },
   get openJob() { return localStorage.getItem("bil_openjob") || ""; },
   set openJob(v) { localStorage.setItem("bil_openjob", v); },
-  extraRevs() { try { return JSON.parse(localStorage.getItem("bil_extra_revs") || "{}"); } catch { return {}; } },
+  extraRevs() { try { return safeParse(localStorage.getItem("bil_extra_revs") || "{}"); } catch { return {}; } },
   saveExtraRevs(map) { localStorage.setItem("bil_extra_revs", JSON.stringify(map)); },
-  jobs() { try { return JSON.parse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
+  jobs() { try { return safeParse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
   saveJobs(list) { localStorage.setItem("bil_jobs", JSON.stringify(list)); },
-  profile() { try { return JSON.parse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
+  profile() { try { return safeParse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
   saveProfile(p) { localStorage.setItem("bil_profile", JSON.stringify(p)); },
-  users() { try { return JSON.parse(localStorage.getItem("bil_users") || "[]"); } catch { return []; } },
+  users() { try { return safeParse(localStorage.getItem("bil_users") || "[]"); } catch { return []; } },
   saveUsers(list) { localStorage.setItem("bil_users", JSON.stringify(list)); },
   get admin() { return localStorage.getItem("bil_admin") === "1"; },
   set admin(v) { localStorage.setItem("bil_admin", v ? "1" : ""); },
@@ -755,7 +759,7 @@ async function pingVisit() {
     await fetch(fb("/visits/" + vid), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(row) });
     localStorage.setItem("bil_visit_ok", "1");
   } catch (e) {
-    const local = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
+    const local = safeParse(localStorage.getItem("bil_visits_local") || "[]");
     localStorage.setItem("bil_visits_local", JSON.stringify(local.concat([row]).slice(-20)));
   }
 }
@@ -789,7 +793,8 @@ function photoSrc(p) {
   return String(p.data || p.src || "");
 }
 function galleryHtml(photos) {
-  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
+  const raw = Array.isArray(photos) ? photos : (photos ? [photos] : []);
+  const list = raw.map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
   if (!list.length) return "";
   return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" />`).join("")}</div>`;
 }
@@ -1148,7 +1153,7 @@ function memberList() {
 }
 function myRep() {
   const p = store.profile();
-  const list = p.reviews || [];
+  const list = Array.isArray(p.reviews) ? p.reviews : [];
   const avg = list.length ? list.reduce((s, r) => s + Number(r.stars || 0), 0) / list.length : 0;
   return {
     avg: Math.round(avg * 10) / 10,
@@ -1213,8 +1218,13 @@ function waLink(phone, text) {
 function render() {
   try { renderSafe(); } catch (e) {
     const app = document.getElementById("app");
-    if (app) app.innerHTML = "<div class=\"card\"><p>Сбой экрана. Закройте вкладку и откройте kadlan.co.il заново.</p></div>";
     console.error(e);
+    if (app) app.innerHTML = "<div class=\"card\"><p>Сбой экрана.</p><p class=\"meta\">" + String(e && e.message || e) + "</p><button class=\"btn\" type=\"button\" id=\"fix-crash\">Сбросить данные на этом устройстве</button></div>";
+    const b = document.getElementById("fix-crash");
+    if (b) b.onclick = () => {
+      Object.keys(localStorage).forEach((k) => { if (k.indexOf("bil_") === 0) localStorage.removeItem(k); });
+      location.replace("./?ok=1");
+    };
   }
 }
 function renderSafe() {
@@ -1722,7 +1732,7 @@ function viewReputation() {
   const p = store.profile();
   const r = myRep();
   const code = p.code || (store.user() && store.user().code) || "";
-  const files = (p.docFiles || []).map((n) => `<div class="plan-name">${n}</div>`).join("");
+  const files = (Array.isArray(p.docFiles) ? p.docFiles : []).map((n) => `<div class="plan-name">${typeof n === "string" ? n : (n && n.name) || ""}</div>`).join("");
   return `<div class="card profile-bg">
     <b>${t("memberCode")}</b>
     <h3>${code || "—"}</h3>
@@ -1805,7 +1815,7 @@ async function loadGuests() {
     const data = res.ok ? await res.json() : null;
     guestCache = data && typeof data === "object" ? Object.values(data) : [];
   } catch (e) {
-    guestCache = JSON.parse(localStorage.getItem("bil_visits_local") || "[]");
+    guestCache = safeParse(localStorage.getItem("bil_visits_local") || "[]");
   }
   guestCache.sort((a, b) => Number(b.last || b.first || 0) - Number(a.last || a.first || 0));
 }
@@ -2363,10 +2373,12 @@ function bind() {
 
 setLang(store.lang);
 (async () => {
-  await cloudLoadUsers();
-  await cloudLoad();
-  await cloudPushLocal();
-  pingVisit();
-  if (myPhone()) { await loadPrivDocs(myPhone()); await loadDocReqs(myPhone()); }
+  try {
+    await cloudLoadUsers();
+    await cloudLoad();
+    await cloudPushLocal();
+    pingVisit();
+    if (myPhone()) { await loadPrivDocs(myPhone()); await loadDocReqs(myPhone()); }
+  } catch (e) { console.error(e); }
   render();
 })();
