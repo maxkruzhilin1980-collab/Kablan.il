@@ -148,6 +148,14 @@ const I18N = {
     budget: "Бюджет",
     budgetSum: "Сумма",
     budgetTalk: "По договорённости",
+    payFilter: "Сумма заказа",
+    payAll: "₪ любая",
+    payTalk: "₪ по договорённости",
+    pay1: "до ₪5,000",
+    pay2: "₪5,000–15,000",
+    pay3: "₪15,000–50,000",
+    pay4: "₪50,000–150,000",
+    pay5: "от ₪150,000",
     plan: "Чертёж / проект",
     planHint: "Тухнит или схема объекта — фото или PDF",
     extraDocs: "Другие документы",
@@ -313,6 +321,14 @@ const I18N = {
     budget: "תקציב",
     budgetSum: "סכום",
     budgetTalk: "לפי סיכום",
+    payFilter: "סכום הזמנה",
+    payAll: "₪ כל סכום",
+    payTalk: "₪ לפי סיכום",
+    pay1: "עד ₪5,000",
+    pay2: "₪5,000–15,000",
+    pay3: "₪15,000–50,000",
+    pay4: "₪50,000–150,000",
+    pay5: "מ־₪150,000",
     plan: "שרטוט / תוכנית",
     planHint: "תוכנית או סקיצה — תמונה או PDF",
     extraDocs: "מסמכים אחרים",
@@ -478,6 +494,14 @@ const I18N = {
     budget: "Budget",
     budgetSum: "Amount",
     budgetTalk: "To be agreed",
+    payFilter: "Order budget",
+    payAll: "₪ any",
+    payTalk: "₪ negotiable",
+    pay1: "up to ₪5,000",
+    pay2: "₪5,000–15,000",
+    pay3: "₪15,000–50,000",
+    pay4: "₪50,000–150,000",
+    pay5: "₪150,000+",
     plan: "Drawing / project",
     planHint: "Site plan or drawing — photo or PDF",
     extraDocs: "Other documents",
@@ -643,6 +667,8 @@ const store = {
   set filter(v) { localStorage.setItem("bil_filter", v); },
   get cityFilter() { return localStorage.getItem("bil_cityf") || "all"; },
   set cityFilter(v) { localStorage.setItem("bil_cityf", v); },
+  get payFilter() { return localStorage.getItem("bil_payf") || "all"; },
+  set payFilter(v) { localStorage.setItem("bil_payf", v); },
   get kind() { return localStorage.getItem("bil_kind") || "all"; },
   set kind(v) { localStorage.setItem("bil_kind", v); },
   get board() { return localStorage.getItem("bil_board") || "feed"; },
@@ -1108,6 +1134,70 @@ function inCity(item) {
   const cities = item.cities || (item.city ? [item.city] : []);
   return cities.includes(store.cityFilter);
 }
+function jobAmount(j) {
+  const raw = String((j && j.budget) || "");
+  if (!raw) return null;
+  const low = raw.toLowerCase();
+  if (/договор|סיכום|agreed|talk|догов/.test(low)) return null;
+  const n = Number(String(raw).replace(/[^0-9.,]/g, "").replace(/,/g, ""));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+function shekel(v) {
+  const raw = String(v || "").trim();
+  if (!raw) return "₪";
+  if (/₪|nis|שק/i.test(raw)) return raw.replace(/nis/ig, "₪");
+  const n = jobAmount({ budget: raw });
+  if (n != null) return "₪ " + Math.round(n).toLocaleString("en-US");
+  return "₪ " + raw;
+}
+function inPay(j) {
+  const f = store.payFilter || "all";
+  if (f === "all") return true;
+  const n = jobAmount(j);
+  if (f === "talk") return n == null;
+  if (n == null) return false;
+  if (f === "0-5000") return n <= 5000;
+  if (f === "5000-15000") return n > 5000 && n <= 15000;
+  if (f === "15000-50000") return n > 15000 && n <= 50000;
+  if (f === "50000-150000") return n > 50000 && n <= 150000;
+  if (f === "150000+") return n > 150000;
+  return true;
+}
+
+
+function jobStamp(j) {
+  if (j && j.created) return Number(j.created) || 0;
+  const m = String((j && j.id) || "").match(/^[jo](\d{10,})$/);
+  return m ? Number(m[1]) : 0;
+}
+function jobEndDay(j) {
+  const raw = String((j && (j.dateTo || j.dates)) || "");
+  const iso = raw.match(/(\d{4})-(\d{2})-(\d{2})/g);
+  if (iso && iso.length) return iso[iso.length - 1];
+  const dmy = raw.match(/(\d{1,2})[./](\d{1,2})(?:[./](\d{2,4}))?/);
+  if (dmy) {
+    const d = Number(dmy[1]), mo = Number(dmy[2]), y = dmy[3] ? Number(dmy[3]) : new Date().getFullYear();
+    const year = y < 100 ? 2000 + y : y;
+    return year + "-" + String(mo).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+  }
+  const months = { январ:1, феврал:2, март:3, апрел:4, мая:5, май:5, июн:6, июл:7, август:8, сентябр:9, октябр:10, ноябр:11, декабр:12 };
+  const low = raw.toLowerCase();
+  for (const k of Object.keys(months)) {
+    if (low.includes(k)) {
+      const y = new Date().getFullYear();
+      const last = new Date(y, months[k], 0).getDate();
+      return y + "-" + String(months[k]).padStart(2,"0") + "-" + String(last).padStart(2,"0");
+    }
+  }
+  return "";
+}
+function jobExpired(j) {
+  const day = jobEndDay(j);
+  if (!day) return false;
+  const today = new Date();
+  const tiso = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+  return day < tiso;
+}
 
 function avatarFor(key) {
   const s = String(key || "user");
@@ -1175,14 +1265,16 @@ function viewRatingBoard() {
     (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
 }
 function viewFeed() {
-  const own = publicJobs().filter((j) => !j.archived);
-  const all = [...own, ...DEMO];
+  const own = publicJobs().filter((j) => !j.archived && !jobExpired(j))
+    .sort((a, b) => jobStamp(b) - jobStamp(a));
+  const demo = DEMO.filter((j) => !jobExpired(j));
+  const all = [...own, ...demo];
   let filtered = all;
   const itemKind = (j) => j.kind === "offer" ? "offer" : "job";
   if (store.kind === "job") filtered = filtered.filter((j) => itemKind(j) === "job");
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
-  filtered = filtered.filter(inCity);
+  filtered = filtered.filter(inCity).filter(inPay);
   const cloudNote = `<div class="meta" style="padding:0 4px 8px">${cloudOk ? t("cloudOn") : t("cloudOff")}</div>`;
   const kinds = cloudNote + `<div class="filters">
       <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
@@ -1194,6 +1286,14 @@ function viewFeed() {
       <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterJobs")}</button>
       <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterOffers")}</button>
       <label class="citypick">${ico("city")}<select id="city-filter">${[`<option value="all">${t("all")}</option>`].concat(CITIES.map((row) => `<option value="${row[0]}" ${store.cityFilter === row[0] ? "selected" : ""}>${loc(row)}</option>`)).join("")}</select></label>
+    </div>` + `    <div class="filters">
+      <button class="chip ${store.payFilter === "all" ? "on" : ""}" data-pay="all">${t("payAll")}</button>
+      <button class="chip ${store.payFilter === "talk" ? "on" : ""}" data-pay="talk">${t("payTalk")}</button>
+      <button class="chip ${store.payFilter === "0-5000" ? "on" : ""}" data-pay="0-5000">${t("pay1")}</button>
+      <button class="chip ${store.payFilter === "5000-15000" ? "on" : ""}" data-pay="5000-15000">${t("pay2")}</button>
+      <button class="chip ${store.payFilter === "15000-50000" ? "on" : ""}" data-pay="15000-50000">${t("pay3")}</button>
+      <button class="chip ${store.payFilter === "50000-150000" ? "on" : ""}" data-pay="50000-150000">${t("pay4")}</button>
+      <button class="chip ${store.payFilter === "150000+" ? "on" : ""}" data-pay="150000+">${t("pay5")}</button>
     </div>`;
   const chips = `<div class="filters">` +
     [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
@@ -1216,7 +1316,7 @@ function viewFeed() {
           <h3>${title}</h3>
           <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
           <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
-          <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${j.budget}</span>` : ""}</div>
+          <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${shekel(j.budget)}</span>` : ""}</div>
           ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>` : ""}
           <div class="tt-actions">
             <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
@@ -1312,7 +1412,7 @@ function viewJobDetail(id) {
       <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
       <h3>${title}</h3>
       <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
-      <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + j.budget : ""}</div>
+      <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + shekel(j.budget) : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
       ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}` : ""}
       <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
@@ -1641,6 +1741,7 @@ function bind() {
     reader.readAsDataURL(f);
   };
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
+  document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => { store.openJob = "member:" + b.dataset.openMember; store.tab = "feed"; render(); });
@@ -1821,6 +1922,7 @@ function bind() {
     const list = store.jobs();
     list.unshift({
       id: "j" + Date.now(),
+      created: Date.now(),
       kind: "job",
       trade: trades[0],
       trades,
@@ -1883,6 +1985,7 @@ function bind() {
     const list = store.jobs().filter((j) => !(j.kind === "offer" && j.phone === phone));
     list.unshift({
       id: "o" + Date.now(),
+      created: Date.now(),
       kind: "offer",
       trade: trades[0],
       trades,
