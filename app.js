@@ -187,7 +187,10 @@ const I18N = {
     phone: "WhatsApp",
     name: "Имя / компания",
     save: "Сохранить",
-    empty: "Заявок пока нет. Каблан может добавить первую.",
+    empty: "Пока нет описания.",
+    noMemberPosts: "Объявлений пока нет.",
+    noMemberPostsWorker: "Мастер ещё не выставил «ищу работу».",
+    noMemberPostsKablan: "Каблан ещё не выставил заказ.",
     wa: "Написать в WhatsApp",
     posted: "Заявка в ленте",
     ad: "Сюда позже встанет реклама магазина материалов — сервис для кабланов и мастеров бесплатный.",
@@ -360,7 +363,10 @@ const I18N = {
     phone: "וואטסאפ",
     name: "שם / חברה",
     save: "שמירה",
-    empty: "אין מודעות עדיין. קבלן יכול לפרסם ראשונה.",
+    empty: "אין תיאור עדיין.",
+    noMemberPosts: "אין מודעות עדיין.",
+    noMemberPostsWorker: "הפועל עוד לא פרסם «מחפש עבודה».",
+    noMemberPostsKablan: "הקבלן עוד לא פרסם הזמנה.",
     wa: "וואטסאפ",
     posted: "המודעה בלוח",
     ad: "כאן תהיה פרסומת לחנות חומרים. השירות לקבלנים ולמקצוענים בחינם.",
@@ -533,7 +539,10 @@ const I18N = {
     phone: "WhatsApp",
     name: "Name / company",
     save: "Save",
-    empty: "No posts yet.",
+    empty: "No description yet.",
+    noMemberPosts: "No listings yet.",
+    noMemberPostsWorker: "This worker has not posted availability.",
+    noMemberPostsKablan: "This contractor has not posted a job.",
     wa: "WhatsApp",
     posted: "Posted to the feed",
     ad: "Material-store ads will go here. The board stays free for contractors and trades.",
@@ -1361,6 +1370,16 @@ function viewMemberDetail(code) {
   const seed = SEED_MEMBERS.find((x) => x.code === code) || {};
   const allFiles = files.length ? files : (seed.docFiles || []);
   const text = about || seed.aboutRu || "";
+  const phone = m.phone || seed.phone || "";
+  const his = publicJobs().filter((j) => !j.archived && !jobExpired(j) && (
+    (m.code && j.posterCode && j.posterCode === m.code) ||
+    (phone && j.phone && normPhone(j.phone) === normPhone(phone))
+  )).sort((a, b) => jobStamp(b) - jobStamp(a));
+  const posts = his.map((j) => {
+    const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
+    return `<button type="button" class="btn ghost" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${title || j.id}${j.budget ? " · " + shekel(j.budget) : ""}</button>`;
+  }).join("");
+  const emptyPosts = worker ? t("noMemberPostsWorker") : t("noMemberPostsKablan");
   return `${boardNav()}
     <button class="btn ghost" data-close-job="1">${t("back")}</button>
     <article class="card job ${worker ? "offer" : "order"}">
@@ -1371,10 +1390,12 @@ function viewMemberDetail(code) {
       <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
       <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
       <p>${text || t("empty")}</p>
+      <b>${t("boardFeed")}</b>
+      ${posts || `<div class="meta">${emptyPosts}</div>`}
       <b>${t("documents")}</b>
       ${allFiles.length ? allFiles.map((n) => `<div class="plan-name">📄 ${n}</div>`).join("") : `<div class="meta">${t("noDocs")}</div>`}
       ${reviewsBox(m.code, worker ? "worker" : "contractor")}
-      ${m.phone || seed.phone ? `<a class="btn" href="${waLink(m.phone || seed.phone, m.code)}">${t("wa")}</a>` : ""}
+      ${phone ? `<a class="btn" href="${waLink(phone, m.code)}">${t("wa")}</a>` : ""}
     </article>`;
 }
 function fileView(name, data) {
