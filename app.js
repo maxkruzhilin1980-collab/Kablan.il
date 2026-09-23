@@ -824,19 +824,19 @@ function safeFace(name, photo, role, trades) {
   return tradeAvatar(trades, role === "worker" ? "worker" : "contractor");
 }
 function lightGallery(photos) {
-  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.startsWith("data:image") && s.length < 180000).slice(0, 3);
+  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.startsWith("data:image") && s.length < 400000).slice(0, 3);
   if (!list.length) {
     const n = (photos || []).length;
     return n ? `<div class="meta">${n} фото</div>` : "";
   }
-  return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g,"")}" alt="" />`).join("")}</div>`;
+  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g,"")}"><img class="plan-preview" src="${src.replace(/"/g,"")}" alt="" /></button>`).join("")}</div>`;
 }
 
 function galleryHtml(photos) {
   const raw = Array.isArray(photos) ? photos : (photos ? [photos] : []);
   const list = raw.map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
   if (!list.length) return "";
-  return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" />`).join("")}</div>`;
+  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g, "")}"><img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" /></button>`).join("")}</div>`;
 }
 function slimJob(j) {
   const copy = { ...j };
@@ -1533,7 +1533,7 @@ function viewFeed() {
     const text = `${title} — ${cities}`;
     return `<article class="card job tt-card ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
+        <button type="button" class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></button>
         <div class="tt-body">
           <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
           <h3>${title}</h3>
@@ -1856,7 +1856,7 @@ function viewMine(history) {
         const title = j.titleRu || j.titleHe || "";
         return `<article class="card job tt-card ${offer ? "offer" : "order"}">
           <div class="tt-row">
-            <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
+            <button type="button" class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></button>
             <div class="tt-body">
               <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
               <h3>${title}</h3>
@@ -1946,7 +1946,7 @@ function viewProfile() {
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" />
+    <button type="button" class="file-open avatar-open" data-view-src="${safeFace(p.name, p.photo, store.role, p.trades)}"><img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" /></button>
     <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -2008,8 +2008,18 @@ function bindViewer() {
   document.querySelectorAll(".file-open").forEach((b) => {
     b.onclick = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       const src = b.getAttribute("data-view-src") || (b.querySelector("img") && b.querySelector("img").getAttribute("src"));
       open(src, b.getAttribute("data-view-kind") || "img");
+    };
+  });
+  document.querySelectorAll(".plan-preview, .avatar.lg, .tt-photo").forEach((im) => {
+    if (im.closest(".file-open")) return;
+    im.style.cursor = "zoom-in";
+    im.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      open(im.getAttribute("src"), "img");
     };
   });
 }
