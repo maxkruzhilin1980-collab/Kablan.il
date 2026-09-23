@@ -280,6 +280,9 @@ const I18N = {
     reviewTo: "Отзыв для",
     needLoginReview: "Чтобы написать отзыв — войдите.",
     reviewOk: "Отзыв сохранён",
+    waReview: "Отзыв на Kadlan",
+    waViewed: "Ваш профиль посмотрели на Kadlan",
+    waStars: "оценка",
     details: "Подробнее",
     back: "Назад в ленту",
     postedBy: "Кто выставил",
@@ -460,6 +463,9 @@ const I18N = {
     reviewTo: "ביקורת עבור",
     needLoginReview: "כדי לכתוב ביקורת צריך להיכנס.",
     reviewOk: "הביקורת נשמרה",
+    waReview: "ביקורת ב-Kadlan",
+    waViewed: "צפו בפרופיל שלך ב-Kadlan",
+    waStars: "דירוג",
     details: "פרטים",
     back: "חזרה ללוח",
     postedBy: "מי פרסם",
@@ -640,6 +646,9 @@ const I18N = {
     reviewTo: "Review for",
     needLoginReview: "Log in to write a review.",
     reviewOk: "Review saved",
+    waReview: "Review on Kadlan",
+    waViewed: "Someone viewed your Kadlan profile",
+    waStars: "rating",
     details: "Details",
     back: "Back to feed",
     postedBy: "Posted by",
@@ -720,7 +729,28 @@ const store = {
   user() { return this.users().find((u) => u.phone === this.session) || null; },
 };
 const FB = "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app";
+const FB_BUCKET = "kadlan-il.firebasestorage.app";
 function fb(path) { return FB + path + ".json"; }
+function dataUrlToBlob(dataUrl) {
+  const s = String(dataUrl || "");
+  const m = s.match(/^data:([^;]+);base64,(.+)$/);
+  if (!m) return null;
+  const bin = atob(m[2]);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: m[1] || "image/jpeg" });
+}
+async function storagePut(path, dataUrl) {
+  if (!dataUrl || !String(dataUrl).startsWith("data:")) return String(dataUrl || "");
+  const blob = dataUrlToBlob(dataUrl);
+  if (!blob) return "";
+  const url = "https://firebasestorage.googleapis.com/v0/b/" + FB_BUCKET + "/o?uploadType=media&name=" + encodeURIComponent(path);
+  try {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": blob.type || "image/jpeg" }, body: blob });
+    if (!res.ok) return "";
+    return "https://firebasestorage.googleapis.com/v0/b/" + FB_BUCKET + "/o/" + encodeURIComponent(path) + "?alt=media";
+  } catch (e) { return ""; }
+}
 function normPhone(v) {
   let s = String(v || "").replace(/\D/g, "");
   if (s.startsWith("972") && s.length >= 11) s = "0" + s.slice(3);
@@ -730,6 +760,8 @@ function normPhone(v) {
 const ADMIN_PIN = "kadlan1";
 let cloudCache = [];
 let guestCache = [];
+let privDocsCache = {};
+let docReqCache = {};
 let showGuests = false;
 let cloudOk = false;
 
@@ -769,7 +801,9 @@ function compressImageFile(file, max, q) {
   max = max || 800;
   q = q || 0.58;
   return new Promise((resolve) => {
-    if (!file || !String(file.type || "").startsWith("image/")) { resolve(""); return; }
+    if (!file) { resolve(""); return; }
+    const _tp = String(file.type || "");
+    if (_tp && !_tp.startsWith("image/") && !_tp.startsWith("application/octet")) { resolve(""); return; }
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -793,11 +827,25 @@ function photoSrc(p) {
   if (typeof p === "string") return p;
   return String(p.data || p.src || "");
 }
+function safeFace(name, photo, role, trades) {
+  const src = photoSrc(photo);
+  if (src && src.length < 180000 && (src.startsWith("data:image") || src.startsWith("http") || src.startsWith("icons/"))) return src;
+  return tradeAvatar(trades, role === "worker" ? "worker" : "contractor");
+}
+function lightGallery(photos) {
+  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.startsWith("data:image") && s.length < 400000).slice(0, 3);
+  if (!list.length) {
+    const n = (photos || []).length;
+    return n ? `<div class="meta">${n} фото</div>` : "";
+  }
+  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g,"")}"><img class="plan-preview" src="${src.replace(/"/g,"")}" alt="" /></button>`).join("")}</div>`;
+}
+
 function galleryHtml(photos) {
   const raw = Array.isArray(photos) ? photos : (photos ? [photos] : []);
   const list = raw.map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
   if (!list.length) return "";
-  return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" />`).join("")}</div>`;
+  return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g, "")}"><img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" /></button>`).join("")}</div>`;
 }
 function slimJob(j) {
   const copy = { ...j };
@@ -864,17 +912,47 @@ async function cloudLoadUsers() {
     store.saveUsers(Object.values(map));
   } catch (e) {}
 }
+async function cloudSavePhotos(phone, photo, workPhotos) {
+  const key = normPhone(phone);
+  if (!key) return;
+  const rawShots = (workPhotos || []).map(photoSrc).filter(Boolean).slice(0, 4);
+  const photoUrl = await storagePut("photos/" + key + "/avatar.jpg", photoSrc(photo) || "");
+  const shots = [];
+  for (let i = 0; i < rawShots.length; i++) {
+    const one = rawShots[i];
+    shots.push(one.startsWith("http") ? one : (await storagePut("photos/" + key + "/w" + i + ".jpg", one)) || one);
+  }
+  try {
+    await fetch(fb("/photos/" + key), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photo: photoUrl || "", workPhotos: shots, at: Date.now() }),
+    });
+  } catch (e) {}
+}
+async function cloudLoadPhotos(phone) {
+  const key = normPhone(phone);
+  if (!key) return null;
+  try {
+    const res = await fetch(fb("/photos/" + key));
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
 async function cloudSaveUser(user) {
   if (!user || !user.phone) return;
   try {
     const slim = { ...user };
+    const photo = slim.photo;
+    const workPhotos = slim.workPhotos;
     delete slim.workPhotos;
-    if (slim.photo && String(slim.photo).length > 120000) slim.photo = "";
+    delete slim.photo;
     await fetch(fb("/users/" + normPhone(user.phone)), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(slim),
     });
+    await cloudSavePhotos(user.phone, photo, workPhotos);
   } catch (e) {}
 }
 
@@ -1209,6 +1287,35 @@ function setLang(lang) {
   document.body.dir = lang === "he" ? "rtl" : "ltr";
 }
 
+
+function findOwnerByTarget(id) {
+  if (!id) return null;
+  const members = memberList();
+  const m = members.find((x) => x.code === id || normPhone(x.phone) === normPhone(id));
+  if (m && m.phone) return m;
+  const job = (typeof findJob === "function" ? findJob(id) : null) || publicJobs().concat(typeof DEMO !== "undefined" ? DEMO : []).find((j) => j.id === id);
+  if (job && job.phone) return { phone: job.phone, name: job.name || "", code: job.posterCode || job.id };
+  return m || null;
+}
+function notifyOwnerWa(owner, kind, extra) {
+  if (!owner || !owner.phone) return;
+  const mePhone = myPhone();
+  if (mePhone && normPhone(owner.phone) === mePhone) return;
+  const me = store.profile() || {};
+  const from = me.name || mePhone || "Kadlan";
+  let text = "";
+  if (kind === "review") {
+    text = t("waReview") + ": " + (extra && extra.stars || "") + "/5 " + t("waStars") + " — " + from + (extra && extra.text ? ". " + extra.text : "") + "\nhttps://kadlan.co.il";
+  } else {
+    const key = "viewed_" + normPhone(owner.phone);
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    text = t("waViewed") + " — " + from + (owner.code ? " (" + owner.code + ")" : "") + "\nhttps://kadlan.co.il";
+  }
+  const url = waLink(owner.phone, text);
+  if (url && url !== "#") window.open(url, "_blank");
+}
+
 function waLink(phone, text) {
   const num = String(phone || "").replace(/\D/g, "");
   if (!num) return "#";
@@ -1252,7 +1359,7 @@ function renderSafe() {
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
-  else if (store.tab === "profile") main = store.admin ? viewAdmin() : (user ? viewProfile() : viewAuth());
+  else if (store.tab === "profile") main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
   app.innerHTML = `
@@ -1464,7 +1571,7 @@ function viewFeed() {
     const text = `${title} — ${cities}`;
     return `<article class="card job tt-card ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
+        <span class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
         <div class="tt-body">
           <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
           <h3>${title}</h3>
@@ -1672,7 +1779,7 @@ function viewSeek() {
   const cityChecks = CITIES.map((row) => `<label class="check"><input type="checkbox" name="cities" value="${row[0]}" ${picked.includes(row[0]) ? "checked" : ""} /> ${loc(row)}</label>`).join("");
   return `<form class="card" id="seek-form">
     <p>${t("seekHint")}</p>
-    <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
+    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
     <label>${t("tradesNeed")}</label>
     <div class="checkgrid">${checks}</div>
     <div id="works-box"></div>
@@ -1687,7 +1794,7 @@ function viewSeek() {
       <input type="file" name="workPhotos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${galleryHtml(p.workPhotos)}
+    ${lightGallery(p.workPhotos) || (shotN ? `<div class="meta">${shotN} фото</div>` : "")}
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("seekSave")}</button>
   </form>`;
@@ -1787,7 +1894,7 @@ function viewMine(history) {
         const title = j.titleRu || j.titleHe || "";
         return `<article class="card job tt-card ${offer ? "offer" : "order"}">
           <div class="tt-row">
-            <span class="picwrap big"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
+            <span class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
             <div class="tt-body">
               <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
               <h3>${title}</h3>
@@ -1866,14 +1973,19 @@ function viewAdmin() {
     ${viewGuests()}`;
 }
 
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+}
 function viewProfile() {
-  const p = store.profile();
+  const raw = store.profile() || {};
+  const p = { ...raw };
   const r = myRep();
-  const code = p.code || (store.user() && store.user().code) || "";
+  const code = esc(p.code || (store.user() && store.user().code) || "");
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
+  const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor", p.trades)}" alt="" />
-    <h2>${p.name || t("myPage")}</h2>
+    <button type="button" class="file-open avatar-open" data-view-src="${safeFace(p.name, p.photo, store.role, p.trades)}"><img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" /></button>
+    <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
     <div class="stats">
@@ -1888,7 +2000,7 @@ function viewProfile() {
       <input type="file" id="work-photos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${galleryHtml(p.workPhotos)}
+    ${lightGallery(p.workPhotos) || (shotN ? `<div class="meta">${shotN} фото</div>` : "")}
     <div class="mine-row">
       <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
@@ -1896,9 +2008,9 @@ function viewProfile() {
     <button type="button" class="btn ghost" data-admin-in="1">${t("adminIn")}</button>
   </div>
   <form class="card profile-bg" id="prof-form">
-    <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
+    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
-    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" />
+    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${esc(p.phone)}" />
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
@@ -1934,8 +2046,18 @@ function bindViewer() {
   document.querySelectorAll(".file-open").forEach((b) => {
     b.onclick = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       const src = b.getAttribute("data-view-src") || (b.querySelector("img") && b.querySelector("img").getAttribute("src"));
       open(src, b.getAttribute("data-view-kind") || "img");
+    };
+  });
+  document.querySelectorAll(".plan-preview, .avatar.lg, .tt-photo").forEach((im) => {
+    if (im.closest(".file-open")) return;
+    im.style.cursor = "zoom-in";
+    im.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      open(im.getAttribute("src"), "img");
     };
   });
 }
@@ -2002,7 +2124,7 @@ function bind() {
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
-  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); notifyOwnerWa(findOwnerByTarget(b.dataset.openJob), "view"); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => {
     const code = b.dataset.openMember;
     store.openJob = "member:" + code;
@@ -2011,6 +2133,7 @@ function bind() {
     const m = memberList().find((x) => x.code === code) || {};
     if (m.phone) {
       loadPrivDocs(m.phone).then(() => loadDocReqs(m.phone)).then(() => render()).catch(() => {});
+      notifyOwnerWa(m, "view");
     }
   });
   document.querySelectorAll("[data-doc-ask]").forEach((b) => b.onclick = async () => {
@@ -2082,6 +2205,7 @@ function bind() {
       store.saveExtraRevs(map);
       store.openRev = id;
       render();
+      notifyOwnerWa(findOwnerByTarget(id), "review", { stars: Number(f.get("stars")), text: String(f.get("text") || "") });
     };
   });
   const cf = document.getElementById("city-filter");
@@ -2170,8 +2294,16 @@ function bind() {
     const user = known;
     store.session = phone;
     store.role = user.role;
-    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || nextCode() });
-    store.tab = "feed";
+    store.saveProfile({
+      ...store.profile(),
+      name: user.name,
+      phone: user.phone,
+      trades: user.trades || [],
+      code: user.code || nextCode(),
+      photo: store.profile().photo || user.photo || "",
+      workPhotos: store.profile().workPhotos || user.workPhotos || [],
+    });
+    store.tab = "profile";
     render();
   };
   document.querySelectorAll("input[name=trades]").forEach((c) => c.onchange = fillWorks);
@@ -2386,7 +2518,18 @@ setLang(store.lang);
     await cloudLoad();
     await cloudPushLocal();
     pingVisit();
-    if (myPhone()) { await loadPrivDocs(myPhone()); await loadDocReqs(myPhone()); }
+    if (myPhone()) {
+      await loadPrivDocs(myPhone());
+      await loadDocReqs(myPhone());
+      const pics = await cloudLoadPhotos(myPhone());
+      if (pics && (pics.photo || (pics.workPhotos && pics.workPhotos.length))) {
+        store.saveProfile({
+          ...store.profile(),
+          photo: pics.photo || store.profile().photo || "",
+          workPhotos: pics.workPhotos || store.profile().workPhotos || []
+        });
+      }
+    }
   } catch (e) { console.error(e); }
   render();
 })();
