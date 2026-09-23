@@ -730,6 +730,8 @@ function normPhone(v) {
 const ADMIN_PIN = "kadlan1";
 let cloudCache = [];
 let guestCache = [];
+let privDocsCache = {};
+let docReqCache = {};
 let showGuests = false;
 let cloudOk = false;
 
