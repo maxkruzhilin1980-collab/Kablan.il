@@ -793,6 +793,20 @@ function photoSrc(p) {
   if (typeof p === "string") return p;
   return String(p.data || p.src || "");
 }
+function safeFace(name, photo, role, trades) {
+  const src = photoSrc(photo);
+  if (src && src.length < 180000 && (src.startsWith("data:image") || src.startsWith("http") || src.startsWith("icons/"))) return src;
+  return tradeAvatar(trades, role === "worker" ? "worker" : "contractor");
+}
+function lightGallery(photos) {
+  const list = (photos || []).map(photoSrc).filter((s) => typeof s === "string" && s.startsWith("data:image") && s.length < 180000).slice(0, 3);
+  if (!list.length) {
+    const n = (photos || []).length;
+    return n ? `<div class="meta">${n} фото</div>` : "";
+  }
+  return `<div class="work-gallery">${list.map((src) => `<img class="plan-preview" src="${src.replace(/"/g,"")}" alt="" />`).join("")}</div>`;
+}
+
 function galleryHtml(photos) {
   const raw = Array.isArray(photos) ? photos : (photos ? [photos] : []);
   const list = raw.map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
@@ -1252,7 +1266,7 @@ function renderSafe() {
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
-  else if (store.tab === "profile") main = store.admin ? viewAdmin() : (user ? viewProfile() : viewAuth());
+  else if (store.tab === "profile") main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth();
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
   app.innerHTML = `
@@ -1672,7 +1686,7 @@ function viewSeek() {
   const cityChecks = CITIES.map((row) => `<label class="check"><input type="checkbox" name="cities" value="${row[0]}" ${picked.includes(row[0]) ? "checked" : ""} /> ${loc(row)}</label>`).join("");
   return `<form class="card" id="seek-form">
     <p>${t("seekHint")}</p>
-    <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
+    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
     <label>${t("tradesNeed")}</label>
     <div class="checkgrid">${checks}</div>
     <div id="works-box"></div>
@@ -1687,7 +1701,7 @@ function viewSeek() {
       <input type="file" name="workPhotos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${galleryHtml(p.workPhotos)}
+    ${shotN ? `<div class="meta">${shotN} фото</div>` : ""}
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("seekSave")}</button>
   </form>`;
@@ -1866,14 +1880,19 @@ function viewAdmin() {
     ${viewGuests()}`;
 }
 
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+}
 function viewProfile() {
-  const p = store.profile();
+  const raw = store.profile() || {};
+  const p = { ...raw };
   const r = myRep();
-  const code = p.code || (store.user() && store.user().code) || "";
+  const code = esc(p.code || (store.user() && store.user().code) || "");
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
+  const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${face(p.name, p.photo, store.role === "worker" ? "worker" : "contractor", p.trades)}" alt="" />
-    <h2>${p.name || t("myPage")}</h2>
+    <img class="avatar lg" src="${tradeAvatar(p.trades, store.role === "worker" ? "worker" : "contractor")}" alt="" />
+    <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
     <div class="stats">
@@ -1888,7 +1907,7 @@ function viewProfile() {
       <input type="file" id="work-photos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${galleryHtml(p.workPhotos)}
+    ${shotN ? `<div class="meta">${shotN} фото</div>` : ""}
     <div class="mine-row">
       <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
@@ -1896,9 +1915,9 @@ function viewProfile() {
     <button type="button" class="btn ghost" data-admin-in="1">${t("adminIn")}</button>
   </div>
   <form class="card profile-bg" id="prof-form">
-    <label>${ico("name")}${t("name")}</label><input name="name" value="${p.name || ""}" />
+    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
-    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" />
+    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${esc(p.phone)}" />
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
@@ -2170,8 +2189,16 @@ function bind() {
     const user = known;
     store.session = phone;
     store.role = user.role;
-    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || nextCode() });
-    store.tab = "feed";
+    store.saveProfile({
+      ...store.profile(),
+      name: user.name,
+      phone: user.phone,
+      trades: user.trades || [],
+      code: user.code || nextCode(),
+      photo: "",
+      workPhotos: [],
+    });
+    store.tab = "profile";
     render();
   };
   document.querySelectorAll("input[name=trades]").forEach((c) => c.onchange = fillWorks);
