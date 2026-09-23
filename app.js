@@ -1533,7 +1533,7 @@ function viewFeed() {
     const text = `${title} — ${cities}`;
     return `<article class="card job tt-card ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <button type="button" class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></button>
+        <span class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
         <div class="tt-body">
           <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
           <h3>${title}</h3>
@@ -1856,7 +1856,7 @@ function viewMine(history) {
         const title = j.titleRu || j.titleHe || "";
         return `<article class="card job tt-card ${offer ? "offer" : "order"}">
           <div class="tt-row">
-            <button type="button" class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></button>
+            <span class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
             <div class="tt-body">
               <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
               <h3>${title}</h3>
