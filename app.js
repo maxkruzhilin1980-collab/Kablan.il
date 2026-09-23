@@ -280,6 +280,9 @@ const I18N = {
     reviewTo: "Отзыв для",
     needLoginReview: "Чтобы написать отзыв — войдите.",
     reviewOk: "Отзыв сохранён",
+    waReview: "Отзыв на Kadlan",
+    waViewed: "Ваш профиль посмотрели на Kadlan",
+    waStars: "оценка",
     details: "Подробнее",
     back: "Назад в ленту",
     postedBy: "Кто выставил",
@@ -460,6 +463,9 @@ const I18N = {
     reviewTo: "ביקורת עבור",
     needLoginReview: "כדי לכתוב ביקורת צריך להיכנס.",
     reviewOk: "הביקורת נשמרה",
+    waReview: "ביקורת ב-Kadlan",
+    waViewed: "צפו בפרופיל שלך ב-Kadlan",
+    waStars: "דירוג",
     details: "פרטים",
     back: "חזרה ללוח",
     postedBy: "מי פרסם",
@@ -640,6 +646,9 @@ const I18N = {
     reviewTo: "Review for",
     needLoginReview: "Log in to write a review.",
     reviewOk: "Review saved",
+    waReview: "Review on Kadlan",
+    waViewed: "Someone viewed your Kadlan profile",
+    waStars: "rating",
     details: "Details",
     back: "Back to feed",
     postedBy: "Posted by",
@@ -1202,13 +1211,14 @@ function memberList() {
     const mine = u.phone === store.session;
     const p = mine ? store.profile() : {};
     const r = mine ? myRep() : {};
+    const live = liveRepFor(u.code, u);
     return {
       code: u.code,
       name: u.name || p.name || u.phone,
       role: u.role || "contractor",
       city: p.city || u.city || "",
-      rating: r.avg || u.rating || 0,
-      reviews: r.count || u.reviews || 0,
+      rating: live.avg || r.avg || u.rating || 0,
+      reviews: live.count || r.count || u.reviews || 0,
       docs: r.docs || u.docs,
       insurance: r.insurance || u.insurance,
       closed: r.closed || u.closed || 0,
@@ -1256,7 +1266,19 @@ function reviewText(r) {
 }
 function reviewsFor(id) {
   const extra = asList((store.extraRevs() || {})[id]);
-  return asList(DEMO_REVIEWS[id]).concat(extra).filter(Boolean);
+  const extra2 = id ? asList((store.extraRevs() || {})[String(id)]) : [];
+  const allExtra = extra.concat(extra2.filter((r) => extra.indexOf(r) < 0));
+  return asList(DEMO_REVIEWS[id]).concat(allExtra).filter(Boolean);
+}
+function avgStars(list) {
+  const rows = (list || []).filter((r) => Number(r.stars) > 0);
+  if (!rows.length) return 0;
+  return Math.round(rows.reduce((s, r) => s + Number(r.stars), 0) / rows.length * 10) / 10;
+}
+function liveRepFor(id, fallback) {
+  const list = reviewsFor(id);
+  if (list.length) return { avg: avgStars(list), count: list.length };
+  return { avg: (fallback && fallback.rating) || 0, count: (fallback && fallback.reviews) || 0 };
 }
 function reviewsBox(id, kind) {
   const open = store.openRev === id;
@@ -1276,6 +1298,50 @@ function setLang(lang) {
   document.documentElement.lang = lang === "he" ? "he" : lang === "en" ? "en" : "ru";
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.body.dir = lang === "he" ? "rtl" : "ltr";
+}
+
+
+function findOwnerByTarget(id) {
+  if (!id) return null;
+  const members = memberList();
+  const m = members.find((x) => x.code === id || normPhone(x.phone) === normPhone(id));
+  if (m && m.phone) return m;
+  const job = (typeof findJob === "function" ? findJob(id) : null) || publicJobs().concat(typeof DEMO !== "undefined" ? DEMO : []).find((j) => j.id === id);
+  if (job && job.phone) return { phone: job.phone, name: job.name || "", code: job.posterCode || job.id };
+  return m || null;
+}
+function notifyOwnerWa(owner, kind, extra) {
+  if (!owner || !owner.phone) return;
+  const mePhone = myPhone();
+  if (mePhone && normPhone(owner.phone) === mePhone) return;
+  const me = store.profile() || {};
+  const from = me.name || mePhone || "Kadlan";
+  let text = "";
+  if (kind === "review") {
+    text = t("waReview") + ": " + (extra && extra.stars || "") + "/5 " + t("waStars") + " — " + from + (extra && extra.text ? ". " + extra.text : "") + "\nhttps://kadlan.co.il";
+  } else {
+    const key = "viewed_" + normPhone(owner.phone);
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    text = t("waViewed") + " — " + from + (owner.code ? " (" + owner.code + ")" : "") + "\nhttps://kadlan.co.il";
+  }
+  const url = waLink(owner.phone, text);
+  try {
+    fetch(fb("/inbox/" + normPhone(owner.phone)), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind, text, from, at: Date.now() })
+    }).catch(() => {});
+  } catch (e) {}
+  if (url && url !== "#") {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 500);
+  }
 }
 
 function waLink(phone, text) {
@@ -1456,7 +1522,7 @@ function memberCard(m) {
         <div class="badge ${m.role === "worker" ? "offer" : "order"}">${m.code}</div>
         <h3>${m.name || m.code}</h3>
         <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
-        <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
+        <div>${starsHtml((liveRepFor(m.code, m).avg), (liveRepFor(m.code, m).count))}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
         <div class="tt-actions">
@@ -1538,7 +1604,7 @@ function viewFeed() {
           <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
           <h3>${title}</h3>
           <div class="meta">${j.name ? j.name + " · " : ""}${cities}${j.dates ? " · " + j.dates : ""}</div>
-          <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
+          <div>${starsHtml(liveRepFor(j.id, j).avg, liveRepFor(j.id, j).count)}</div>
           <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${!offer && j.budget ? `<span class="tag">${shekel(j.budget)}</span>` : ""}</div>
           ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>` : ""}
           <div class="tt-actions">
@@ -1635,7 +1701,7 @@ function viewMemberDetail(code) {
       <div class="badge ${worker ? "offer" : "order"}">${m.code}</div>
       <h3>${m.name}</h3>
       <div class="meta">${worker ? t("nowWorker") : t("nowContractor")} · ${ico("city")}${cities}</div>
-      <div>${starsHtml(m.rating || 0, m.reviews || reviewsFor(m.code).length)}</div>
+      <div>${starsHtml((liveRepFor(m.code, m).avg), (liveRepFor(m.code, m).count))}</div>
       <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
       ${galleryHtml(m.workPhotos)}
       <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
@@ -1682,7 +1748,7 @@ function viewJobDetail(id) {
     <article class="card job ${offer ? "offer" : "order"}">
       <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
       <h3>${title}</h3>
-      <div>${starsHtml(j.rating || 0, j.reviews || reviewsFor(j.id).length)}</div>
+      <div>${starsHtml(liveRepFor(j.id, j).avg, liveRepFor(j.id, j).count)}</div>
       <div class="meta">${ico("city")}${cities}${j.dates ? " · " + ico("date") + j.dates : ""}${j.budget ? " · " + ico("money") + shekel(j.budget) : ""}</div>
       <div class="tags">${(j.trades || [j.trade]).filter(Boolean).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
       ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}` : ""}
@@ -2086,7 +2152,7 @@ function bind() {
   document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
-  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); notifyOwnerWa(findOwnerByTarget(b.dataset.openJob), "view"); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => {
     const code = b.dataset.openMember;
     store.openJob = "member:" + code;
@@ -2095,6 +2161,7 @@ function bind() {
     const m = memberList().find((x) => x.code === code) || {};
     if (m.phone) {
       loadPrivDocs(m.phone).then(() => loadDocReqs(m.phone)).then(() => render()).catch(() => {});
+      notifyOwnerWa(m, "view");
     }
   });
   document.querySelectorAll("[data-doc-ask]").forEach((b) => b.onclick = async () => {
@@ -2164,8 +2231,19 @@ function bind() {
         name: store.profile().name || t("reviews"),
       }]);
       store.saveExtraRevs(map);
+      try {
+        fetch(fb("/reviews/" + encodeURIComponent(id)), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(map[id])
+        }).catch(() => {});
+      } catch (e) {}
       store.openRev = id;
       render();
+      const owner = findOwnerByTarget(id);
+      notifyOwnerWa(owner, "review", { stars: Number(f.get("stars")), text: String(f.get("text") || "") });
+      if (!owner || !owner.phone) alert(t("reviewOk") + ". WhatsApp: номер не найден");
+      else alert(t("reviewOk"));
     };
   });
   const cf = document.getElementById("city-filter");
@@ -2477,6 +2555,20 @@ setLang(store.lang);
     await cloudLoadUsers();
     await cloudLoad();
     await cloudPushLocal();
+    try {
+      const rr = await fetch(fb("/reviews"));
+      if (rr.ok) {
+        const data = await rr.json();
+        if (data && typeof data === "object") {
+          const map = store.extraRevs();
+          Object.keys(data).forEach((k) => {
+            const rows = Array.isArray(data[k]) ? data[k] : [];
+            map[k] = (map[k] || []).concat(rows.filter((n) => !(map[k] || []).some((o) => o.text === n.text && o.name === n.name && o.stars === n.stars)));
+          });
+          store.saveExtraRevs(map);
+        }
+      }
+    } catch (e) {}
     pingVisit();
     if (myPhone()) {
       await loadPrivDocs(myPhone());
