@@ -720,7 +720,28 @@ const store = {
   user() { return this.users().find((u) => u.phone === this.session) || null; },
 };
 const FB = "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app";
+const FB_BUCKET = "kadlan-il.firebasestorage.app";
 function fb(path) { return FB + path + ".json"; }
+function dataUrlToBlob(dataUrl) {
+  const s = String(dataUrl || "");
+  const m = s.match(/^data:([^;]+);base64,(.+)$/);
+  if (!m) return null;
+  const bin = atob(m[2]);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: m[1] || "image/jpeg" });
+}
+async function storagePut(path, dataUrl) {
+  if (!dataUrl || !String(dataUrl).startsWith("data:")) return String(dataUrl || "");
+  const blob = dataUrlToBlob(dataUrl);
+  if (!blob) return "";
+  const url = "https://firebasestorage.googleapis.com/v0/b/" + FB_BUCKET + "/o?uploadType=media&name=" + encodeURIComponent(path);
+  try {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": blob.type || "image/jpeg" }, body: blob });
+    if (!res.ok) return "";
+    return "https://firebasestorage.googleapis.com/v0/b/" + FB_BUCKET + "/o/" + encodeURIComponent(path) + "?alt=media";
+  } catch (e) { return ""; }
+}
 function normPhone(v) {
   let s = String(v || "").replace(/\D/g, "");
   if (s.startsWith("972") && s.length >= 11) s = "0" + s.slice(3);
@@ -885,12 +906,18 @@ async function cloudLoadUsers() {
 async function cloudSavePhotos(phone, photo, workPhotos) {
   const key = normPhone(phone);
   if (!key) return;
-  const shots = (workPhotos || []).map(photoSrc).filter(Boolean).slice(0, 4);
+  const rawShots = (workPhotos || []).map(photoSrc).filter(Boolean).slice(0, 4);
+  const photoUrl = await storagePut("photos/" + key + "/avatar.jpg", photoSrc(photo) || "");
+  const shots = [];
+  for (let i = 0; i < rawShots.length; i++) {
+    const one = rawShots[i];
+    shots.push(one.startsWith("http") ? one : (await storagePut("photos/" + key + "/w" + i + ".jpg", one)) || one);
+  }
   try {
     await fetch(fb("/photos/" + key), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photo: photoSrc(photo) || "", workPhotos: shots, at: Date.now() }),
+      body: JSON.stringify({ photo: photoUrl || "", workPhotos: shots, at: Date.now() }),
     });
   } catch (e) {}
 }
