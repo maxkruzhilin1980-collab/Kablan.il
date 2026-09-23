@@ -771,7 +771,9 @@ function compressImageFile(file, max, q) {
   max = max || 800;
   q = q || 0.58;
   return new Promise((resolve) => {
-    if (!file || !String(file.type || "").startsWith("image/")) { resolve(""); return; }
+    if (!file) { resolve(""); return; }
+    const _tp = String(file.type || "");
+    if (_tp && !_tp.startsWith("image/") && !_tp.startsWith("application/octet")) { resolve(""); return; }
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -880,17 +882,41 @@ async function cloudLoadUsers() {
     store.saveUsers(Object.values(map));
   } catch (e) {}
 }
+async function cloudSavePhotos(phone, photo, workPhotos) {
+  const key = normPhone(phone);
+  if (!key) return;
+  const shots = (workPhotos || []).map(photoSrc).filter(Boolean).slice(0, 4);
+  try {
+    await fetch(fb("/photos/" + key), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photo: photoSrc(photo) || "", workPhotos: shots, at: Date.now() }),
+    });
+  } catch (e) {}
+}
+async function cloudLoadPhotos(phone) {
+  const key = normPhone(phone);
+  if (!key) return null;
+  try {
+    const res = await fetch(fb("/photos/" + key));
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
 async function cloudSaveUser(user) {
   if (!user || !user.phone) return;
   try {
     const slim = { ...user };
+    const photo = slim.photo;
+    const workPhotos = slim.workPhotos;
     delete slim.workPhotos;
-    if (slim.photo && String(slim.photo).length > 120000) slim.photo = "";
+    delete slim.photo;
     await fetch(fb("/users/" + normPhone(user.phone)), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(slim),
     });
+    await cloudSavePhotos(user.phone, photo, workPhotos);
   } catch (e) {}
 }
 
@@ -1703,7 +1729,7 @@ function viewSeek() {
       <input type="file" name="workPhotos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${shotN ? `<div class="meta">${shotN} фото</div>` : ""}
+    ${lightGallery(p.workPhotos) || (shotN ? `<div class="meta">${shotN} фото</div>` : "")}
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("seekSave")}</button>
   </form>`;
@@ -1893,7 +1919,7 @@ function viewProfile() {
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${tradeAvatar(p.trades, store.role === "worker" ? "worker" : "contractor")}" alt="" />
+    <img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" />
     <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -1909,7 +1935,7 @@ function viewProfile() {
       <input type="file" id="work-photos" accept="image/*" multiple />
     </label>
     <div class="plan-name">${t("workPhotosHint")}</div>
-    ${shotN ? `<div class="meta">${shotN} фото</div>` : ""}
+    ${lightGallery(p.workPhotos) || (shotN ? `<div class="meta">${shotN} фото</div>` : "")}
     <div class="mine-row">
       <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
@@ -2197,8 +2223,8 @@ function bind() {
       phone: user.phone,
       trades: user.trades || [],
       code: user.code || nextCode(),
-      photo: "",
-      workPhotos: [],
+      photo: store.profile().photo || user.photo || "",
+      workPhotos: store.profile().workPhotos || user.workPhotos || [],
     });
     store.tab = "profile";
     render();
@@ -2415,7 +2441,18 @@ setLang(store.lang);
     await cloudLoad();
     await cloudPushLocal();
     pingVisit();
-    if (myPhone()) { await loadPrivDocs(myPhone()); await loadDocReqs(myPhone()); }
+    if (myPhone()) {
+      await loadPrivDocs(myPhone());
+      await loadDocReqs(myPhone());
+      const pics = await cloudLoadPhotos(myPhone());
+      if (pics && (pics.photo || (pics.workPhotos && pics.workPhotos.length))) {
+        store.saveProfile({
+          ...store.profile(),
+          photo: pics.photo || store.profile().photo || "",
+          workPhotos: pics.workPhotos || store.profile().workPhotos || []
+        });
+      }
+    }
   } catch (e) { console.error(e); }
   render();
 })();
