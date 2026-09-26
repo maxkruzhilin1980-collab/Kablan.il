@@ -159,9 +159,9 @@ const I18N = {
     plan: "Чертёж / проект",
     pickFile: "Выбрать файл",
     pickFiles: "Выбрать файлы",
-    planHint: "Только для заказа: фото или PDF чертежа. Видно всем.",
+    planHint: "Лучше JPG или PDF, до 2 МБ. Не HEIC и не видео.",
     extraDocs: "Другие документы",
-    extraDocsHint: "Договор, счёт, фото объекта — не чертёж",
+    extraDocsHint: "Договор, счёт, фото объекта. Формат: PDF или JPG, до 2 МБ.",
     noPlan: "Чертёж не приложен",
     noExtraDocs: "Других документов нет",
     openFile: "Открыть",
@@ -290,11 +290,12 @@ const I18N = {
     rulesLead: "Чтобы рейтинг был честным. Коротко, без мелкого шрифта.",
     rules1: "Подтверждённый аккаунт. Загрузите теудат зеут, осэк или выписку из реестра компаний. Пока документа нет — в рейтинге вы ниже, значок серый.",
     rules2: "Отзыв только после работы. Оценить человека можно, если вы писали ему в WhatsApp из приложения или нажали «мы работали». Один отзыв с одного профиля.",
-    rules3: "Жалоба с фото. Укажите причину и фото. После двух жалоб от разных людей появится красный значок.",
+    rules3: "Жалоба. Напишите причину. После двух жалоб от разных людей появится красный значок.",
     rules4: "Свежие отзывы сильнее. Оценкам старше 12 месяцев вес меньше. В карточке видна дата последнего отзыва.",
     rules5: "Полнота профиля 0–100. Фото, город, сфера, телефон, документы и 3 фото работ. Ниже 50% — не в топе рейтинга.",
     rules6: "Скорость ответа. Если профиль не обновляли больше 14 дней — пометка «редко отвечает».",
     rules7: "Нельзя хвалить себя и свои номера. Повторная оценка тому же человеку с того же профиля закрыта.",
+    rules8: "Документы и чертежи. Лучший формат: JPG для фото и PDF для бумаг. Размер до 2 МБ. Не прикладывайте HEIC, видео и тяжёлые PNG — они не открываются у других.",
     badgeVerified: "Подтверждён",
     badgePending: "Документ на проверке",
     badgeUnverified: "Не подтверждён",
@@ -323,7 +324,7 @@ const I18N = {
     worksDone: "Состав работ",
     photo: "Фото профиля",
     workPhotos: "Фото работ",
-    workPhotosHint: "Фото ваших работ. Видны всем в анкете и в ленте.",
+    workPhotosHint: "Фото работ: JPG, до 6 штук. Не видео и не HEIC с iPhone.",
     worksCount: "Работ",
     myPage: "Личная страница",
   },
@@ -372,9 +373,9 @@ const I18N = {
     plan: "שרטוט / תוכנית",
     pickFile: "בחר קובץ",
     pickFiles: "בחר קבצים",
-    planHint: "תוכנית או סקיצה — תמונה או PDF",
+    planHint: "עדיף JPG או PDF עד 2MB. לא HEIC ולא וידאו.",
     extraDocs: "מסמכים אחרים",
-    extraDocsHint: "חוזה, חשבונית, תמונת האתר — לא שרטוט",
+    extraDocsHint: "חוזה או חשבונית: PDF או JPG עד 2MB.",
     noPlan: "אין שרטוט",
     noExtraDocs: "אין מסמכים נוספים",
     openFile: "פתיחה",
@@ -508,6 +509,7 @@ const I18N = {
     rules5: "שלמות פרופיל 0–100. תמונה, עיר, תחום, טלפון, מסמכים ו-3 תמונות עבודה. מתחת ל-50% לא בראש הדירוג.",
     rules6: "מהירות מענה. אם לא עדכנו פרופיל מעל 14 יום — «נדיר שמגיב».",
     rules7: "אי אפשר לדרג את עצמך או את אותו אדם שוב מאותו פרופיל.",
+    rules8: "מסמכים ושרטוטים: JPG לתמונה, PDF למסמך, עד 2MB. בלי HEIC, וידאו ו-PNG כבד.",
     badgeVerified: "מאומת",
     badgePending: "מסמך בבדיקה",
     badgeUnverified: "לא מאומת",
@@ -536,7 +538,7 @@ const I18N = {
     worksDone: "פירוט עבודות",
     photo: "תמונת פרופיל",
     workPhotos: "תמונות עבודות",
-    workPhotosHint: "עד 6 תמונות. יופיעו בכרטיס ובלפיד.",
+    workPhotosHint: "תמונות עבודה ב-JPG, עד 6. בלי וידאו ו-HEIC.",
     worksCount: "עבודות",
     myPage: "עמוד אישי",
   },
@@ -585,9 +587,9 @@ const I18N = {
     plan: "Drawing / project",
     pickFile: "Choose file",
     pickFiles: "Choose files",
-    planHint: "Site plan or drawing — photo or PDF",
+    planHint: "Best: JPG or PDF, under 2 MB. No HEIC or video.",
     extraDocs: "Other documents",
-    extraDocsHint: "Contract, invoice, site photo — not the drawing",
+    extraDocsHint: "Contract or invoice: PDF or JPG, under 2 MB.",
     noPlan: "No drawing attached",
     noExtraDocs: "No other documents",
     openFile: "Open",
@@ -721,6 +723,7 @@ const I18N = {
     rules5: "Profile completeness 0–100. Photo, city, trade, phone, documents and 3 work photos. Below 50% stays out of the top.",
     rules6: "Response speed. No profile update for 14 days — “rarely replies”.",
     rules7: "No self-reviews. Same profile cannot rate the same member twice.",
+    rules8: "Documents and drawings: JPG for photos, PDF for papers, under 2 MB. No HEIC, video, or heavy PNG.",
     badgeVerified: "Verified",
     badgePending: "Document in review",
     badgeUnverified: "Not verified",
@@ -749,7 +752,7 @@ const I18N = {
     worksDone: "Work items",
     photo: "Profile photo",
     workPhotos: "Work photos",
-    workPhotosHint: "Up to 6 photos. Shown on the profile and feed.",
+    workPhotosHint: "Work photos as JPG, up to 6. No video or HEIC.",
     worksCount: "Jobs",
     myPage: "Profile page",
   },
@@ -1310,16 +1313,46 @@ const SEED_MEMBERS = [
   { code: "K-12480", name: "Beer Sheva Kablan", role: "contractor", city: "beer", rating: 4.7, reviews: 13, docs: true, insurance: true, closed: 13, trades: ["reno"], phone: "0501110017", aboutRu: "Ремонт под ключ в Беэр-Шеве.", aboutHe: "שיפוץ מפתח בבאר שבע.", aboutEn: "Turnkey renovation in Beersheba." },
 ];
 
+function codeNum(code) {
+  const m = String(code || "").match(/^K-(\d+)$/i);
+  return m ? Number(m[1]) : 0;
+}
+function usedCodes(extra) {
+  const set = new Set(SEED_MEMBERS.map((m) => m.code).filter(Boolean));
+  (extra || []).forEach((c) => { if (c) set.add(c); });
+  store.users().forEach((u) => { if (u && u.code) set.add(u.code); });
+  return set;
+}
 function nextCode() {
-  const used = new Set(store.users().map((u) => u.code).concat(SEED_MEMBERS.map((m) => m.code)));
-  let n = 10000 + store.users().length;
+  const used = usedCodes();
+  let n = 10000;
+  used.forEach((c) => { n = Math.max(n, codeNum(c)); });
+  n += 1;
   let code = "K-" + n;
   while (used.has(code)) { n += 1; code = "K-" + n; }
   return code;
 }
 function ensureCodes() {
-  const users = store.users().map((u) => u.code ? u : { ...u, code: nextCode() });
-  if (JSON.stringify(users) !== JSON.stringify(store.users())) store.saveUsers(users);
+  const seen = new Set(SEED_MEMBERS.map((m) => m.code).filter(Boolean));
+  let changed = false;
+  const users = store.users().map((u) => {
+    if (u.code && !seen.has(u.code)) {
+      seen.add(u.code);
+      return u;
+    }
+    let n = 10000;
+    seen.forEach((c) => { n = Math.max(n, codeNum(c)); });
+    n += 1;
+    let code = "K-" + n;
+    while (seen.has(code)) { n += 1; code = "K-" + n; }
+    seen.add(code);
+    changed = true;
+    return { ...u, code };
+  });
+  if (changed) {
+    store.saveUsers(users);
+    users.forEach((u) => { if (u && u.phone) cloudSaveUser(u); });
+  }
 }
 function memberList() {
   ensureCodes();
@@ -1578,9 +1611,6 @@ function complainBox(id) {
   return `<form class="complain-write" data-complain-target="${id}">
     <label>${t("complain")}</label>
     <textarea name="why" placeholder="${t("complainWhy")}" required></textarea>
-    <label class="filebtn">${t("pickFile")}
-      <input type="file" name="shot" accept="image/*" />
-    </label>
     <button class="btn danger" type="submit">${t("complain")}</button>
   </form>`;
 }
@@ -1852,6 +1882,7 @@ function viewRules() {
       <li>${t("rules5")}</li>
       <li>${t("rules6")}</li>
       <li>${t("rules7")}</li>
+      <li>${t("rules8")}</li>
     </ol>
   </div>`;
 }
@@ -2042,7 +2073,7 @@ function viewMemberDetail(code) {
 function fileView(name, data) {
   if (!name && !data) return "";
   let raw = String(data || "");
-  if (!raw && name) raw = "icons/plan-sample.jpg";
+  if (!raw && /plan-sample|tohnit-bathroom|3room-tohnit|points-plan/i.test(String(name || ""))) raw = "icons/plan-sample.jpg";
   const label = `${t("openFile")}${name ? " — " + name : ""}`;
   const isImg = raw.startsWith("data:image") || /\.(png|jpe?g|gif|webp)(\?|$)/i.test(raw) || raw.startsWith("icons/");
   const isPdf = raw.startsWith("data:application/pdf") || /\.pdf(\?|$)/i.test(raw);
