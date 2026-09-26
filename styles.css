@@ -203,8 +203,11 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 }
 .tt-body { flex: 1; min-width: 0; }
 .tt-body h3 { font-size: 16px; line-height: 1.25; }
-.tt-actions { display: flex; gap: 8px; margin-top: 8px; }
-.tt-actions .btn { width: auto; flex: 1; padding: 10px 8px; font-size: 13px; }
+.tt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 4px; position: relative; z-index: 3; }
+.tt-actions .btn { width: 100%; padding: 11px 8px; font-size: 13px; position: relative; z-index: 3; }
+.wa-btn { white-space: nowrap; }
+.reviews { margin-top: 10px; position: relative; z-index: 1; clear: both; }
+.work-gallery { margin: 8px 0; position: relative; z-index: 1; }
 
 .compare { max-width: 480px; margin: 0 auto; padding: 10px 16px 0; font-size: 13px; font-weight: 700; display: flex; gap: 8px; }
 .compare a { color: #009fd9; border: 1px solid #cfe8f3; background: #fff; border-radius: 999px; padding: 6px 12px; text-decoration: none; }
@@ -316,3 +319,34 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .tt-body { flex:1 1 auto; min-width:0; overflow:hidden; }
 .tt-body .tags, .tt-body .flags { flex-wrap:wrap; max-width:100%; }
 .file-open.picwrap.big { width:88px; }
+
+.wa-row { margin: 10px 0 12px; display: flex; justify-content: flex-start; }
+.wa-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto !important;
+  max-width: 160px;
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  background: #25D366 !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
+}
+.wa-btn .icon { width: 16px; height: 16px; fill: #fff; flex: 0 0 16px; }
+.complain-write { margin-top: 14px; }
+.complain-write .btn.danger { position: relative; z-index: 1; }
+
+.tt-card.slim { padding: 14px; }
+.tt-card.slim h3 { font-size: 16px; margin: 4px 0 6px; }
+.tt-card.slim .meta { margin-bottom: 8px; }
+.badge.demo { background: #fff3bf; color: #7a5b00; }
+.badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn.sm { width: auto !important; flex: 0 0 auto; padding: 8px 10px !important; font-size: 12px !important; font-weight: 600; }
+.tt-actions { align-items: center; }
+.tt-card.slim .wa-btn { max-width: none; flex: 1; padding: 12px 14px !important; font-size: 15px !important; }
