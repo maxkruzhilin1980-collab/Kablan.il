@@ -321,6 +321,13 @@ const I18N = {
     offerDetails: "Об анкете",
     documents: "Документы",
     noDocs: "Документов пока нет",
+    docsPrivate: "Документы видит только владелец",
+    docsRequest: "Запросить документы",
+    docsRequested: "Запрос отправлен",
+    docsGranted: "Документы открыты",
+    docsInbox: "Запросы на документы",
+    docsGrant: "Открыть",
+    docsDeny: "Отклонить",
     worksDone: "Состав работ",
     photo: "Фото профиля",
     workPhotos: "Фото работ",
@@ -535,6 +542,13 @@ const I18N = {
     offerDetails: "על הכרטיס",
     documents: "מסמכים",
     noDocs: "אין מסמכים עדיין",
+    docsPrivate: "המסמכים גלויים רק לבעלים",
+    docsRequest: "בקש מסמכים",
+    docsRequested: "הבקשה נשלחה",
+    docsGranted: "המסמכים פתוחים",
+    docsInbox: "בקשות למסמכים",
+    docsGrant: "אשר",
+    docsDeny: "דחה",
     worksDone: "פירוט עבודות",
     photo: "תמונת פרופיל",
     workPhotos: "תמונות עבודות",
@@ -749,6 +763,13 @@ const I18N = {
     offerDetails: "About the profile",
     documents: "Documents",
     noDocs: "No documents yet",
+    docsPrivate: "Documents are private",
+    docsRequest: "Request documents",
+    docsRequested: "Request sent",
+    docsGranted: "Documents unlocked",
+    docsInbox: "Document requests",
+    docsGrant: "Allow",
+    docsDeny: "Deny",
     worksDone: "Work items",
     photo: "Profile photo",
     workPhotos: "Work photos",
@@ -1628,7 +1649,7 @@ function reviewsBox(id, kind) {
   }
   form = lastLine + form;
   return `<button class="btn ghost" type="button" data-open-rev="${id}">${open ? t("hideReviews") : t("viewReviews")}</button>
-    ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}</div>` : ""}`;
+    ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}${complainBox(id)}</div>` : ""}`;
 }
 function complainBox(id) {
   if (isSelfTarget(id)) return "";
