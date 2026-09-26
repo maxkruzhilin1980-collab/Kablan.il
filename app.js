@@ -1919,10 +1919,8 @@ function memberCard(m) {
         <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
-        <div class="tt-actions">
-          <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
-          ${m.phone ? waBtn(m.phone, m.code) : ""}
-        </div>
+        <div class="wa-row">${m.phone ? waBtn(m.phone, m.code) : ""}</div>
+        <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
       </div>
     </div>
   </article>`;
@@ -2015,10 +2013,8 @@ function viewFeed() {
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
           <h3>${title}</h3>
           <div class="meta">${ico("city")}${cities}${!offer && j.budget ? " · " + shekel(j.budget) : ""}</div>
-          <div class="tt-actions">
-            <button class="btn ghost sm" type="button" data-open-job="${j.id}">${t("details")}</button>
-            ${waBtn(j.phone, j.posterCode || text)}
-          </div>
+          <div class="wa-row">${waBtn(j.phone, j.posterCode || text)}</div>
+          <button class="btn ghost sm details-sep" type="button" data-open-job="${j.id}">${t("details")}</button>
         </div>
       </div>
     </article>`;
@@ -2441,7 +2437,7 @@ function viewProfile() {
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <button type="button" class="file-open avatar-open" data-view-src="${safeFace(p.name, p.photo, store.role, p.trades)}"><img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" /></button>
+    <img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" />
     <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -2450,9 +2446,6 @@ function viewProfile() {
       <div><b>${r.count}</b><span>${t("reviews")}</span></div>
       <div><b>${r.avg || "—"}</b><span>${t("rating")}</span></div>
     </div>
-    <label class="filebtn">${t("pickFile")} · ${t("photo")}
-      <input type="file" id="photo-file" accept="image/*" />
-    </label>
     <label class="filebtn">${t("workPhotos")}
       <input type="file" id="work-photos" accept="image/*" multiple />
     </label>
