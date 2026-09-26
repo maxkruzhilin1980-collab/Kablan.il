@@ -280,6 +280,36 @@ const I18N = {
     reviewTo: "Отзыв для",
     needLoginReview: "Чтобы написать отзыв — войдите.",
     reviewOk: "Отзыв сохранён",
+    reviewOnce: "С этого профиля отзыв этому участнику уже оставлен",
+    reviewSelf: "Нельзя поставить оценку своему профилю",
+    reviewNeedWork: "Отзыв можно оставить после контакта: напишите в WhatsApp или отметьте «мы работали»",
+    workedBtn: "Мы работали",
+    workedOk: "Контакт записан. Теперь можно оставить отзыв",
+    rulesTab: "Правила",
+    rulesTitle: "Как устроен рейтинг Kadlan",
+    rulesLead: "Чтобы рейтинг был честным. Коротко, без мелкого шрифта.",
+    rules1: "Подтверждённый аккаунт. Загрузите теудат зеут, осэк или выписку из реестра компаний. Пока документа нет — в рейтинге вы ниже, значок серый.",
+    rules2: "Отзыв только после работы. Оценить человека можно, если вы писали ему в WhatsApp из приложения или нажали «мы работали». Один отзыв с одного профиля.",
+    rules3: "Жалоба с фото. Укажите причину и фото. После двух жалоб от разных людей появится красный значок.",
+    rules4: "Свежие отзывы сильнее. Оценкам старше 12 месяцев вес меньше. В карточке видна дата последнего отзыва.",
+    rules5: "Полнота профиля 0–100. Фото, город, сфера, телефон, документы и 3 фото работ. Ниже 50% — не в топе рейтинга.",
+    rules6: "Скорость ответа. Если профиль не обновляли больше 14 дней — пометка «редко отвечает».",
+    rules7: "Нельзя хвалить себя и свои номера. Повторная оценка тому же человеку с того же профиля закрыта.",
+    badgeVerified: "Подтверждён",
+    badgePending: "Документ на проверке",
+    badgeUnverified: "Не подтверждён",
+    badgeSlow: "Редко отвечает",
+    badgeFresh: "Активен",
+    complete: "Профиль заполнен",
+    lastReview: "Последний отзыв",
+    verifyTitle: "Подтверждение личности",
+    verifyHint: "Теудат зеут, осэк машур или רשם החברות. После загрузки появится значок.",
+    complain: "Пожаловаться",
+    complainWhy: "Причина жалобы",
+    complainOk: "Жалоба отправлена",
+    complainNeed: "Войдите, чтобы пожаловаться",
+    complainSelf: "На себя жалобу оставить нельзя",
+    complainOnce: "С этого профиля жалоба уже есть",
     waReview: "Отзыв на Kadlan",
     waViewed: "Ваш профиль посмотрели на Kadlan",
     waStars: "оценка",
@@ -463,6 +493,36 @@ const I18N = {
     reviewTo: "ביקורת עבור",
     needLoginReview: "כדי לכתוב ביקורת צריך להיכנס.",
     reviewOk: "הביקורת נשמרה",
+    reviewOnce: "כבר השארת ביקורת למשתמש הזה מהפרופיל הזה",
+    reviewSelf: "אי אפשר לדרג את הפרופיל של עצמך",
+    reviewNeedWork: "אפשר לכתוב ביקורת אחרי יצירת קשר: וואטסאפ מתוך האפליקציה או «עבדנו יחד»",
+    workedBtn: "עבדנו יחד",
+    workedOk: "הקשר נשמר. עכשיו אפשר לכתוב ביקורת",
+    rulesTab: "כללים",
+    rulesTitle: "איך הדירוג עובד ב-Kadlan",
+    rulesLead: "כדי שהדירוג יהיה הוגן. קצר ולעניין.",
+    rules1: "חשבון מאומת. העלו תעודת זהות, עוסק או אישור מרשם החברות. בלי מסמך המקום בדירוג נמוך יותר.",
+    rules2: "ביקורת רק אחרי עבודה. אפשר לדרג אחרי וואטסאפ מהאפליקציה או לחיצה על «עבדנו יחד». ביקורת אחת מכל פרופיל.",
+    rules3: "תלונה עם תמונה. ציינו סיבה וצילום. אחרי שתי תלונות מאנשים שונים יופיע סימון אדום.",
+    rules4: "ביקורות חדשות חזקות יותר. לביקורת מעל 12 חודשים משקל נמוך יותר.",
+    rules5: "שלמות פרופיל 0–100. תמונה, עיר, תחום, טלפון, מסמכים ו-3 תמונות עבודה. מתחת ל-50% לא בראש הדירוג.",
+    rules6: "מהירות מענה. אם לא עדכנו פרופיל מעל 14 יום — «נדיר שמגיב».",
+    rules7: "אי אפשר לדרג את עצמך או את אותו אדם שוב מאותו פרופיל.",
+    badgeVerified: "מאומת",
+    badgePending: "מסמך בבדיקה",
+    badgeUnverified: "לא מאומת",
+    badgeSlow: "נדיר שמגיב",
+    badgeFresh: "פעיל",
+    complete: "הפרופיל מלא",
+    lastReview: "ביקורת אחרונה",
+    verifyTitle: "אימות זהות",
+    verifyHint: "תעודת זהות, עוסק מורשה או רשם החברות.",
+    complain: "תלונה",
+    complainWhy: "סיבת התלונה",
+    complainOk: "התלונה נשלחה",
+    complainNeed: "יש להיכנס כדי לשלוח תלונה",
+    complainSelf: "אי אפשר להתלונן על עצמך",
+    complainOnce: "כבר שלחת תלונה מהפרופיל הזה",
     waReview: "ביקורת ב-Kadlan",
     waViewed: "צפו בפרופיל שלך ב-Kadlan",
     waStars: "דירוג",
@@ -646,6 +706,36 @@ const I18N = {
     reviewTo: "Review for",
     needLoginReview: "Log in to write a review.",
     reviewOk: "Review saved",
+    reviewOnce: "This profile already reviewed this member",
+    reviewSelf: "You cannot rate your own profile",
+    reviewNeedWork: "Review after contact: WhatsApp from the app or tap “we worked together”",
+    workedBtn: "We worked together",
+    workedOk: "Contact saved. You can leave a review now",
+    rulesTab: "Rules",
+    rulesTitle: "How Kadlan rating works",
+    rulesLead: "Fair ranking, stated plainly.",
+    rules1: "Verified account. Upload ID, osek, or company extract. Unverified profiles rank lower.",
+    rules2: "Review only after work. Rate after WhatsApp from the app or “we worked together”. One review per profile.",
+    rules3: "Complaint with photo. After two complaints from different people a red badge appears.",
+    rules4: "Fresh reviews weigh more. Reviews older than 12 months count less.",
+    rules5: "Profile completeness 0–100. Photo, city, trade, phone, documents and 3 work photos. Below 50% stays out of the top.",
+    rules6: "Response speed. No profile update for 14 days — “rarely replies”.",
+    rules7: "No self-reviews. Same profile cannot rate the same member twice.",
+    badgeVerified: "Verified",
+    badgePending: "Document in review",
+    badgeUnverified: "Not verified",
+    badgeSlow: "Rarely replies",
+    badgeFresh: "Active",
+    complete: "Profile complete",
+    lastReview: "Last review",
+    verifyTitle: "Identity check",
+    verifyHint: "Teudat zehut, osek, or company registry extract.",
+    complain: "Report",
+    complainWhy: "Reason",
+    complainOk: "Complaint sent",
+    complainNeed: "Log in to send a complaint",
+    complainOnce: "You already sent a complaint",
+    complainSelf: "You cannot report yourself",
     waReview: "Review on Kadlan",
     waViewed: "Someone viewed your Kadlan profile",
     waStars: "rating",
@@ -716,6 +806,10 @@ const store = {
   set openJob(v) { localStorage.setItem("bil_openjob", v); },
   extraRevs() { try { return safeParse(localStorage.getItem("bil_extra_revs") || "{}"); } catch { return {}; } },
   saveExtraRevs(map) { localStorage.setItem("bil_extra_revs", JSON.stringify(map)); },
+  contacts() { try { return safeParse(localStorage.getItem("bil_contacts") || "{}"); } catch { return {}; } },
+  saveContacts(map) { localStorage.setItem("bil_contacts", JSON.stringify(map)); },
+  complaints() { try { return safeParse(localStorage.getItem("bil_complaints") || "{}"); } catch { return {}; } },
+  saveComplaints(map) { localStorage.setItem("bil_complaints", JSON.stringify(map)); },
   jobs() { try { return safeParse(localStorage.getItem("bil_jobs") || "[]"); } catch { return []; } },
   saveJobs(list) { localStorage.setItem("bil_jobs", JSON.stringify(list)); },
   profile() { try { return safeParse(localStorage.getItem("bil_profile") || "{}"); } catch { return {}; } },
@@ -843,8 +937,15 @@ function lightGallery(photos) {
 
 function galleryHtml(photos) {
   const raw = Array.isArray(photos) ? photos : (photos ? [photos] : []);
-  const list = raw.map(photoSrc).filter((s) => typeof s === "string" && s.length > 8).slice(0, 6);
-  if (!list.length) return "";
+  const list = raw.map(photoSrc).filter((s) => {
+    if (typeof s !== "string" || s.length < 8) return false;
+    if (s.length > 220000) return false;
+    return s.startsWith("data:image") || s.startsWith("http") || s.startsWith("icons/");
+  }).slice(0, 6);
+  if (!list.length) {
+    const n = raw.length;
+    return n ? `<div class="meta">${n} фото</div>` : "";
+  }
   return `<div class="work-gallery">${list.map((src) => `<button type="button" class="file-open" data-view-src="${src.replace(/"/g, "")}"><img class="plan-preview" src="${src.replace(/"/g, "")}" alt="" /></button>`).join("")}</div>`;
 }
 function slimJob(j) {
@@ -1055,6 +1156,21 @@ function publicJobs() {
   store.jobs().forEach((j) => { map[j.id] = { ...(map[j.id] || {}), ...j }; });
   return Object.values(map);
 }
+function jobsForMember(m) {
+  if (!m) return [];
+  const phones = [m.phone];
+  const u = store.users().find((x) => x.code === m.code || (m.phone && normPhone(x.phone) === normPhone(m.phone)));
+  if (u && u.phone) phones.push(u.phone);
+  const pset = new Set(phones.filter(Boolean).map(normPhone));
+  const name = String(m.name || "").trim().toLowerCase();
+  return publicJobs().filter((j) => {
+    if (m.code && j.posterCode && String(j.posterCode) === String(m.code)) return true;
+    if (j.phone && pset.has(normPhone(j.phone))) return true;
+    const jn = String(j.name || "").trim().toLowerCase();
+    if (name && jn && (jn === name || jn.includes(name) || name.includes(jn))) return true;
+    return false;
+  }).sort((a, b) => jobStamp(b) - jobStamp(a));
+}
 
 
 
@@ -1227,6 +1343,10 @@ function memberList() {
       flags: u.flags || p.flags || [],
       photo: p.photo || u.photo || "",
       workPhotos: p.workPhotos || u.workPhotos || [],
+      verified: u.verified || p.verified || r.docs,
+      verifyPending: u.verifyPending || p.verifyPending,
+      lastAct: u.lastAct || p.lastAct || 0,
+      warn: uniqueComplaints(u.code).length >= 2,
     };
   });
   return fromUsers.concat(SEED_MEMBERS.filter((s) => !fromUsers.some((u) => u.code === s.code)));
@@ -1252,11 +1372,19 @@ function starsHtml(score, count) {
 }
 function badgesHtml(item) {
   const bits = [];
+  if (isVerifiedMember(item)) bits.push(`<span class="tag ok">${t("badgeVerified")}</span>`);
+  else if (item.verifyPending) bits.push(`<span class="tag">${t("badgePending")}</span>`);
+  else bits.push(`<span class="tag muted">${t("badgeUnverified")}</span>`);
   if (item.phone) bits.push(`<span class="tag">${t("badgePhone")}</span>`);
   if (item.docs) bits.push(`<span class="tag">${t("badgeDocs")}</span>`);
   if (item.insurance) bits.push(`<span class="tag">${t("badgeIns")}</span>`);
   if (item.closed) bits.push(`<span class="tag">${t("badgeJobs")}: ${item.closed}</span>`);
-  if (item.warn) bits.push(`<span class="tag warn">${t("badgeWarn")}</span>`);
+  const warns = uniqueComplaints(item.code || item.id).length;
+  if (warns >= 2 || item.warn) bits.push(`<span class="tag warn">${t("badgeWarn")} · ${Math.max(warns, 1)}</span>`);
+  if (isSlowMember(item)) bits.push(`<span class="tag warn">${t("badgeSlow")}</span>`);
+  else if (isFreshMember(item)) bits.push(`<span class="tag ok">${t("badgeFresh")}</span>`);
+  const sc = profileScore(item);
+  bits.push(`<span class="tag">${t("complete")} ${sc}%</span>`);
   return bits.join("");
 }
 function reviewText(r) {
@@ -1270,6 +1398,137 @@ function reviewsFor(id) {
   const allExtra = extra.concat(extra2.filter((r) => extra.indexOf(r) < 0));
   return asList(DEMO_REVIEWS[id]).concat(allExtra).filter(Boolean);
 }
+function myReviewerId() {
+  return normPhone(myPhone() || (store.profile() && store.profile().phone) || store.session || "");
+}
+function alreadyReviewed(id) {
+  const me = myReviewerId();
+  if (!me || !id) return false;
+  return reviewsFor(id).some((r) => {
+    const from = normPhone(r.fromPhone || r.phone || "");
+    if (from && from === me) return true;
+    const myName = String((store.profile() && store.profile().name) || "").trim().toLowerCase();
+    return myName && from === "" && String(r.name || "").trim().toLowerCase() === myName;
+  });
+}
+function isSelfTarget(id) {
+  const me = store.user() || store.profile() || {};
+  if (!id) return false;
+  if (me.code && String(me.code) === String(id)) return true;
+  if (me.phone && normPhone(me.phone) === normPhone(id)) return true;
+  const owner = typeof findOwnerByTarget === "function" ? findOwnerByTarget(id) : null;
+  if (owner && owner.phone && myPhone() && normPhone(owner.phone) === myPhone()) return true;
+  return false;
+}
+function contactKey(a, b) {
+  const x = normPhone(a), y = normPhone(b);
+  return [x, y].sort().join("_");
+}
+function markWorked(targetPhone, targetCode) {
+  const me = myReviewerId();
+  if (!me) return;
+  const map = store.contacts();
+  if (targetPhone) map[contactKey(me, targetPhone)] = Date.now();
+  if (targetCode) map["code_" + me + "_" + targetCode] = Date.now();
+  store.saveContacts(map);
+  touchAct();
+}
+function workedWith(id) {
+  const me = myReviewerId();
+  if (!me || !id) return false;
+  const map = store.contacts();
+  if (map["code_" + me + "_" + id]) return true;
+  const owner = typeof findOwnerByTarget === "function" ? findOwnerByTarget(id) : null;
+  const phone = owner && owner.phone ? normPhone(owner.phone) : normPhone(id);
+  if (phone && map[contactKey(me, phone)]) return true;
+  return false;
+}
+function canWriteReview(id) {
+  if (!store.session) return false;
+  if (isSelfTarget(id)) return false;
+  if (alreadyReviewed(id)) return false;
+  return workedWith(id);
+}
+function reviewWeight(r) {
+  const at = Number(r && r.at) || 0;
+  if (!at) return 0.7;
+  const age = Date.now() - at;
+  if (age > 365 * 24 * 3600 * 1000) return 0.4;
+  return 1;
+}
+function lastReviewAt(id) {
+  let last = 0;
+  reviewsFor(id).forEach((r) => { last = Math.max(last, Number(r.at) || 0); });
+  return last;
+}
+function fmtDay(ms) {
+  if (!ms) return "";
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return "";
+  const p = (n) => String(n).padStart(2, "0");
+  return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+}
+function complaintsFor(id) {
+  const map = store.complaints();
+  return asList(map[id]).concat(id ? asList(map[String(id)]) : []);
+}
+function uniqueComplaints(id) {
+  const seen = {};
+  return complaintsFor(id).filter((c) => {
+    const k = normPhone(c.fromPhone || c.phone || "") || String(c.name || "x");
+    if (seen[k]) return false;
+    seen[k] = 1;
+    return true;
+  });
+}
+function hasMyComplaint(id) {
+  const me = myReviewerId();
+  return uniqueComplaints(id).some((c) => normPhone(c.fromPhone) === me);
+}
+function isVerifiedMember(m) {
+  if (!m) return false;
+  if (m.verified || m.docs) return true;
+  const u = store.users().find((x) => x.code === m.code || (m.phone && x.phone === m.phone));
+  return Boolean(u && (u.verified || u.docs));
+}
+function profileScore(m) {
+  const p = (m && m.phone === store.session) ? { ...m, ...store.profile() } : (m || {});
+  let n = 0;
+  if (p.name) n += 15;
+  if (p.photo) n += 15;
+  if (p.city) n += 10;
+  if ((p.trades || []).length) n += 10;
+  if (p.phone) n += 10;
+  if (p.docs || p.verified) n += 15;
+  if ((p.workPhotos || []).length >= 3) n += 15;
+  if (p.verified || p.docs) n += 10;
+  return Math.min(100, n);
+}
+function isSlowMember(m) {
+  const at = Number((m && m.lastAct) || 0);
+  if (!at) return false;
+  return (Date.now() - at) > 14 * 24 * 3600 * 1000;
+}
+function isFreshMember(m) {
+  const at = Number((m && m.lastAct) || 0);
+  return at && (Date.now() - at) < 2 * 24 * 3600 * 1000;
+}
+function touchAct() {
+  const p = store.profile() || {};
+  store.saveProfile({ ...p, lastAct: Date.now() });
+  const users = store.users().map((u) => u.phone === store.session ? { ...u, lastAct: Date.now() } : u);
+  store.saveUsers(users);
+}
+function rankScore(m) {
+  const live = liveRepFor(m.code, m);
+  const stars = live.avg || 0;
+  const comp = profileScore(m) / 100;
+  const ver = isVerifiedMember(m) ? 1.15 : 0.85;
+  const slow = isSlowMember(m) ? 0.8 : 1;
+  const warns = uniqueComplaints(m.code).length;
+  const low = comp < 0.5 ? 0.7 : 1;
+  return stars * ver * slow * low * (0.6 + 0.4 * comp) - warns * 0.35;
+}
 function avgStars(list) {
   const rows = (list || []).filter((r) => Number(r.stars) > 0);
   if (!rows.length) return 0;
@@ -1277,21 +1536,53 @@ function avgStars(list) {
 }
 function liveRepFor(id, fallback) {
   const list = reviewsFor(id);
-  if (list.length) return { avg: avgStars(list), count: list.length };
-  return { avg: (fallback && fallback.rating) || 0, count: (fallback && fallback.reviews) || 0 };
+  if (!list.length) return { avg: (fallback && fallback.rating) || 0, count: (fallback && fallback.reviews) || 0, last: 0 };
+  let wsum = 0, w = 0, last = 0;
+  list.forEach((r) => {
+    const ww = reviewWeight(r);
+    wsum += Number(r.stars || 0) * ww;
+    w += ww;
+    last = Math.max(last, Number(r.at) || 0);
+  });
+  return { avg: w ? Math.round(wsum / w * 10) / 10 : 0, count: list.length, last };
 }
 function reviewsBox(id, kind) {
   const open = store.openRev === id;
   const list = reviewsFor(id);
   const shown = list.map((r) => `<div class="review-item"><b>★${r.stars}</b> ${r.name || t("reviews")} — ${reviewText(r)}</div>`).join("");
-  const form = `<form class="review-write" data-rev-target="${id}">
+  const last = lastReviewAt(id);
+  const lastLine = last ? `<div class="meta">${t("lastReview")}: ${fmtDay(last)}</div>` : "";
+  let form = "";
+  if (isSelfTarget(id)) {
+    form = `<div class="meta">${t("reviewSelf")}</div>`;
+  } else if (store.session && alreadyReviewed(id)) {
+    form = `<div class="meta">${t("reviewOnce")}</div>`;
+  } else if (store.session && !workedWith(id)) {
+    form = `<div class="meta">${t("reviewNeedWork")}</div>
+      <button class="btn ghost" type="button" data-worked="${id}">${t("workedBtn")}</button>`;
+  } else {
+    form = `<form class="review-write" data-rev-target="${id}">
     <label>${kind === "worker" || kind === "offer" ? t("writeReview") : t("writeReviewC")}</label>
     <select name="stars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
     <textarea name="text" placeholder="${t("reviewText")}"></textarea>
     <button class="btn" type="submit">${t("sendReview")}</button>
   </form>`;
+  }
+  form = lastLine + form;
   return `<button class="btn ghost" type="button" data-open-rev="${id}">${open ? t("hideReviews") : t("viewReviews")}</button>
     ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}</div>` : ""}`;
+}
+function complainBox(id) {
+  if (isSelfTarget(id)) return "";
+  if (store.session && hasMyComplaint(id)) return `<div class="meta">${t("complainOnce")}</div>`;
+  return `<form class="complain-write" data-complain-target="${id}">
+    <label>${t("complain")}</label>
+    <textarea name="why" placeholder="${t("complainWhy")}" required></textarea>
+    <label class="filebtn">${t("pickFile")}
+      <input type="file" name="shot" accept="image/*" />
+    </label>
+    <button class="btn danger" type="submit">${t("complain")}</button>
+  </form>`;
 }
 function setLang(lang) {
   store.lang = lang;
@@ -1383,11 +1674,14 @@ function renderSafe() {
     try { main = viewJobDetail(store.openJob); }
     catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
   }
-  else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : viewFeed();
+  else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : store.board === "rules" ? viewRules() : viewFeed();
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
-  else if (store.tab === "profile") main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth();
+  else if (store.tab === "profile") {
+    try { main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth(); }
+    catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p><button class="btn" data-tab="feed">${t("feed")}</button></div>`; }
+  }
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
 
   app.innerHTML = `
@@ -1410,6 +1704,7 @@ function boardNav() {
     <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
     <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
     <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
+    <button class="chip ${store.board === "rules" ? "on" : ""}" data-board="rules">${t("rulesTab")}</button>
   </div>`;
 }
 function cityChips() {
@@ -1523,11 +1818,12 @@ function memberCard(m) {
         <h3>${m.name || m.code}</h3>
         <div class="meta">${m.role === "worker" ? t("nowWorker") : t("nowContractor")} · ${m.city ? ico("city") + cityName(m.city) : ""}</div>
         <div>${starsHtml((liveRepFor(m.code, m).avg), (liveRepFor(m.code, m).count))}</div>
+        <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
         <div class="tt-actions">
           <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
-          ${m.phone ? `<a class="btn" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+          ${m.phone ? `<a class="btn" data-contact="${m.phone}" data-contact-code="${m.code}" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
         </div>
       </div>
     </div>
@@ -1544,10 +1840,25 @@ function viewMembers() {
     <input id="member-q" value="${store.q}" placeholder="K-10421" />
   </div>` + (list.map(memberCard).join("") || `<div class="empty">${t("empty")}</div>`);
 }
+function viewRules() {
+  return boardNav() + `<div class="card rules-card">
+    <h2>${t("rulesTitle")}</h2>
+    <p>${t("rulesLead")}</p>
+    <ol class="rules">
+      <li>${t("rules1")}</li>
+      <li>${t("rules2")}</li>
+      <li>${t("rules3")}</li>
+      <li>${t("rules4")}</li>
+      <li>${t("rules5")}</li>
+      <li>${t("rules6")}</li>
+      <li>${t("rules7")}</li>
+    </ol>
+  </div>`;
+}
 function viewRatingBoard() {
-  const list = memberList().filter((m) => m.reviews || m.closed);
-  const workers = list.filter((m) => m.role === "worker").sort((a, b) => (b.rating - a.rating) || (b.closed - a.closed));
-  const contractors = list.filter((m) => m.role !== "worker").sort((a, b) => (b.rating - a.rating) || (b.closed - a.closed));
+  const list = memberList().filter((m) => m.reviews || m.closed || profileScore(m) >= 50);
+  const workers = list.filter((m) => m.role === "worker").sort((a, b) => rankScore(b) - rankScore(a));
+  const contractors = list.filter((m) => m.role !== "worker").sort((a, b) => rankScore(b) - rankScore(a));
   return boardNav() + `<div class="card"><b>${t("topWorkers")}</b></div>` +
     (workers.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyOffers")}</div>`) +
     `<div class="card"><b>${t("topContractors")}</b></div>` +
@@ -1569,6 +1880,7 @@ function viewFeed() {
       <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
       <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
       <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
+      <button class="chip ${store.board === "rules" ? "on" : ""}" data-board="rules">${t("rulesTab")}</button>
     </div>
     <div class="filters">
       <button class="chip ${store.kind === "all" ? "on" : ""}" data-kind="all">${t("all")}</button>
@@ -1676,32 +1988,42 @@ function docsBlock(m, phone) {
   return `<div class="meta">${t("docsPrivate")}</div><button type="button" class="btn ghost" data-doc-ask="${owner}">${t("docsRequest")}</button>`;
 }
 function viewMemberDetail(code) {
-  const m = memberList().find((x) => x.code === code) || SEED_MEMBERS.find((x) => x.code === code);
-  if (!m) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
-  const worker = m.role === "worker";
-  const about = store.lang === "he" ? (m.aboutHe || m.aboutRu || "") : store.lang === "en" ? (m.aboutEn || m.aboutRu || "") : (m.aboutRu || "");
-  const cities = (m.cities || [m.city]).filter(Boolean).map(cityName).join(", ");
-  const files = asList(m.docFiles);
-  const seed = SEED_MEMBERS.find((x) => x.code === code) || {};
-  const allFiles = files.length ? files : (seed.docFiles || []);
-  const text = about || seed.aboutRu || "";
-  const phone = m.phone || seed.phone || "";
-  const his = publicJobs().filter((j) => !j.archived && !jobExpired(j) && (
-    (m.code && j.posterCode && j.posterCode === m.code) ||
-    (phone && j.phone && normPhone(j.phone) === normPhone(phone))
-  )).sort((a, b) => jobStamp(b) - jobStamp(a));
-  const posts = his.map((j) => {
-    const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
-    return `<button type="button" class="btn ghost" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${title || j.id}${j.budget ? " · " + shekel(j.budget) : ""}</button>`;
-  }).join("");
-  const emptyPosts = worker ? t("noMemberPostsWorker") : t("noMemberPostsKablan");
-  return `${boardNav()}
+  try {
+    const m = memberList().find((x) => x.code === code) || SEED_MEMBERS.find((x) => x.code === code);
+    if (!m) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
+    const worker = m.role === "worker";
+    const about = store.lang === "he" ? (m.aboutHe || m.aboutRu || "") : store.lang === "en" ? (m.aboutEn || m.aboutRu || "") : (m.aboutRu || "");
+    const cities = (m.cities || [m.city]).filter(Boolean).map((c) => cityName(c)).join(", ");
+    const seed = SEED_MEMBERS.find((x) => x.code === code) || {};
+    const text = esc(about || seed.aboutRu || "");
+    const phone = m.phone || seed.phone || "";
+    let posts = "";
+    try {
+      const his = jobsForMember(m);
+      posts = his.map((j) => {
+        const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
+        const mark = j.archived ? " · " + t("myHistory") : jobExpired(j) ? " · " + t("toHistory") : "";
+        return `<button type="button" class="btn ghost" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${esc(title || j.id)}${j.budget ? " · " + shekel(j.budget) : ""}${mark}</button>`;
+      }).join("");
+    } catch (e1) { posts = ""; }
+    const emptyPosts = worker ? t("noMemberPostsWorker") : t("noMemberPostsKablan");
+    const faceSrc = safeFace(m.name, m.photo, worker ? "worker" : "contractor", m.trades);
+    let docs = "";
+    try { docs = docsBlock(m, phone); } catch (e2) { docs = `<div class="meta">${t("noDocs")}</div>`; }
+    let revs = "";
+    try { revs = reviewsBox(m.code, worker ? "worker" : "contractor") + complainBox(m.code); } catch (e3) { revs = ""; }
+    return `${boardNav()}
     <button class="btn ghost" data-close-job="1">${t("back")}</button>
     <article class="card job ${worker ? "offer" : "order"}">
-      <div class="badge ${worker ? "offer" : "order"}">${m.code}</div>
-      <h3>${m.name}</h3>
-      <div class="meta">${worker ? t("nowWorker") : t("nowContractor")} · ${ico("city")}${cities}</div>
-      <div>${starsHtml((liveRepFor(m.code, m).avg), (liveRepFor(m.code, m).count))}</div>
+      <div class="tt-row">
+        <span class="picwrap big file-open" data-view-src="${faceSrc}"><img class="tt-photo" src="${faceSrc}" alt="" /></span>
+        <div class="tt-body">
+          <div class="badge ${worker ? "offer" : "order"}">${esc(m.code)}</div>
+          <h3>${esc(m.name)}</h3>
+          <div class="meta">${worker ? t("nowWorker") : t("nowContractor")} · ${ico("city")}${esc(cities)}</div>
+          <div>${starsHtml((liveRepFor(m.code, m).avg), (liveRepFor(m.code, m).count))}</div>
+        </div>
+      </div>
       <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
       ${galleryHtml(m.workPhotos)}
       <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
@@ -1709,10 +2031,13 @@ function viewMemberDetail(code) {
       <b>${t("boardFeed")}</b>
       ${posts || `<div class="meta">${emptyPosts}</div>`}
       <b>${t("documents")}</b>
-      ${docsBlock(m, phone)}
-      ${reviewsBox(m.code, worker ? "worker" : "contractor")}
-      ${phone ? `<a class="btn" href="${waLink(phone, m.code)}">${t("wa")}</a>` : ""}
+      ${docs}
+      ${revs}
+      ${phone ? `<a class="btn" data-contact="${phone}" data-contact-code="${m.code}" href="${waLink(phone, m.code)}">${t("wa")}</a>` : ""}
     </article>`;
+  } catch (e) {
+    return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><h3>${esc(code)}</h3><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`;
+  }
 }
 function fileView(name, data) {
   if (!name && !data) return "";
@@ -1879,8 +2204,15 @@ function viewReputation() {
     <h3>${code || "—"}</h3>
     <b>${t("rating")}</b>
     <div>${starsHtml(r.avg, r.count)}</div>
-    <div class="tags">${badgesHtml(r)}</div>
+    <div class="tags">${badgesHtml({ ...r, ...p, code, phone: p.phone || (store.user() && store.user().phone), lastAct: p.lastAct })}</div>
+    <div class="meta">${t("complete")}: ${profileScore({ ...p, ...r, code, phone: p.phone || (store.user() && store.user().phone), trades: p.trades, photo: p.photo, workPhotos: p.workPhotos, verified: p.verified, docs: p.docs })}%</div>
+    <button type="button" class="btn ghost" data-board="rules">${t("rulesTab")}</button>
     <p class="meta">${t("docsHint")}</p>
+    <b>${t("verifyTitle")}</b>
+    <p class="meta">${t("verifyHint")}</p>
+    <label class="filebtn">${t("pickFile")}
+      <input type="file" id="verify-file" accept="image/*,.pdf,application/pdf" />
+    </label>
     <label class="check"><input type="checkbox" id="flag-docs" ${p.docs ? "checked" : ""} /> ${t("badgeDocs")}</label>
     <label class="check"><input type="checkbox" id="flag-ins" ${p.insurance ? "checked" : ""} /> ${t("badgeIns")}</label>
     <label>${t("uploadDocs")}</label>
@@ -2217,18 +2549,76 @@ function bind() {
     store.openRev = store.openRev === b.dataset.openRev ? "" : b.dataset.openRev;
     render();
   });
+  document.querySelectorAll("[data-worked]").forEach((b) => {
+    b.onclick = () => {
+      if (!store.session) { alert(t("needLoginReview")); store.tab = "profile"; render(); return; }
+      const id = b.dataset.worked;
+      const owner = findOwnerByTarget(id);
+      markWorked(owner && owner.phone, id);
+      alert(t("workedOk"));
+      store.openRev = id;
+      render();
+    };
+  });
+  document.querySelectorAll("a[data-contact]").forEach((a) => {
+    a.addEventListener("click", () => markWorked(a.getAttribute("data-contact"), a.getAttribute("data-contact-code")));
+  });
+  document.querySelectorAll("form[data-complain-target]").forEach((form) => {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      if (!store.session) { alert(t("complainNeed")); store.tab = "profile"; render(); return; }
+      const id = form.dataset.complainTarget;
+      if (isSelfTarget(id)) { alert(t("complainSelf")); return; }
+      if (hasMyComplaint(id)) { alert(t("complainOnce")); return; }
+      const f = new FormData(form);
+      const file = form.querySelector("input[type=file]") && form.querySelector("input[type=file]").files[0];
+      let shot = "";
+      if (file && String(file.type || "").startsWith("image/")) {
+        shot = await new Promise((resolve) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            const c = document.createElement("canvas");
+            const s = Math.min(1, 900 / Math.max(img.width, img.height));
+            c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+            c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            resolve(c.toDataURL("image/jpeg", 0.7));
+          };
+          img.src = url;
+        });
+      }
+      const map = store.complaints();
+      map[id] = (map[id] || []).concat([{
+        why: String(f.get("why") || ""),
+        shot,
+        fromPhone: myReviewerId(),
+        name: (store.profile() || {}).name || "",
+        at: Date.now()
+      }]);
+      store.saveComplaints(map);
+      try { fetch(fb("/complaints/" + encodeURIComponent(id)), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(map[id]) }).catch(() => {}); } catch (err) {}
+      alert(t("complainOk"));
+      render();
+    };
+  });
   document.querySelectorAll("form.review-write").forEach((form) => {
     form.onsubmit = (e) => {
       e.preventDefault();
       if (!store.session) { alert(t("needLoginReview")); store.tab = "profile"; render(); return; }
       const f = new FormData(form);
       const id = form.dataset.revTarget;
+      if (isSelfTarget(id)) { alert(t("reviewSelf")); return; }
+      if (alreadyReviewed(id)) { alert(t("reviewOnce")); return; }
+      if (!workedWith(id)) { alert(t("reviewNeedWork")); return; }
       const map = store.extraRevs();
       map[id] = (map[id] || []).concat([{
         stars: Number(f.get("stars")),
         text: String(f.get("text") || ""),
         textRu: String(f.get("text") || ""),
         name: store.profile().name || t("reviews"),
+        fromPhone: myReviewerId(),
+        at: Date.now()
       }]);
       store.saveExtraRevs(map);
       try {
@@ -2284,6 +2674,19 @@ function bind() {
     store.saveUsers(users);
     const u = store.user();
     if (u) cloudSaveUser({ ...u, docs: true });
+    render();
+  };
+  const verifyFile = document.getElementById("verify-file");
+  if (verifyFile) verifyFile.onchange = async () => {
+    const f = verifyFile.files[0];
+    if (!f) return;
+    const p = store.profile();
+    store.saveProfile({ ...p, verified: true, verifyPending: true, docs: true, verifyName: f.name, lastAct: Date.now() });
+    const users = store.users().map((u) => u.phone === store.session ? { ...u, verified: true, verifyPending: true, docs: true, lastAct: Date.now() } : u);
+    store.saveUsers(users);
+    const u = store.user();
+    if (u) cloudSaveUser({ ...u, verified: true, docs: true, lastAct: Date.now() });
+    touchAct();
     render();
   };
   document.querySelectorAll("[data-switch]").forEach((b) => {
@@ -2529,11 +2932,7 @@ function bind() {
   const review = document.getElementById("review-form");
   if (review) review.onsubmit = (e) => {
     e.preventDefault();
-    const f = new FormData(review);
-    const p = store.profile();
-    const reviews = (p.reviews || []).concat([{ stars: Number(f.get("stars")), text: String(f.get("text") || "") }]);
-    store.saveProfile({ ...p, reviews });
-    render();
+    alert(t("reviewSelf"));
   };
   const prof = document.getElementById("prof-form");
   if (prof) prof.onsubmit = (e) => {
@@ -2544,7 +2943,9 @@ function bind() {
       name: f.get("name"),
       city: f.get("city"),
       phone: f.get("phone"),
+      lastAct: Date.now()
     });
+    touchAct();
     render();
   };
 }
@@ -2563,12 +2964,31 @@ setLang(store.lang);
           const map = store.extraRevs();
           Object.keys(data).forEach((k) => {
             const rows = Array.isArray(data[k]) ? data[k] : [];
-            map[k] = (map[k] || []).concat(rows.filter((n) => !(map[k] || []).some((o) => o.text === n.text && o.name === n.name && o.stars === n.stars)));
+            map[k] = (map[k] || []).concat(rows.filter((n) => !(map[k] || []).some((o) => {
+              const np = normPhone(n.fromPhone || "");
+              const op = normPhone(o.fromPhone || "");
+              if (np && op && np === op) return true;
+              return o.text === n.text && o.name === n.name && o.stars === n.stars;
+            })));
           });
           store.saveExtraRevs(map);
         }
       }
     } catch (e) {}
+    try {
+      const cc = await fetch(fb("/complaints"));
+      if (cc.ok) {
+        const data = await cc.json();
+        if (data && typeof data === "object") {
+          const map = store.complaints();
+          Object.keys(data).forEach((k) => {
+            const rows = Array.isArray(data[k]) ? data[k] : [];
+            map[k] = (map[k] || []).concat(rows.filter((n) => !(map[k] || []).some((o) => o.fromPhone === n.fromPhone && o.why === n.why)));
+          });
+          store.saveComplaints(map);
+        }
+      }
+    } catch (e2) {}
     pingVisit();
     if (myPhone()) {
       await loadPrivDocs(myPhone());
