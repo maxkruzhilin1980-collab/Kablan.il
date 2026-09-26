@@ -193,7 +193,7 @@ const I18N = {
     noMemberPosts: "Объявлений пока нет.",
     noMemberPostsWorker: "Мастер ещё не выставил «ищу работу».",
     noMemberPostsKablan: "Каблан ещё не выставил заказ.",
-    wa: "Написать в WhatsApp",
+    wa: "WhatsApp",
     posted: "Заявка в ленте",
     ad: "Сюда позже встанет реклама магазина материалов — сервис для кабланов и мастеров бесплатный.",
     demo: "Примеры заявок уже в ленте. Свои хранятся в этом телефоне.",
@@ -407,7 +407,7 @@ const I18N = {
     noMemberPosts: "אין מודעות עדיין.",
     noMemberPostsWorker: "הפועל עוד לא פרסם «מחפש עבודה».",
     noMemberPostsKablan: "הקבלן עוד לא פרסם הזמנה.",
-    wa: "וואטסאפ",
+    wa: "WhatsApp",
     posted: "המודעה בלוח",
     ad: "כאן תהיה פרסומת לחנות חומרים. השירות לקבלנים ולמקצוענים בחינם.",
     demo: "יש מודעות לדוגמה. המודעות שלכם נשמרות בטלפון.",
@@ -978,13 +978,37 @@ async function cloudLoad() {
   }
   return cloudCache;
 }
+async function putJobFile(jobId, kind, dataUrl) {
+  const raw = String(dataUrl || "");
+  if (!raw) return "";
+  if (raw.startsWith("http") || raw.startsWith("icons/")) return raw;
+  if (!raw.startsWith("data:")) return raw;
+  const ext = raw.startsWith("data:application/pdf") ? "pdf" : "jpg";
+  return (await storagePut("plans/" + jobId + "/" + kind + "." + ext, raw)) || "";
+}
+function planGuessUrl(jobId) {
+  if (!jobId) return "";
+  return "https://firebasestorage.googleapis.com/v0/b/" + FB_BUCKET + "/o/" + encodeURIComponent("plans/" + jobId + "/plan.jpg") + "?alt=media";
+}
 async function cloudSave(job) {
   const id = String(job.cloudId || job.id || ("j" + Date.now()));
-  const body = JSON.stringify({ ...slimJob(job), cloudId: id });
+  const planUrl = await putJobFile(id, "plan", job.planData);
+  const extras = [];
+  const extraList = Array.isArray(job.extraDocs) ? job.extraDocs : [];
+  for (let i = 0; i < extraList.length; i++) {
+    const f = extraList[i] || {};
+    const url = await putJobFile(id, "doc" + i, f.data);
+    extras.push({ name: f.name || "", data: url });
+  }
+  const body = JSON.stringify({ ...slimJob({ ...job, planData: planUrl || job.planData, extraDocs: extras.length ? extras : job.extraDocs }), cloudId: id });
   try {
     const res = await fetch(fb("/jobs/" + id), { method: "PUT", headers: { "Content-Type": "application/json" }, body });
     if (!res.ok) throw new Error("put");
     cloudOk = true;
+    if (planUrl) {
+      const list = store.jobs().map((j) => j.id === job.id || j.cloudId === id ? { ...j, planData: planUrl, cloudId: id } : j);
+      store.saveJobs(list);
+    }
     return id;
   } catch (e) {
     cloudOk = false;
@@ -1178,6 +1202,7 @@ function jobsForMember(m) {
 
 
 const ICO = {
+  wa: "M12 2C6.5 2 2 6.2 2 11.4c0 1.8.5 3.5 1.5 5L2 22l5.7-1.5c1.4.8 3 1.2 4.6 1.2 5.5 0 10-4.2 10-9.3S17.5 2 12 2zm5.2 13.1c-.2.6-1.1 1.1-1.6 1.2-.4.1-.8.2-1.4.1-.8-.1-1.7-.4-2.8-1.1-1.7-1-3.1-2.6-3.6-3.3-.4-.6-.9-1.4-.9-2.2 0-.7.4-1.1.7-1.3.2-.2.4-.3.6-.3h.5c.2 0 .3 0 .4.3l.7 1.6c.1.2 0 .4-.1.5l-.3.4c-.2.2-.2.3-.1.5.3.5.9 1.3 1.8 2 .8.7 1.5 1 1.8 1.1.2.1.4 0 .5-.1l.4-.5c.2-.2.3-.2.5-.1l1.6.8c.2.1.3.2.3.4.1.2 0 .7-.2 1.3z",
   tile: "M4 10l8-6 8 6v10H4V10zm8 2v6",
   elec: "M13 2L4 14h7l-1 8 9-12h-7l1-8z",
   paint: "M12 3l7 7-8 8H6v-5l6-10zM5 20h14",
@@ -1672,6 +1697,11 @@ function waLink(phone, text) {
   return `https://wa.me/${full}?text=${encodeURIComponent(text || "")}`;
 }
 
+function waBtn(phone, code) {
+  if (!phone) return "";
+  return `<a class="btn wa-btn" data-contact="${phone}" data-contact-code="${code || ""}" href="${waLink(phone, code)}">${ico("wa")}<span>WhatsApp</span></a>`;
+}
+
 function render() {
   try { renderSafe(); } catch (e) {
     const app = document.getElementById("app");
@@ -1853,7 +1883,7 @@ function memberCard(m) {
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
         <div class="tt-actions">
           <button class="btn ghost" type="button" data-open-member="${m.code}">${t("details")}</button>
-          ${m.phone ? `<a class="btn" data-contact="${m.phone}" data-contact-code="${m.code}" href="${waLink(m.phone, m.code)}">${t("wa")}</a>` : ""}
+          ${m.phone ? waBtn(m.phone, m.code) : ""}
         </div>
       </div>
     </div>
@@ -1952,7 +1982,7 @@ function viewFeed() {
           ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>` : ""}
           <div class="tt-actions">
             <button class="btn ghost" type="button" data-open-job="${j.id}">${t("details")}</button>
-            <a class="btn" href="${waLink(j.phone, text)}">${t("wa")}</a>
+            ${waBtn(j.phone, j.posterCode || text)}
           </div>
         </div>
       </div>
@@ -2063,31 +2093,33 @@ function viewMemberDetail(code) {
       ${posts || `<div class="meta">${emptyPosts}</div>`}
       <b>${t("documents")}</b>
       ${docs}
+      ${phone ? `<div class="wa-row">${waBtn(phone, m.code)}</div>` : ""}
       ${revs}
-      ${phone ? `<a class="btn" data-contact="${phone}" data-contact-code="${m.code}" href="${waLink(phone, m.code)}">${t("wa")}</a>` : ""}
     </article>`;
   } catch (e) {
     return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><h3>${esc(code)}</h3><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`;
   }
 }
-function fileView(name, data) {
+function fileView(name, data, jobId) {
   if (!name && !data) return "";
   let raw = String(data || "");
   if (!raw && /plan-sample|tohnit-bathroom|3room-tohnit|points-plan/i.test(String(name || ""))) raw = "icons/plan-sample.jpg";
+  if (!raw && jobId && /\.(png|jpe?g|gif|webp|pdf)$/i.test(String(name || ""))) raw = planGuessUrl(jobId);
   const label = `${t("openFile")}${name ? " — " + name : ""}`;
-  const isImg = raw.startsWith("data:image") || /\.(png|jpe?g|gif|webp)(\?|$)/i.test(raw) || raw.startsWith("icons/");
-  const isPdf = raw.startsWith("data:application/pdf") || /\.pdf(\?|$)/i.test(raw);
-  if (isImg) {
+  const looksImg = /\.(png|jpe?g|gif|webp)(\?|$)/i.test(raw) || /\.(png|jpe?g|gif|webp)$/i.test(String(name || "")) || raw.startsWith("data:image") || raw.startsWith("icons/") || (raw.startsWith("http") && raw.indexOf(".pdf") < 0);
+  const isPdf = raw.startsWith("data:application/pdf") || /\.pdf(\?|$)/i.test(raw) || /\.pdf$/i.test(String(name || ""));
+  if (raw && looksImg && !isPdf) {
     return `<button type="button" class="file-open" data-view-src="${raw.replace(/"/g, "")}" data-view-kind="img">
-      <img class="plan-preview" src="${raw}" alt="${name || ""}" />
+      <img class="plan-preview" src="${raw.replace(/"/g, "")}" alt="${name || ""}" />
       <span class="plan-name">${label}</span>
     </button>`;
   }
-  if (isPdf || raw.startsWith("data:")) {
-    return `<button type="button" class="btn ghost file-open" data-view-src="${raw.replace(/"/g, "")}" data-view-kind="pdf">${label}</button>`;
+  if (raw && (isPdf || raw.startsWith("data:") || raw.startsWith("http"))) {
+    return `<button type="button" class="btn ghost file-open" data-view-src="${raw.replace(/"/g, "")}" data-view-kind="${isPdf ? "pdf" : "img"}">${label}</button>`;
   }
-  return name ? `<div class="plan-name">📄 ${name}</div>` : "";
+  return name ? `<div class="plan-name">📄 ${name} — ${t("planMissing")}</div>` : "";
 }
+
 function viewJobDetail(id) {
   const j = findJob(id);
   if (!j) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
@@ -2110,10 +2142,10 @@ function viewJobDetail(id) {
       ${offer ? `<div class="flags">${flagsHtml(j.flags)}</div>${j.flags && j.flags.length ? `<div class="meta">${t("flagsHint")}</div>` : ""}` : ""}
       <b>${offer ? t("offerDetails") : t("jobDetails")}</b>
       <p>${desc || t("noDesc")}</p>
-      ${offer ? galleryHtml((j.workPhotos && j.workPhotos.length ? j.workPhotos : ((poster && poster.workPhotos) || []))) : (fileView(j.planName, j.planData) ? `<b>${t("plan")}</b>${fileView(j.planName, j.planData)}` : "")}
+      ${offer ? galleryHtml((j.workPhotos && j.workPhotos.length ? j.workPhotos : ((poster && poster.workPhotos) || []))) : ((fileView(j.planName, j.planData, j.cloudId || j.id) ? `<b>${t("plan")}</b>${fileView(j.planName, j.planData, j.cloudId || j.id)}` : (j.planName ? `<b>${t("plan")}</b><div class="plan-name">📄 ${j.planName}</div>` : "")) + (isMine(j) ? `<label class="filebtn">${t("plan")} · ${t("pickFile")}<input type="file" id="replan-file" accept="image/*,.pdf,application/pdf" /></label>` : ""))}
       ${!offer && extraHtml ? `<b>${t("extraDocs")}</b>${extraHtml}` : ""}
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
-      <a class="btn" href="${waLink(j.phone, title)}">${t("wa")}</a>
+      <div class="wa-row">${waBtn(j.phone, j.posterCode || title)}</div>
       ${isMine(j) ? `<button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>` : ""}
     </article>
     <div class="card">
@@ -2477,6 +2509,28 @@ function bind() {
   });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
   document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; render(); });
+  const replan = document.getElementById("replan-file");
+  if (replan) replan.onchange = async () => {
+    const f = replan.files[0];
+    if (!f || !store.openJob) return;
+    const job = findJob(store.openJob);
+    if (!job || !isMine(job)) return;
+    const data = String(f.type || "").startsWith("image/") ? await compressImageFile(f, 1400, 0.72) : "";
+    const payload = data || await new Promise((resolve) => {
+      if (f.size > 900000) { resolve(""); return; }
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result || ""));
+      r.readAsDataURL(f);
+    });
+    if (!payload) { alert(t("planMissing")); return; }
+    const id = job.cloudId || job.id;
+    const url = await putJobFile(id, "plan", payload);
+    const list = store.jobs().map((j) => j.id === job.id ? { ...j, planName: f.name, planData: url || payload } : j);
+    store.saveJobs(list);
+    await cloudSave({ ...job, planName: f.name, planData: url || payload, cloudId: id });
+    await cloudLoad();
+    render();
+  };
   const photo = document.getElementById("photo-file");
   if (photo) photo.onchange = async () => {
     const f = photo.files[0];
