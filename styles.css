@@ -360,3 +360,21 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 }
 .wa-row { margin: 8px 0 0; }
 .tt-card .wa-btn { width: 100% !important; max-width: none !important; }
+
+.kind-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.kind-btn, .city-btn {
+  display: flex; align-items: center; gap: 8px; text-align: left;
+  width: 100%; border: 1px solid var(--line); background: #fff;
+  border-radius: 16px; padding: 12px 12px; font: inherit; cursor: pointer;
+}
+.kind-btn.on, .city-btn.on { border-color: #009fd9; background: #eef8fc; }
+.kind-btn b, .city-btn b { display: block; font-size: 14px; }
+.kind-btn small, .city-btn small { display: block; color: var(--muted); font-size: 12px; }
+.city-btn { margin-bottom: 8px; min-height: 56px; }
+.sheet { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px; margin: 0 0 12px; }
+.sheet-title { font-weight: 700; margin: 4px 6px 8px; }
+.sheet-item {
+  display: block; width: 100%; text-align: left; border: 0; background: transparent;
+  padding: 11px 10px; border-radius: 10px; font: inherit; cursor: pointer;
+}
+.sheet-item.on { background: #eef8fc; color: #009fd9; font-weight: 700; }

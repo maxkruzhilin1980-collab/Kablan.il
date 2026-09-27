@@ -132,6 +132,14 @@ const I18N = {
     filterJobs: "Ищу мастера",
     sortNew: "Новые",
     sortBest: "Сначала лучшие",
+    cityPick: "Город",
+    radius0: "Только город",
+    radius20: "+20 км",
+    radius40: "+40 км",
+    radius80: "+80 км",
+    radiusAll: "Вся страна",
+    pickTrade: "Профессия",
+    allTrades: "Все профессии",
     demoTag: "Пример",
     filterOffers: "Ищу заказ",
     badgeJob: "Заказ",
@@ -356,6 +364,14 @@ const I18N = {
     filterJobs: "מחפש מקצוען",
     sortNew: "חדשים",
     sortBest: "הכי טובים",
+    cityPick: "עיר",
+    radius0: "רק העיר",
+    radius20: "+20 ק״מ",
+    radius40: "+40 ק״מ",
+    radius80: "+80 ק״מ",
+    radiusAll: "כל הארץ",
+    pickTrade: "מקצוע",
+    allTrades: "כל המקצועות",
     demoTag: "דוגמה",
     filterOffers: "מחפש עבודה",
     badgeJob: "הזמנה",
@@ -580,6 +596,14 @@ const I18N = {
     filterJobs: "Looking for a pro",
     sortNew: "Newest",
     sortBest: "Best first",
+    cityPick: "City",
+    radius0: "This city",
+    radius20: "+20 km",
+    radius40: "+40 km",
+    radius80: "+80 km",
+    radiusAll: "All Israel",
+    pickTrade: "Trade",
+    allTrades: "All trades",
     demoTag: "Sample",
     filterOffers: "Looking for a job",
     badgeJob: "Job",
@@ -824,6 +848,10 @@ const store = {
   get filter() { return localStorage.getItem("bil_filter") || "all"; },
   set filter(v) { localStorage.setItem("bil_filter", v); },
   get cityFilter() { return localStorage.getItem("bil_cityf") || "all"; },
+  get radius() { return localStorage.getItem("bil_radius") || "40"; },
+  set radius(v) { localStorage.setItem("bil_radius", String(v)); },
+  get panel() { return localStorage.getItem("bil_panel") || ""; },
+  set panel(v) { localStorage.setItem("bil_panel", v || ""); },
   get sort() { return localStorage.getItem("bil_sort") || "new"; },
   set sort(v) { localStorage.setItem("bil_sort", v); },
   set cityFilter(v) { localStorage.setItem("bil_cityf", v); },
@@ -1755,7 +1783,7 @@ function renderSafe() {
     try { main = viewJobDetail(store.openJob); }
     catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
   }
-  else if (store.tab === "feed") main = store.board === "members" ? viewMembers() : store.board === "rating" ? viewRatingBoard() : store.board === "rules" ? viewRules() : viewFeed();
+  else if (store.tab === "feed") main = store.board === "rules" ? viewRules() : viewFeed();
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
@@ -1790,6 +1818,19 @@ function cityChips() {
     .join("");
   return `<div class="filters"><label class="citypick">${ico("city")}<select id="city-filter">${opts}</select></label></div>`;
 }
+const CITY_XY = {
+  tlv:[32.08,34.78], rishon:[31.97,34.79], netanya:[32.33,34.86], haifa:[32.79,34.99],
+  jerusalem:[31.77,35.22], petah:[32.09,34.89], ashdod:[31.80,34.65], beer:[31.25,34.79],
+  holon:[32.02,34.77], herzliya:[32.16,34.84], rehovot:[31.89,34.81], eilat:[29.56,34.95],
+  ashkelon:[31.67,34.57], kfar:[32.18,34.91], batyam:[32.02,34.75], modiim:[31.90,35.01]
+};
+function cityKm(a, b) {
+  const A = CITY_XY[a], B = CITY_XY[b];
+  if (!A || !B) return a === b ? 0 : 9999;
+  const R = 6371, dLat = (B[0]-A[0])*Math.PI/180, dLon = (B[1]-A[1])*Math.PI/180;
+  const x = Math.sin(dLat/2)**2 + Math.cos(A[0]*Math.PI/180)*Math.cos(B[0]*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1, Math.sqrt(x)));
+}
 const NEAR = {
   tlv: ["tlv","rishon","petah","holon","batyam","herzliya","kfar"],
   rishon: ["rishon","tlv","holon","rehovot","ashdod","batyam"],
@@ -1810,10 +1851,11 @@ const NEAR = {
 };
 function nearCities(id) { return NEAR[id] || (id && id !== "all" ? [id] : []); }
 function inCity(item) {
-  if (store.cityFilter === "all") return true;
+  if (store.cityFilter === "all" || store.radius === "999") return true;
   const cities = item.cities || (item.city ? [item.city] : []);
-  const allow = new Set(nearCities(store.cityFilter));
-  return cities.some((c) => allow.has(c));
+  const r = Number(store.radius || 40);
+  if (!r) return cities.includes(store.cityFilter);
+  return cities.some((c) => c === store.cityFilter || cityKm(store.cityFilter, c) <= r + 1);
 }
 function jobAmount(j) {
   const raw = String((j && j.budget) || "");
@@ -1960,6 +2002,24 @@ function viewRatingBoard() {
     `<div class="card"><b>${t("topContractors")}</b></div>` +
     (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
 }
+
+function filterPanel() {
+  if (store.panel === "trade") {
+    const rows = [`<button class="sheet-item ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("allTrades")}</button>`]
+      .concat(TRADES.map(([id]) => `<button class="sheet-item ${store.filter === id ? "on" : ""}" data-filter="${id}">${tradeLabel(id)}</button>`));
+    return `<div class="sheet"><div class="sheet-title">${t("pickTrade")}</div>${rows.join("")}</div>`;
+  }
+  if (store.panel === "city") {
+    const rads = [["0", t("radius0")],["20", t("radius20")],["40", t("radius40")],["80", t("radius80")],["999", t("radiusAll")]];
+    const cities = [`<button class="sheet-item ${store.cityFilter === "all" ? "on" : ""}" data-city="all">${t("all")}</button>`]
+      .concat(CITIES.map((row) => `<button class="sheet-item ${store.cityFilter === row[0] ? "on" : ""}" data-city="${row[0]}">${loc(row)}</button>`));
+    return `<div class="sheet"><div class="sheet-title">${t("cityPick")}</div>
+      <div class="filters">${rads.map(([v,l]) => `<button class="chip ${store.radius === v ? "on" : ""}" data-radius="${v}">${l}</button>`).join("")}</div>
+      ${cities.join("")}</div>`;
+  }
+  return "";
+}
+
 function viewFeed() {
   const own = publicJobs().filter((j) => !j.archived && !jobExpired(j))
     .sort((a, b) => jobStamp(b) - jobStamp(a));
@@ -1972,17 +2032,19 @@ function viewFeed() {
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
   filtered = filtered.filter(inCity).filter(inPay);
   store.payFilter = "all";
-  const kinds = `<div class="filters">
-      <button class="chip ${store.kind === "offer" ? "on" : ""}" data-kind="offer">${ico("worker")}${t("filterJobs")}</button>
-      <button class="chip ${store.kind === "job" ? "on" : ""}" data-kind="job">${ico("contractor")}${t("filterOffers")}</button>
+  const tradeNow = store.filter === "all" ? t("allTrades") : tradeLabel(store.filter);
+  const cityNow = store.cityFilter === "all" ? t("all") : cityName(store.cityFilter);
+  const radLbl = store.cityFilter === "all" || store.radius === "999" ? t("radiusAll") : store.radius === "0" ? t("radius0") : ("+" + store.radius + " " + "км");
+  const kinds = `<div class="kind-row">
+      <button class="kind-btn ${store.kind === "offer" ? "on" : ""}" data-kind="offer" data-panel="trade">${ico("worker")}<span><b>${t("filterJobs")}</b><small>${tradeNow}</small></span></button>
+      <button class="kind-btn ${store.kind === "job" ? "on" : ""}" data-kind="job" data-panel="trade">${ico("contractor")}<span><b>${t("filterOffers")}</b><small>${tradeNow}</small></span></button>
+    </div>
+    <button class="city-btn" type="button" data-panel="city">${ico("city")}<span><b>${cityNow}</b><small>${radLbl}</small></span></button>
+    <div class="filters">
       <button class="chip ${store.sort === "new" ? "on" : ""}" data-sort="new">${t("sortNew")}</button>
       <button class="chip ${store.sort === "best" ? "on" : ""}" data-sort="best">${t("sortBest")}</button>
-      <label class="citypick">${ico("city")}<select id="city-filter">${[`<option value="all">${t("all")}</option>`].concat(CITIES.map((row) => `<option value="${row[0]}" ${store.cityFilter === row[0] ? "selected" : ""}>${loc(row)}</option>`)).join("")}</select></label>
-    </div>`;
-  const chips = `<div class="filters">` +
-    [`<button class="chip ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("all")}</button>`]
-      .concat(TRADES.filter(([id]) => id !== "other").map(([id]) => `<button class="chip ${store.filter === id ? "on" : ""}" data-filter="${id}">${tradeLabel(id)}</button>`))
-      .join("") + `</div>`;
+    </div>` + filterPanel();
+  const chips = "";
   if (!filtered.length) {
     const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
     return kinds + chips + `<div class="empty">${msg}</div>`;
@@ -2516,7 +2578,11 @@ function bindViewer() {
 function bind() {
   document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); render(); });
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { store.role = b.dataset.role; store.tab = "feed"; render(); });
-  document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { store.tab = b.dataset.tab; render(); });
+  document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => {
+    store.tab = b.dataset.tab;
+    if (b.dataset.tab === "feed") { store.board = "feed"; store.openJob = ""; }
+    render();
+  });
   document.querySelectorAll("[data-guests]").forEach((b) => b.onclick = async () => {
     showGuests = !showGuests;
     if (showGuests) await loadGuests();
@@ -2535,8 +2601,8 @@ function bind() {
     store.admin = false;
     render();
   });
-  document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; render(); });
-  document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; render(); });
+  document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; store.panel = ""; render(); });
+  document.querySelectorAll("[data-city]").forEach((b) => b.onclick = () => { store.cityFilter = b.dataset.city; if (b.dataset.city === "all") store.radius = "999"; store.panel = ""; render(); });
   const replan = document.getElementById("replan-file");
   if (replan) replan.onchange = async () => {
     const f = replan.files[0];
@@ -2594,7 +2660,16 @@ function bind() {
     }
     render();
   };
-  document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => { store.kind = b.dataset.kind; render(); });
+  document.querySelectorAll("[data-kind]").forEach((b) => b.onclick = () => {
+    store.kind = b.dataset.kind;
+    store.panel = store.panel === "trade" ? "" : "trade";
+    render();
+  });
+  document.querySelectorAll("[data-panel]").forEach((b) => {
+    if (b.dataset.kind) return;
+    b.onclick = () => { store.panel = store.panel === b.dataset.panel ? "" : b.dataset.panel; render(); };
+  });
+  document.querySelectorAll("[data-radius]").forEach((b) => b.onclick = () => { store.radius = b.dataset.radius; render(); });
   document.querySelectorAll("[data-sort]").forEach((b) => b.onclick = () => { store.sort = b.dataset.sort; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
@@ -3065,6 +3140,18 @@ function bind() {
 }
 
 setLang(store.lang);
+(function resetStale() {
+  const ver = "68";
+  if (localStorage.getItem("bil_appv") !== ver) {
+    localStorage.setItem("bil_appv", ver);
+    localStorage.setItem("bil_board", "feed");
+    localStorage.setItem("bil_tab", "feed");
+    store.board = "feed";
+    store.tab = "feed";
+    store.openJob = "";
+  }
+})();
+
 try {
   if (store.cityFilter === "all") {
     const pc = (store.profile() || {}).city;
