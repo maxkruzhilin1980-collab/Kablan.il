@@ -341,6 +341,9 @@ const I18N = {
     docsDeny: "Отклонить",
     worksDone: "Состав работ",
     photo: "Фото профиля",
+    photoChange: "Нажмите на фото, чтобы сменить",
+    loginToReview: "Отзыв может оставить только зарегистрированный пользователь.",
+    loginToMembers: "Участников видят только зарегистрированные.",
     workPhotos: "Фото работ",
     workPhotosHint: "Фото работ: JPG, до 6 штук. Не видео и не HEIC с iPhone.",
     worksCount: "Работ",
@@ -573,6 +576,9 @@ const I18N = {
     docsDeny: "דחה",
     worksDone: "פירוט עבודות",
     photo: "תמונת פרופיל",
+    photoChange: "לחצו על התמונה להחלפה",
+    loginToReview: "רק משתמש רשום יכול להשאיר חוות דעת.",
+    loginToMembers: "רק משתמשים רשומים רואים משתתפים.",
     workPhotos: "תמונות עבודות",
     workPhotosHint: "תמונות עבודה ב-JPG, עד 6. בלי וידאו ו-HEIC.",
     worksCount: "עבודות",
@@ -805,6 +811,9 @@ const I18N = {
     docsDeny: "Deny",
     worksDone: "Work items",
     photo: "Profile photo",
+    photoChange: "Tap the photo to change it",
+    loginToReview: "Only registered users can leave a review.",
+    loginToMembers: "Only registered users can see members.",
     workPhotos: "Work photos",
     workPhotosHint: "Work photos as JPG, up to 6. No video or HEIC.",
     worksCount: "Jobs",
@@ -1305,6 +1314,35 @@ function loc(row) {
   if (store.lang === "en") return row[3] || row[1];
   return row[1];
 }
+
+function phraseBook() {
+  const rows = [];
+  TRADES.forEach((r) => rows.push([r[1], r[2], r[3]]));
+  Object.keys(WORKS).forEach((k) => WORKS[k].forEach((r) => rows.push([r[1], r[2], r[3]])));
+  rows.sort((a, b) => Math.max(...a.map((x) => String(x||"").length)) - Math.max(...b.map((x) => String(x||"").length)));
+  return rows.reverse();
+}
+function toLangText(text, lang) {
+  let s = String(text || "");
+  if (!s) return "";
+  const idx = lang === "he" ? 1 : lang === "en" ? 2 : 0;
+  phraseBook().forEach((row) => {
+    const dst = row[idx];
+    if (!dst) return;
+    row.forEach((src) => {
+      if (src && src !== dst && s.indexOf(src) >= 0) s = s.split(src).join(dst);
+    });
+  });
+  return s;
+}
+function jobTitle(j) {
+  const raw = store.lang === "he" ? (j.titleHe || j.titleRu || j.titleEn) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe || j.titleEn);
+  return toLangText(raw, store.lang);
+}
+function jobDesc(j) {
+  const raw = store.lang === "he" ? (j.descHe || j.descRu || j.descEn || j.other) : store.lang === "en" ? (j.descEn || j.descRu || j.descHe || j.other) : (j.descRu || j.descHe || j.descEn || j.other);
+  return toLangText(raw, store.lang);
+}
 function tradeName(id) {
   const row = TRADES.find((x) => x[0] === id);
   if (!row) return id;
@@ -1661,6 +1699,8 @@ function reviewsBox(id, kind) {
   let form = "";
   if (isSelfTarget(id)) {
     form = `<div class="meta">${t("reviewSelf")}</div>`;
+  } else if (!store.session) {
+    form = `<div class="meta">${t("loginToReview")}</div><button class="btn ghost" type="button" data-tab="profile">${t("login")}</button>`;
   } else if (store.session && alreadyReviewed(id)) {
     form = `<div class="meta">${t("reviewOnce")}</div>`;
   } else if (store.session && !workedWith(id)) {
@@ -1680,6 +1720,7 @@ function reviewsBox(id, kind) {
 }
 function complainBox(id) {
   if (isSelfTarget(id)) return "";
+  if (!store.session) return `<div class="meta">${t("loginToReview")}</div>`;
   if (store.session && hasMyComplaint(id)) return `<div class="meta">${t("complainOnce")}</div>`;
   return `<form class="complain-write" data-complain-target="${id}">
     <label>${t("complain")}</label>
@@ -1783,7 +1824,7 @@ function renderSafe() {
     try { main = viewJobDetail(store.openJob); }
     catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
   }
-  else if (store.tab === "feed") main = store.board === "rules" ? viewRules() : viewFeed();
+  else if (store.tab === "feed") main = store.board === "rules" ? viewRules() : store.board === "members" ? (user ? viewMembers() : viewAuth()) : store.board === "rating" ? (user ? viewRatingBoard() : viewAuth()) : viewFeed();
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
@@ -1809,8 +1850,12 @@ function renderSafe() {
 }
 
 function boardNav() {
-  if (store.board === "feed" && !store.openJob) return "";
-  return `<div class="filters"><button class="chip" data-board="feed" data-close-job="1">${t("back")}</button></div>`;
+  if (store.openJob) return `<div class="filters"><button class="chip" data-board="feed" data-close-job="1">${t("back")}</button></div>`;
+  return `<div class="filters">
+    <button class="chip ${store.board === "feed" ? "on" : ""}" data-board="feed">${t("boardFeed")}</button>
+    <button class="chip ${store.board === "members" ? "on" : ""}" data-board="members">${t("members")}</button>
+    <button class="chip ${store.board === "rating" ? "on" : ""}" data-board="rating">${t("ratingBoard")}</button>
+  </div>`;
 }
 function cityChips() {
   const opts = [`<option value="all">${t("all")}</option>`]
@@ -2043,6 +2088,8 @@ function viewFeed() {
     <div class="filters">
       <button class="chip ${store.sort === "new" ? "on" : ""}" data-sort="new">${t("sortNew")}</button>
       <button class="chip ${store.sort === "best" ? "on" : ""}" data-sort="best">${t("sortBest")}</button>
+      <button class="chip" data-board="members">${t("members")}</button>
+      <button class="chip" data-board="rating">${t("ratingBoard")}</button>
     </div>` + filterPanel();
   const chips = "";
   if (!filtered.length) {
@@ -2063,7 +2110,7 @@ function viewFeed() {
   });
   return kinds + chips + filtered.map((j) => {
     const offer = j.kind === "offer";
-    const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu || j.titleHe) : (j.titleRu || j.titleHe);
+    const title = jobTitle(j);
     const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
     const text = `${title} — ${cities}`;
     const demo = demoIds.has(j.id);
@@ -2154,7 +2201,7 @@ function viewMemberDetail(code) {
     try {
       const his = jobsForMember(m);
       posts = his.map((j) => {
-        const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
+        const title = jobTitle(j);
         const mark = j.archived ? " · " + t("myHistory") : jobExpired(j) ? " · " + t("toHistory") : "";
         return `<button type="button" class="btn ghost" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${esc(title || j.id)}${j.budget ? " · " + shekel(j.budget) : ""}${mark}</button>`;
       }).join("");
@@ -2216,8 +2263,8 @@ function viewJobDetail(id) {
   const j = findJob(id);
   if (!j) return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p></div>`;
   const offer = j.kind === "offer";
-  const title = store.lang === "he" ? (j.titleHe || j.titleRu) : store.lang === "en" ? (j.titleEn || j.titleRu) : (j.titleRu || j.titleHe);
-  const desc = store.lang === "he" ? (j.descHe || j.descRu || j.other || "") : store.lang === "en" ? (j.descEn || j.descRu || j.other || "") : (j.descRu || j.other || "");
+  const title = jobTitle(j);
+  const desc = jobDesc(j);
   const cities = (j.cities || [j.city]).filter(Boolean).map(cityName).join(", ");
   const poster = findPoster(j);
   const extra = asList(j.extraDocs).concat(j.extraName ? [{ name: j.extraName, data: j.extraData }] : []);
@@ -2499,7 +2546,14 @@ function viewProfile() {
   const cities = CITIES.map((row) => `<option value="${row[0]}" ${p.city === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
   const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
   return `<div class="card profile-bg page-head">
-    <img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" />
+    <label class="avatar-edit">
+      <img class="avatar lg" src="${safeFace(p.name, p.photo, store.role, p.trades)}" alt="" />
+      <input type="file" id="photo-file" accept="image/*" />
+    </label>
+    <div class="meta">${t("photoChange")}</div>
+    <label class="filebtn">${t("pickFile")} · ${t("photo")}
+      <input type="file" id="photo-file-btn" accept="image/*" />
+    </label>
     <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
@@ -2625,9 +2679,8 @@ function bind() {
     await cloudLoad();
     render();
   };
-  const photo = document.getElementById("photo-file");
-  if (photo) photo.onchange = async () => {
-    const f = photo.files[0];
+  const onPhoto = async (el) => {
+    const f = el && el.files && el.files[0];
     if (!f) return;
     const data = await compressImageFile(f, 700, 0.7);
     if (!data) return;
@@ -2640,6 +2693,10 @@ function bind() {
     }
     render();
   };
+  const photo = document.getElementById("photo-file");
+  if (photo) photo.onchange = () => onPhoto(photo);
+  const photoBtn = document.getElementById("photo-file-btn");
+  if (photoBtn) photoBtn.onchange = () => onPhoto(photoBtn);
   const workPhotos = document.getElementById("work-photos");
   if (workPhotos) workPhotos.onchange = async () => {
     const files = [...(workPhotos.files || [])].slice(0, 6);
@@ -2675,6 +2732,7 @@ function bind() {
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); notifyOwnerWa(findOwnerByTarget(b.dataset.openJob), "view"); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => {
+    if (!store.session) { store.tab = "profile"; render(); return; }
     const code = b.dataset.openMember;
     store.openJob = "member:" + code;
     store.tab = "feed";
@@ -3006,9 +3064,9 @@ function bind() {
       trade: trades[0],
       trades,
       city: f.get("city"),
-      titleRu: title,
-      titleHe: title,
-      titleEn: title,
+      titleRu: toLangText(title, "ru"),
+      titleHe: toLangText(title, "he"),
+      titleEn: toLangText(title, "en"),
       dates,
       budget,
       phone: f.get("phone"),
@@ -3016,9 +3074,9 @@ function bind() {
       planData: plan.data,
       extraDocs,
       other,
-      descRu: descText,
-      descHe: descText,
-      descEn: descText,
+      descRu: toLangText(descText, "ru"),
+      descHe: toLangText(descText, "he"),
+      descEn: toLangText(descText, "en"),
       posterCode: (store.user() && store.user().code) || store.profile().code || "",
       name: store.profile().name || "",
       docs: Boolean(store.profile().docs),
@@ -3080,9 +3138,9 @@ function bind() {
       trades,
       cities,
       city: cities[0],
-      titleRu: title,
-      titleHe: title,
-      titleEn: title,
+      titleRu: toLangText(title, "ru"),
+      titleHe: toLangText(title, "he"),
+      titleEn: toLangText(title, "en"),
       phone,
       name,
       flags,
