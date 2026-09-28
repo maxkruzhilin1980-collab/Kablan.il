@@ -2551,9 +2551,6 @@ function viewProfile() {
       <input type="file" id="photo-file" accept="image/*" />
     </label>
     <div class="meta">${t("photoChange")}</div>
-    <label class="filebtn">${t("pickFile")} · ${t("photo")}
-      <input type="file" id="photo-file-btn" accept="image/*" />
-    </label>
     <h2>${esc(p.name) || t("myPage")}</h2>
     <div class="meta">${code} · ${store.role === "worker" ? t("nowWorker") : t("nowContractor")}</div>
     <div>${starsHtml(r.avg, r.count)}</div>
