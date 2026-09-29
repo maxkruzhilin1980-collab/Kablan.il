@@ -2123,8 +2123,8 @@ function memberCard(m) {
         <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
-        <div class="wa-row">${m.phone ? waBtn(m.phone, m.code) : ""}</div>
         <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
+        ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code)}</div>` : ""}
       </div>
     </div>
   </article>`;
@@ -2242,8 +2242,8 @@ function viewFeed() {
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
           <h3>${title}</h3>
           <div class="meta">${ico("city")}${cities}${!offer && j.budget ? " · " + shekel(j.budget) : ""}</div>
-          <div class="wa-row">${waBtn(j.phone, j.posterCode || text)}</div>
           <button class="btn ghost sm details-sep" type="button" data-open-job="${j.id}">${t("details")}</button>
+          <div class="wa-row">${waBtn(j.phone, j.posterCode || text)}</div>
         </div>
       </div>
     </article>`;
@@ -2352,8 +2352,8 @@ function viewMemberDetail(code) {
       ${posts || `<div class="meta">${emptyPosts}</div>`}
       <b>${t("documents")}</b>
       ${docs}
-      ${phone ? `<div class="wa-row">${waBtn(phone, m.code)}</div>` : ""}
       ${revs}
+      ${phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(phone, m.code)}</div>` : ""}
     </article>`;
   } catch (e) {
     return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><h3>${esc(code)}</h3><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`;
@@ -2404,7 +2404,6 @@ function viewJobDetail(id) {
       ${offer ? galleryHtml((j.workPhotos && j.workPhotos.length ? j.workPhotos : ((poster && poster.workPhotos) || []))) : ((fileView(j.planName, j.planData, j.cloudId || j.id) ? `<b>${t("plan")}</b>${fileView(j.planName, j.planData, j.cloudId || j.id)}` : (j.planName ? `<b>${t("plan")}</b><div class="plan-name">📄 ${j.planName}</div>` : "")) + (isMine(j) ? `<label class="filebtn">${t("plan")} · ${t("pickFile")}<input type="file" id="replan-file" accept="image/*,.pdf,application/pdf" /></label>` : ""))}
       ${!offer && extraHtml ? `<b>${t("extraDocs")}</b>${extraHtml}` : ""}
       ${reviewsBox(j.id || j.phone, offer ? "offer" : "job")}
-      <div class="wa-row">${waBtn(j.phone, j.posterCode || title)}</div>
       ${isMine(j) ? `<button class="btn danger" type="button" data-del-job="${j.id}">${t("deleteJob")}</button>` : ""}
     </article>
     <div class="card">
