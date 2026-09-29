@@ -1287,6 +1287,31 @@ function profilePhones(p) {
   });
   return out.slice(0, 3);
 }
+function isLogged() {
+  if (store.user()) return true;
+  return !!(store.session || (store.profile() && store.profile().phone));
+}
+function ensureUserRow() {
+  if (store.user()) return store.user();
+  const phone = normPhone(store.session || (store.profile() || {}).phone || "");
+  if (!phone) return null;
+  const p = store.profile() || {};
+  const row = {
+    phone,
+    phones: p.phones || [phone],
+    name: p.name || "",
+    role: store.role || p.role || "contractor",
+    code: p.code || "",
+    city: p.city || "",
+    trades: p.trades || [],
+    photo: p.photo || ""
+  };
+  const users = store.users().filter((u) => normPhone(u.phone) !== phone);
+  users.push(row);
+  store.saveUsers(users);
+  store.session = phone;
+  return row;
+}
 function myPhone() {
   const u = store.user && store.user();
   const p = store.profile ? store.profile() : {};
@@ -1978,7 +2003,7 @@ function renderSafe() {
       <button class="${store.lang === "en" ? "on" : ""}" data-lang="en">EN</button>
     </div>`;
 
-  const user = store.user();
+  const user = store.user() || (isLogged() ? ensureUserRow() : null);
   if (user && user.role) store.role = user.role;
 
   let main = "";
@@ -2552,9 +2577,9 @@ function viewNew() {
 }
 
 function viewSeek() {
-  const p = store.profile();
-  const picked = p.cities || (p.city ? [p.city] : []);
-  const selected = p.trades || [];
+  const p = store.profile() || {};
+  const picked = Array.isArray(p.cities) ? p.cities : (p.city ? [p.city] : []);
+  const selected = Array.isArray(p.trades) ? p.trades : [];
   const checks = TRADES.filter(([id]) => id !== "other").map(([id]) => `<label class="check"><input type="checkbox" name="trades" value="${id}" ${selected.includes(id) ? "checked" : ""} /> ${tradeLabel(id)}</label>`).join("");
   const cityChecks = CITIES.map((row) => `<label class="check"><input type="checkbox" name="cities" value="${row[0]}" ${picked.includes(row[0]) ? "checked" : ""} /> ${loc(row)}</label>`).join("");
   return `<form class="card" id="seek-form">
@@ -3402,6 +3427,8 @@ function bind() {
   const seek = document.getElementById("seek-form");
   if (seek) seek.onsubmit = async (e) => {
     e.preventDefault();
+    try {
+    ensureUserRow();
     const f = new FormData(seek);
     const trades = [...seek.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
     const works = [...seek.querySelectorAll("input[name=works]:checked")].map((x) => x.value);
@@ -3462,15 +3489,18 @@ function bind() {
       list[0].cloudId = cloudId;
       store.saveJobs(list);
     }
-    const u = store.users().find((x) => normPhone(x.phone) === normPhone(phone));
+    const u = store.users().find((x) => normPhone(x.phone) === normPhone(phone) || (x.phones||[]).some((n) => normPhone(n)===normPhone(phone)));
     if (u) {
-      const upd = { ...u, name, trades, cities, workPhotos: photos, photo: photos[0] || u.photo || store.profile().photo || "" };
-      store.saveUsers(store.users().map((x) => x.phone === u.phone ? upd : x));
-      await cloudSaveUser(upd);
+      const upd = { ...u, name, trades, cities, phone: normPhone(phone) || u.phone };
+      store.saveUsers(store.users().map((x) => normPhone(x.phone) === normPhone(u.phone) ? upd : x));
+      try { await cloudSaveUser(upd); } catch (err) {}
     }
     store.tab = "mine";
-    await cloudLoad();
+    try { await cloudLoad(); } catch (err) {}
     render();
+    } catch (err) {
+      alert((err && err.message) || t("empty"));
+    }
   };
   const docs = document.getElementById("flag-docs");
   const ins = document.getElementById("flag-ins");
