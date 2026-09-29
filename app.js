@@ -353,6 +353,26 @@ const I18N = {
     installApp: "Установить Kadlan на телефон",
     installIos: "На iPhone: Поделиться → На экран «Домой»",
     installLater: "Позже",
+    helpTab: "Помощь",
+    helpTitle: "Вопрос — ответ",
+    helpLead: "Коротко, как пользоваться Kadlan. Если не нашли ответ — напишите в поддержку.",
+    helpWrite: "Написать в поддержку",
+    helpQ1: "Как зарегистрироваться?",
+    helpA1: "Профиль → регистрация: имя, телефон, пароль, кто вы — каблан или мастер. Ленту видно без входа. Заказ и «ищу работу» — после регистрации.",
+    helpQ2: "Как выложить заказ?",
+    helpA2: "Внизу «Есть заказ». Работы, город, даты, бюджет. Телефон берётся из профиля. Чертёж — по желанию.",
+    helpQ3: "Как искать работу?",
+    helpA3: "Внизу «Ищу работу». Профессии, города, фото работ. Объявление попадёт в ленту «Ищу мастера».",
+    helpQ4: "Как написать человеку?",
+    helpA4: "В ленте зелёная кнопка WhatsApp. На карточке заявки кнопка в блоке «Кто выставил».",
+    helpQ5: "Как поставить приложение на телефон?",
+    helpA5: "Android: сверху «Установить Kadlan». iPhone: Поделиться → На экран «Домой».",
+    helpQ6: "Как сменить фото и телефон?",
+    helpA6: "Профиль: нажмите на круглое фото. Имя и до трёх номеров — в форме, затем Сохранить. Первый номер — WhatsApp и вход.",
+    helpQ7: "Почему нет ленты на Android?",
+    helpA7: "Откройте kadlan.co.il в Chrome, не во встроенном браузере Facebook. Обновите страницу.",
+    helpQ8: "Кто видит отзывы и участников?",
+    helpA8: "Только зарегистрированные. Один человек ставит другому один отзыв.",
     loginToReview: "Отзыв может оставить только зарегистрированный пользователь.",
     loginToMembers: "Участников видят только зарегистрированные.",
     workPhotos: "Фото работ",
@@ -599,6 +619,26 @@ const I18N = {
     installApp: "התקנת Kadlan לטלפון",
     installIos: "באייפון: שיתוף → הוסף למסך הבית",
     installLater: "אחר כך",
+    helpTab: "עזרה",
+    helpTitle: "שאלה — תשובה",
+    helpLead: "בקצרה איך משתמשים ב-Kadlan. לא מצאתם תשובה? כתבו לתמיכה.",
+    helpWrite: "כתבו לתמיכה",
+    helpQ1: "איך נרשמים?",
+    helpA1: "פרופיל → הרשמה: שם, טלפון, סיסמה, קבלן או מקצוען. את הפיד רואים בלי כניסה. לפרסם — רק אחרי הרשמה.",
+    helpQ2: "איך מפרסמים הזמנה?",
+    helpA2: "למטה «יש הזמנה». עבודות, עיר, תאריכים, תקציב. הטלפון מגיע מהפרופיל.",
+    helpQ3: "איך מחפשים עבודה?",
+    helpA3: "למטה «מחפש עבודה». מקצועות, ערים, תמונות.",
+    helpQ4: "איך כותבים?",
+    helpA4: "בפיד כפתור WhatsApp. בכרטיס הזמנה — אצל «מי פרסם».",
+    helpQ5: "איך מתקינים לטלפון?",
+    helpA5: "אנדרואיד: «התקנת Kadlan». אייפון: שיתוף → מסך הבית.",
+    helpQ6: "איך מחליפים תמונה וטלפון?",
+    helpA6: "בפרופיל לחצו על התמונה העגולה. שם ועד 3 מספרים בטופס.",
+    helpQ7: "למה הפיד ריק באנדרואיד?",
+    helpA7: "פתחו ב-Chrome, לא מתוך פייסבוק, ורעננו.",
+    helpQ8: "מי רואה חוות דעת?",
+    helpA8: "רק משתמשים רשומים. חוות דעת אחת לאדם.",
     loginToReview: "רק משתמש רשום יכול להשאיר חוות דעת.",
     loginToMembers: "רק משתמשים רשומים רואים משתתפים.",
     workPhotos: "תמונות עבודות",
@@ -845,6 +885,26 @@ const I18N = {
     installApp: "Install Kadlan on your phone",
     installIos: "iPhone: Share → Add to Home Screen",
     installLater: "Later",
+    helpTab: "Help",
+    helpTitle: "Questions",
+    helpLead: "Short answers. If you need more, message support.",
+    helpWrite: "Message support",
+    helpQ1: "How do I sign up?",
+    helpA1: "Profile → register: name, phone, password, contractor or tradesperson. The feed is public. Posting needs an account.",
+    helpQ2: "How do I post a job?",
+    helpA2: "Bottom tab “Need a crew”. Trades, city, dates, budget. Phone comes from your profile.",
+    helpQ3: "How do I look for work?",
+    helpA3: "Bottom tab “Looking for work”. Trades, cities, work photos.",
+    helpQ4: "How do I message someone?",
+    helpA4: "Green WhatsApp on the feed. On a job page it sits under “Posted by”.",
+    helpQ5: "How do I install the app?",
+    helpA5: "Android: Install Kadlan at the top. iPhone: Share → Add to Home Screen.",
+    helpQ6: "How do I change photo and phone?",
+    helpA6: "Profile: tap the round photo. Name and up to 3 numbers are in the form. First number is WhatsApp and login.",
+    helpQ7: "Android feed is empty?",
+    helpA7: "Open kadlan.co.il in Chrome, not the Facebook in-app browser, then refresh.",
+    helpQ8: "Who can see reviews and members?",
+    helpA8: "Signed-in users only. One review per person.",
     loginToReview: "Only registered users can leave a review.",
     loginToMembers: "Only registered users can see members.",
     workPhotos: "Work photos",
@@ -957,6 +1017,7 @@ function normPhone(v) {
   return s;
 }
 const ADMIN_PIN = "kadlan1";
+const SUPPORT_PHONE = ""; // номер поддержки, например 9725...
 let cloudCache = [];
 let guestCache = [];
 let waClickCache = [];
@@ -1925,6 +1986,10 @@ function renderSafe() {
   else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
   else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
+  else if (store.tab === "help") {
+    try { main = viewHelp(); }
+    catch (e) { main = `<div class="card"><p>${t("empty")}</p></div>`; }
+  }
   else if (store.tab === "profile") {
     try { main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth(); }
     catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p><button class="btn" data-tab="feed">${t("feed")}</button></div>`; }
@@ -1933,7 +1998,7 @@ function renderSafe() {
 
   app.innerHTML = `
     <div class="app">
-      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}</div>
+      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}<button type="button" class="help-mini" data-tab="help">${t("helpTab")}</button></div>
       ${installBanner()}
       ${main}
       <nav class="nav">
@@ -2157,6 +2222,16 @@ function viewMembers() {
     <label>${t("searchCode")}</label>
     <input id="member-q" value="${store.q}" placeholder="K-10421" />
   </div>` + (list.map(memberCard).join("") || `<div class="empty">${t("empty")}</div>`);
+}
+function viewHelp() {
+  const items = [1,2,3,4,5,6,7,8].map((n) => `<details class="faq"><summary>${t("helpQ"+n)}</summary><p>${t("helpA"+n)}</p></details>`).join("");
+  const wa = SUPPORT_PHONE ? `<div class="wa-row">${waBtn(SUPPORT_PHONE, "support")}</div><p class="meta">${t("helpWrite")}</p>` : "";
+  return `<div class="card">
+    <h2>${t("helpTitle")}</h2>
+    <p>${t("helpLead")}</p>
+    ${items}
+    ${wa}
+  </div>`;
 }
 function viewRules() {
   return boardNav() + `<div class="card rules-card">
@@ -2545,6 +2620,7 @@ function viewReputation() {
     <div>${starsHtml(r.avg, r.count)}</div>
     <div class="tags">${badgesHtml({ ...r, ...p, code, phone: p.phone || (store.user() && store.user().phone), lastAct: p.lastAct })}</div>
     <div class="meta">${t("complete")}: ${profileScore({ ...p, ...r, code, phone: p.phone || (store.user() && store.user().phone), trades: p.trades, photo: p.photo, workPhotos: p.workPhotos, verified: p.verified, docs: p.docs })}%</div>
+    <button type="button" class="btn ghost" data-tab="help">${t("helpTab")}</button>
     <button type="button" class="btn ghost" data-board="rules">${t("rulesTab")}</button>
     <p class="meta">${t("docsHint")}</p>
     <b>${t("verifyTitle")}</b>
