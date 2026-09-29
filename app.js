@@ -1521,6 +1521,12 @@ function myRep() {
     warn: Boolean(p.warn),
   };
 }
+function starOnPhoto(j) {
+  const r = liveRepFor(j.posterCode || j.id, j);
+  if (!r.count) return "";
+  const n = Math.max(1, Math.min(5, Math.round(r.avg || 0)));
+  return `<span class="star-on-photo">${"★".repeat(n)}</span>`;
+}
 function starsHtml(score, count) {
   if (!count) return `<span class="meta">${t("noRating")}</span>`;
   const full = Math.round(score);
@@ -2048,6 +2054,18 @@ function viewRatingBoard() {
     (contractors.slice(0, 10).map((m, i) => `<div class="meta">${i + 1}. ${m.code} ${m.name}</div>` + memberCard(m)).join("") || `<div class="empty">${t("emptyJobs")}</div>`);
 }
 
+function payChips() {
+  const rows = [
+    ["all", t("payAll")],
+    ["talk", t("payTalk")],
+    ["0-5000", t("pay1")],
+    ["5000-15000", t("pay2")],
+    ["15000-50000", t("pay3")],
+    ["50000-150000", t("pay4")],
+    ["150000+", t("pay5")]
+  ];
+  return `<div class="filters">` + rows.map(([v,l]) => `<button class="chip ${store.payFilter === v ? "on" : ""}" data-pay="${v}">${l}</button>`).join("") + `</div>`;
+}
 function filterPanel() {
   if (store.panel === "trade") {
     const rows = [`<button class="sheet-item ${store.filter === "all" ? "on" : ""}" data-filter="all">${t("allTrades")}</button>`]
@@ -2075,8 +2093,8 @@ function viewFeed() {
   if (store.kind === "job") filtered = filtered.filter((j) => itemKind(j) === "job");
   if (store.kind === "offer") filtered = filtered.filter((j) => itemKind(j) === "offer");
   if (store.filter !== "all") filtered = filtered.filter((j) => (j.trades || [j.trade]).includes(store.filter));
-  filtered = filtered.filter(inCity).filter(inPay);
-  store.payFilter = "all";
+  if (store.kind !== "job") store.payFilter = "all";
+  filtered = filtered.filter(inCity).filter((j) => store.kind !== "job" || inPay(j));
   const tradeNow = store.filter === "all" ? t("allTrades") : tradeLabel(store.filter);
   const cityNow = store.cityFilter === "all" ? t("all") : cityName(store.cityFilter);
   const radLbl = store.cityFilter === "all" || store.radius === "999" ? t("radiusAll") : store.radius === "0" ? t("radius0") : ("+" + store.radius + " " + "км");
@@ -2088,9 +2106,7 @@ function viewFeed() {
     <div class="filters">
       <button class="chip ${store.sort === "new" ? "on" : ""}" data-sort="new">${t("sortNew")}</button>
       <button class="chip ${store.sort === "best" ? "on" : ""}" data-sort="best">${t("sortBest")}</button>
-      <button class="chip" data-board="members">${t("members")}</button>
-      <button class="chip" data-board="rating">${t("ratingBoard")}</button>
-    </div>` + filterPanel();
+    </div>` + (store.kind === "job" ? payChips() : "") + filterPanel();
   const chips = "";
   if (!filtered.length) {
     const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
@@ -2117,7 +2133,7 @@ function viewFeed() {
     const pic = jobPhoto(j);
     return `<article class="card job tt-card slim ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <span class="file-open picwrap big" data-view-src="${pic}"><img class="tt-photo" src="${pic}" alt="" /></span>
+        <span class="file-open picwrap big" data-view-src="${pic}"><img class="tt-photo" src="${pic}" alt="" />${starOnPhoto(j)}</span>
         <div class="tt-body">
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
           <h3>${title}</h3>
