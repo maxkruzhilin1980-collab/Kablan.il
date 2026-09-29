@@ -1028,6 +1028,7 @@ const SUPPORT_PHONE = ""; // номер поддержки, например 972
 let cloudCache = [];
 let guestCache = [];
 let waClickCache = [];
+let postingLock = false;
 let privDocsCache = {};
 let docReqCache = {};
 let showGuests = false;
@@ -1286,6 +1287,18 @@ function profilePhones(p) {
     if (n && out.indexOf(n) < 0) out.push(n);
   });
   return out.slice(0, 3);
+}
+function recentlyPosted(kind, phone) {
+  const p = normPhone(phone || myPhone() || "");
+  const code = (store.user() && store.user().code) || (store.profile() || {}).code || "";
+  const now = Date.now();
+  return (store.jobs() || []).some((j) => {
+    if (j.kind !== kind) return false;
+    if ((now - Number(j.created || 0)) >= 20000) return false;
+    if (p && normPhone(j.phone) === p) return true;
+    if (code && j.posterCode && j.posterCode === code) return true;
+    return false;
+  });
 }
 function isLogged() {
   if (store.user()) return true;
@@ -1960,6 +1973,7 @@ function waBtn(phone, code) {
 
 
 let deferredInstall = null;
+window.addEventListener("hashchange", () => { if (wantAdminLink()) openAdminLogin(); });
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredInstall = e;
@@ -2783,6 +2797,22 @@ function viewWaClicks() {
     ${rows || `<div class="meta">${t("waEmpty")}</div>`}
   </div>`;
 }
+async function openAdminLogin() {
+  const pin = prompt(t("adminPin"));
+  if (pin === ADMIN_PIN) {
+    store.admin = true;
+    await loadGuests();
+    await loadWaClicks();
+    store.tab = "profile";
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    render();
+  } else if (pin != null) alert(t("adminBad"));
+}
+function wantAdminLink() {
+  const h = String(location.hash || "").replace("#", "").toLowerCase();
+  const q = String(location.search || "").toLowerCase();
+  return h === "admin" || h === "adm" || q.indexOf("admin=1") >= 0 || q.indexOf("adm=1") >= 0;
+}
 async function loadGuests() {
   try {
     const res = await fetch(fb("/visits"));
@@ -2871,7 +2901,6 @@ function viewProfile() {
       <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
     </div>
     <button type="button" class="btn ghost" data-board="rules">${t("rulesTab")}</button>
-    <button type="button" class="btn ghost" data-admin-in="1">${t("adminIn")}</button>
   </div>
   <form class="card profile-bg" id="prof-form">
     <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" required />
@@ -2955,16 +2984,7 @@ function bind() {
     if (showGuests) { await loadGuests(); await loadWaClicks(); }
     render();
   });
-  document.querySelectorAll("[data-admin-in]").forEach((b) => b.onclick = async () => {
-    const pin = prompt(t("adminPin"));
-    if (pin === ADMIN_PIN) {
-      store.admin = true;
-      await loadGuests();
-      await loadWaClicks();
-      store.tab = "profile";
-      render();
-    } else if (pin != null) alert(t("adminBad"));
-  });
+  document.querySelectorAll("[data-admin-in]").forEach((b) => b.onclick = () => openAdminLogin());
   document.querySelectorAll("[data-admin-out]").forEach((b) => b.onclick = () => {
     store.admin = false;
     render();
@@ -3055,7 +3075,7 @@ function bind() {
   document.querySelectorAll("[data-sort]").forEach((b) => b.onclick = () => { store.sort = b.dataset.sort; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
-  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = () => { store.openJob = b.dataset.openJob; store.tab = "feed"; render(); notifyOwnerWa(findOwnerByTarget(b.dataset.openJob), "view"); });
+  document.querySelectorAll("[data-open-job]").forEach((b) => b.onclick = (e) => { e.preventDefault(); if (store.openJob) return; store.openJob = b.dataset.openJob; store.tab = "feed"; render(); notifyOwnerWa(findOwnerByTarget(b.dataset.openJob), "view"); });
   document.querySelectorAll("[data-open-member]").forEach((b) => b.onclick = () => {
     if (!store.session) { store.tab = "profile"; render(); return; }
     const code = b.dataset.openMember;
@@ -3333,10 +3353,15 @@ function bind() {
   const job = document.getElementById("job-form");
   if (job) job.onsubmit = async (e) => {
     e.preventDefault();
+    if (postingLock) return;
+    const jobBtn = job.querySelector("button[type=submit]");
+    postingLock = true;
+    if (jobBtn) jobBtn.disabled = true;
     try {
     const f = new FormData(job);
     const trades = [...job.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
-    if (!trades.length) { alert(t("pickOne")); return; }
+    if (!trades.length) { postingLock = false; if (jobBtn) jobBtn.disabled = false; alert(t("pickOne")); return; }
+    if (recentlyPosted("job", myPhone())) { postingLock = false; if (jobBtn) jobBtn.disabled = false; return; }
     const workLabels = [...job.querySelectorAll("input[name=works]:checked")].map((x) => {
       const [tr, wid] = String(x.value).split(":");
       return workName(tr, wid);
@@ -3420,13 +3445,20 @@ function bind() {
     store.tab = "mine";
     try { await cloudLoad(); } catch (err) {}
     render();
+    setTimeout(() => { postingLock = false; }, 2500);
     } catch (err) {
+      postingLock = false;
+      if (jobBtn) jobBtn.disabled = false;
       alert((err && err.message) || t("empty"));
     }
   };
   const seek = document.getElementById("seek-form");
   if (seek) seek.onsubmit = async (e) => {
     e.preventDefault();
+    if (postingLock) return;
+    const seekBtn = seek.querySelector("button[type=submit]");
+    postingLock = true;
+    if (seekBtn) seekBtn.disabled = true;
     try {
     ensureUserRow();
     const f = new FormData(seek);
@@ -3435,6 +3467,7 @@ function bind() {
     const cities = [...seek.querySelectorAll("input[name=cities]:checked")].map((x) => x.value);
     const name = String(f.get("name") || "");
     const phone = myPhone() || String((store.profile() || {}).phone || "") || "";
+    if (recentlyPosted("offer", phone)) { postingLock = false; if (seekBtn) seekBtn.disabled = false; return; }
     const workLabels = works.map((w) => {
       const [tr, wid] = String(w).split(":");
       return workName(tr, wid);
@@ -3498,7 +3531,10 @@ function bind() {
     store.tab = "mine";
     try { await cloudLoad(); } catch (err) {}
     render();
+    setTimeout(() => { postingLock = false; }, 2500);
     } catch (err) {
+      postingLock = false;
+      if (seekBtn) seekBtn.disabled = false;
       alert((err && err.message) || t("empty"));
     }
   };
@@ -3580,6 +3616,7 @@ try { askGeoCity(); } catch (e) {}
 (async () => {
   try {
     if (store.session) store.session = normPhone(store.session);
+    if (wantAdminLink()) await openAdminLogin();
     await cloudLoadUsers();
     await cloudLoadPhotosAll();
     await cloudLoad();
