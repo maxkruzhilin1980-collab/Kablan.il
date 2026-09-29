@@ -133,6 +133,8 @@ const I18N = {
     sortNew: "Новые",
     sortBest: "Сначала лучшие",
     cityPick: "Город",
+    nearMe: "Рядом со мной",
+    nearMeHint: "Определить по геолокации",
     radius0: "Только город",
     radius20: "+20 км",
     radius40: "+40 км",
@@ -368,6 +370,8 @@ const I18N = {
     sortNew: "חדשים",
     sortBest: "הכי טובים",
     cityPick: "עיר",
+    nearMe: "לידי",
+    nearMeHint: "לפי מיקום",
     radius0: "רק העיר",
     radius20: "+20 ק״מ",
     radius40: "+40 ק״מ",
@@ -603,6 +607,8 @@ const I18N = {
     sortNew: "Newest",
     sortBest: "Best first",
     cityPick: "City",
+    nearMe: "Near me",
+    nearMeHint: "Use my location",
     radius0: "This city",
     radius20: "+20 km",
     radius40: "+40 km",
@@ -1875,6 +1881,31 @@ const CITY_XY = {
   holon:[32.02,34.77], herzliya:[32.16,34.84], rehovot:[31.89,34.81], eilat:[29.56,34.95],
   ashkelon:[31.67,34.57], kfar:[32.18,34.91], batyam:[32.02,34.75], modiim:[31.90,35.01]
 };
+function geoKm(lat1, lon1, lat2, lon2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+  const x = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1, Math.sqrt(x)));
+}
+function nearestCityId(lat, lon) {
+  let best = "tlv", bestD = 1e9;
+  Object.keys(CITY_XY).forEach((id) => {
+    const xy = CITY_XY[id];
+    const d = geoKm(lat, lon, xy[0], xy[1]);
+    if (d < bestD) { bestD = d; best = id; }
+  });
+  return best;
+}
+function askGeoCity() {
+  if (!navigator.geolocation) return;
+  if (localStorage.getItem("bil_geo_done") === "1") return;
+  navigator.geolocation.getCurrentPosition((pos) => {
+    localStorage.setItem("bil_geo_done", "1");
+    const id = nearestCityId(pos.coords.latitude, pos.coords.longitude);
+    store.cityFilter = id;
+    if (store.radius === "999") store.radius = "40";
+    render();
+  }, () => { localStorage.setItem("bil_geo_done", "1"); }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
+}
 function cityKm(a, b) {
   const A = CITY_XY[a], B = CITY_XY[b];
   if (!A || !B) return a === b ? 0 : 9999;
@@ -2077,6 +2108,7 @@ function filterPanel() {
     const cities = [`<button class="sheet-item ${store.cityFilter === "all" ? "on" : ""}" data-city="all">${t("all")}</button>`]
       .concat(CITIES.map((row) => `<button class="sheet-item ${store.cityFilter === row[0] ? "on" : ""}" data-city="${row[0]}">${loc(row)}</button>`));
     return `<div class="sheet"><div class="sheet-title">${t("cityPick")}</div>
+      <button class="city-btn" type="button" data-geo="1">${ico("city")}<span><b>${t("nearMe")}</b><small>${t("nearMeHint")}</small></span></button>
       <div class="filters">${rads.map(([v,l]) => `<button class="chip ${store.radius === v ? "on" : ""}" data-radius="${v}">${l}</button>`).join("")}</div>
       ${cities.join("")}</div>`;
   }
@@ -2103,10 +2135,7 @@ function viewFeed() {
       <button class="kind-btn ${store.kind === "job" ? "on" : ""}" data-kind="job" data-panel="trade">${ico("contractor")}<span><b>${t("filterOffers")}</b><small>${tradeNow}</small></span></button>
     </div>
     <button class="city-btn" type="button" data-panel="city">${ico("city")}<span><b>${cityNow}</b><small>${radLbl}</small></span></button>
-    <div class="filters">
-      <button class="chip ${store.sort === "new" ? "on" : ""}" data-sort="new">${t("sortNew")}</button>
-      <button class="chip ${store.sort === "best" ? "on" : ""}" data-sort="best">${t("sortBest")}</button>
-    </div>` + (store.kind === "job" ? payChips() : "") + filterPanel();
+    ` + (store.kind === "job" ? payChips() : "") + filterPanel();
   const chips = "";
   if (!filtered.length) {
     const msg = store.kind === "offer" ? t("emptyOffers") : store.kind === "job" ? t("emptyJobs") : t("empty");
@@ -2117,11 +2146,6 @@ function viewFeed() {
     const da = demoIds.has(a.id) ? 1 : 0;
     const db = demoIds.has(b.id) ? 1 : 0;
     if (da !== db) return da - db;
-    if (store.sort === "best") {
-      const ra = liveRepFor(a.posterCode || a.id, a).avg || 0;
-      const rb = liveRepFor(b.posterCode || b.id, b).avg || 0;
-      if (rb !== ra) return rb - ra;
-    }
     return jobStamp(b) - jobStamp(a);
   });
   return kinds + chips + filtered.map((j) => {
@@ -2740,6 +2764,17 @@ function bind() {
     b.onclick = () => { store.panel = store.panel === b.dataset.panel ? "" : b.dataset.panel; render(); };
   });
   document.querySelectorAll("[data-radius]").forEach((b) => b.onclick = () => { store.radius = b.dataset.radius; render(); });
+  document.querySelectorAll("[data-geo]").forEach((b) => b.onclick = () => {
+    localStorage.removeItem("bil_geo_done");
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      localStorage.setItem("bil_geo_done", "1");
+      store.cityFilter = nearestCityId(pos.coords.latitude, pos.coords.longitude);
+      if (store.radius === "999") store.radius = "40";
+      store.panel = "";
+      render();
+    }, () => { localStorage.setItem("bil_geo_done", "1"); }, { timeout: 8000 });
+  });
   document.querySelectorAll("[data-sort]").forEach((b) => b.onclick = () => { store.sort = b.dataset.sort; render(); });
   document.querySelectorAll("[data-pay]").forEach((b) => b.onclick = () => { store.payFilter = b.dataset.pay; render(); });
   document.querySelectorAll("[data-board]").forEach((b) => b.onclick = () => { store.board = b.dataset.board; store.openJob = ""; store.tab = "feed"; render(); });
@@ -3229,6 +3264,7 @@ try {
     if (pc) store.cityFilter = pc;
   }
 } catch (e) {}
+try { askGeoCity(); } catch (e) {}
 
 (async () => {
   try {
