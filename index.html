@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=75" />
+  <link rel="stylesheet" href="styles.css?v=78" />
 </head>
 <body>
   <div id="app"><div class="card" style="margin:24px"><p>Загрузка Kadlan…</p></div></div>
@@ -22,11 +22,9 @@
   </div>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (list) {
-        list.forEach(function (r) { r.unregister(); });
-      });
+      navigator.serviceWorker.register("./sw.js");
     }
   </script>
-  <script src="app.js?v=75"></script>
+  <script src="app.js?v=78"></script>
 </body>
 </html>

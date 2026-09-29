@@ -344,6 +344,9 @@ const I18N = {
     worksDone: "Состав работ",
     photo: "Фото профиля",
     photoChange: "Нажмите на фото, чтобы сменить",
+    installApp: "Установить Kadlan на телефон",
+    installIos: "На iPhone: Поделиться → На экран «Домой»",
+    installLater: "Позже",
     loginToReview: "Отзыв может оставить только зарегистрированный пользователь.",
     loginToMembers: "Участников видят только зарегистрированные.",
     workPhotos: "Фото работ",
@@ -581,6 +584,9 @@ const I18N = {
     worksDone: "פירוט עבודות",
     photo: "תמונת פרופיל",
     photoChange: "לחצו על התמונה להחלפה",
+    installApp: "התקנת Kadlan לטלפון",
+    installIos: "באייפון: שיתוף → הוסף למסך הבית",
+    installLater: "אחר כך",
     loginToReview: "רק משתמש רשום יכול להשאיר חוות דעת.",
     loginToMembers: "רק משתמשים רשומים רואים משתתפים.",
     workPhotos: "תמונות עבודות",
@@ -818,6 +824,9 @@ const I18N = {
     worksDone: "Work items",
     photo: "Profile photo",
     photoChange: "Tap the photo to change it",
+    installApp: "Install Kadlan on your phone",
+    installIos: "iPhone: Share → Add to Home Screen",
+    installLater: "Later",
     loginToReview: "Only registered users can leave a review.",
     loginToMembers: "Only registered users can see members.",
     workPhotos: "Work photos",
@@ -1001,7 +1010,8 @@ function photoSrc(p) {
 }
 function safeFace(name, photo, role, trades) {
   const src = photoSrc(photo);
-  if (src && src.length < 180000 && (src.startsWith("data:image") || src.startsWith("http") || src.startsWith("icons/"))) return src;
+  if (src && !isCartoonSrc(src) && (src.startsWith("data:image") || src.startsWith("http"))) return src;
+  if (src && src.startsWith("icons/")) return src;
   return tradeAvatar(trades, role === "worker" ? "worker" : "contractor");
 }
 function lightGallery(photos) {
@@ -1133,6 +1143,27 @@ async function cloudSavePhotos(phone, photo, workPhotos) {
     });
   } catch (e) {}
 }
+async function cloudLoadPhotosAll() {
+  try {
+    const res = await fetch(fb("/photos"));
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || typeof data !== "object") return;
+    const users = store.users().map((u) => {
+      const pack = data[normPhone(u.phone)] || data[u.phone];
+      if (!pack) return u;
+      return { ...u, photo: pack.photo || u.photo || "", workPhotos: pack.workPhotos || u.workPhotos || [] };
+    });
+    store.saveUsers(users);
+    const me = store.user();
+    if (me) {
+      const pack = data[normPhone(me.phone)] || data[me.phone];
+      if (pack && (pack.photo || pack.workPhotos)) {
+        store.saveProfile({ ...store.profile(), photo: pack.photo || store.profile().photo, workPhotos: pack.workPhotos || store.profile().workPhotos });
+      }
+    }
+  } catch (e) {}
+}
 async function cloudLoadPhotos(phone) {
   const key = normPhone(phone);
   if (!key) return null;
@@ -1159,6 +1190,16 @@ async function cloudSaveUser(user) {
   } catch (e) {}
 }
 
+function profilePhones(p) {
+  const src = p || store.profile() || {};
+  const raw = [].concat(src.phones || [], [src.phone, src.phone2, src.phone3]);
+  const out = [];
+  raw.forEach((x) => {
+    const n = normPhone(x);
+    if (n && out.indexOf(n) < 0) out.push(n);
+  });
+  return out.slice(0, 3);
+}
 function myPhone() {
   const u = store.user && store.user();
   const p = store.profile ? store.profile() : {};
@@ -1501,6 +1542,7 @@ function memberList() {
       insurance: r.insurance || u.insurance,
       closed: r.closed || u.closed || 0,
       phone: u.phone,
+      phones: u.phones || p.phones || (u.phone ? [u.phone] : []),
       trades: u.trades || p.trades || [],
       flags: u.flags || p.flags || [],
       photo: p.photo || u.photo || "",
@@ -1804,6 +1846,30 @@ function waBtn(phone, code) {
   return `<a class="btn wa-btn" data-contact="${phone}" data-contact-code="${code || ""}" href="${waLink(phone, code)}">${ico("wa")}<span>WhatsApp</span></a>`;
 }
 
+
+let deferredInstall = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  try { render(); } catch (err) {}
+});
+function isStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+function installBanner() {
+  if (isStandalone()) return "";
+  if (localStorage.getItem("bil_hideinst") === "1") return "";
+  if (deferredInstall) {
+    return `<div class="install-bar"><button type="button" class="btn" data-install="1">${t("installApp")}</button><button type="button" class="btn ghost" data-install-hide="1">${t("installLater")}</button></div>`;
+  }
+  if (isIos()) {
+    return `<div class="install-bar"><span>${t("installIos")}</span><button type="button" class="btn ghost" data-install-hide="1">${t("installLater")}</button></div>`;
+  }
+  return `<div class="install-bar"><span>${t("installApp")}</span><button type="button" class="btn ghost" data-install-hide="1">${t("installLater")}</button></div>`;
+}
 function render() {
   try { renderSafe(); } catch (e) {
     const app = document.getElementById("app");
@@ -1849,6 +1915,7 @@ function renderSafe() {
   app.innerHTML = `
     <div class="app">
       <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}</div>
+      ${installBanner()}
       ${main}
       <nav class="nav">
         <button data-tab="feed" class="${store.tab === "feed" ? "on" : ""}">${ico("feed")}${t("feed")}</button>
@@ -2022,13 +2089,26 @@ function face(name, photo, role, trades) {
   if (photo) return photo;
   return tradeAvatar(trades, role);
 }
+function isCartoonSrc(src) {
+  const s = String(src || "");
+  return !s || s.indexOf("icons/") >= 0 || s.indexOf("avatars/") >= 0 || /\.gif(\?|$)/.test(s);
+}
+function realFaceSrc(photo) {
+  const src = photoSrc(photo);
+  if (!src || isCartoonSrc(src)) return "";
+  if (src.startsWith("data:image") || src.startsWith("http")) return src;
+  return "";
+}
 function jobPhoto(j) {
+  const poster = findPoster(j) || {};
+  const mine = (j && j.phone && myPhone() && normPhone(j.phone) === myPhone()) ? (store.profile() || {}) : {};
+  const face = realFaceSrc(mine.photo) || realFaceSrc(poster.photo) || realFaceSrc(j && j.photo);
+  if (face) return face;
   const plan = String((j && j.planData) || "");
-  if (plan.startsWith("data:image") || plan.startsWith("http") || plan.startsWith("icons/")) return plan;
-  if (j && j.photo) return photoSrc(j.photo) || j.photo;
-  const trades = j.trades || (j.trade ? [j.trade] : []);
+  if (plan.startsWith("data:image") || (plan.startsWith("http") && !isCartoonSrc(plan))) return plan;
+  const trades = (j && (j.trades || (j.trade ? [j.trade] : []))) || [];
   if (trades.length) return tradeAvatar(trades, j.kind === "offer" ? "worker" : "contractor");
-  if (j.kind === "offer") return "icons/worker.gif?v=24";
+  if (j && j.kind === "offer") return "icons/worker.gif?v=24";
   return "icons/contractor.gif?v=24";
 }
 function memberCard(m) {
@@ -2360,7 +2440,7 @@ function viewNew() {
       <label class="check"><input type="radio" name="budgetType" value="sum" /> ${t("budgetSum")}</label>
     </div>
     <input name="budget" id="budget-sum" placeholder="₪ 5000" style="display:none" />
-    <label>${ico("phone")}${t("phone")}</label><input name="phone" placeholder="050..." required />
+    <p class="meta">${ico("phone")} ${esc(myPhone() || t("phone"))}</p>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("post")}</button>
   </form>`;
@@ -2380,7 +2460,7 @@ function viewSeek() {
     <div id="works-box"></div>
     <label>${ico("city")}${t("city")}</label>
     <div class="checkgrid">${cityChecks}</div>
-    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${p.phone || ""}" placeholder="050..." />
+    <p class="meta">${ico("phone")} ${esc(p.phone || myPhone() || t("phone"))}</p>
     <label>${t("flagsHave")}</label>
     <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
     <div class="plan-name">${t("flagsHint")}</div>
@@ -2612,9 +2692,12 @@ function viewProfile() {
     <button type="button" class="btn ghost" data-admin-in="1">${t("adminIn")}</button>
   </div>
   <form class="card profile-bg" id="prof-form">
-    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
+    <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" required />
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
-    <label>${ico("phone")}${t("phone")}</label><input name="phone" value="${esc(p.phone)}" />
+    <label>${ico("phone")}${t("phone")} 1</label><input name="phone" value="${esc((p.phones && p.phones[0]) || p.phone || myPhone() || "")}" placeholder="050..." required />
+    <label>${t("phone")} 2</label><input name="phone2" value="${esc((p.phones && p.phones[1]) || p.phone2 || "")}" placeholder="050..." />
+    <label>${t("phone")} 3</label><input name="phone3" value="${esc((p.phones && p.phones[2]) || "")}" placeholder="050..." />
+    <p class="meta">${t("phonesHint")}</p>
     <div style="height:10px"></div>
     <button class="btn" type="submit">${t("save")}</button>
   </form>
@@ -2668,6 +2751,17 @@ function bindViewer() {
 
 function bind() {
   document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); render(); });
+  document.querySelectorAll("[data-install]").forEach((b) => b.onclick = async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    try { await deferredInstall.userChoice; } catch (e) {}
+    deferredInstall = null;
+    render();
+  });
+  document.querySelectorAll("[data-install-hide]").forEach((b) => b.onclick = () => {
+    localStorage.setItem("bil_hideinst", "1");
+    render();
+  });
   document.querySelectorAll("[data-role]").forEach((b) => b.onclick = () => { store.role = b.dataset.role; store.tab = "feed"; render(); });
   document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => {
     store.tab = b.dataset.tab;
@@ -3024,6 +3118,7 @@ function bind() {
     const phone = normPhone(f.get("phone"));
     const password = String(f.get("password") || "");
     await cloudLoadUsers();
+    await cloudLoadPhotosAll();
     const known = store.users().find((u) => normPhone(u.phone) === phone);
     if (!known) { alert(t("notRegistered")); return; }
     if (String(known.password || "") !== password) { alert(t("badPassword")); return; }
@@ -3117,7 +3212,8 @@ function bind() {
       titleEn: toLangText(title, "en"),
       dates,
       budget,
-      phone: f.get("phone"),
+      phone: myPhone() || (store.user() && store.user().phone) || "",
+      photo: (store.profile() || {}).photo || (store.user() && store.user().photo) || "",
       planName: plan.name,
       planData: plan.data,
       extraDocs,
@@ -3149,7 +3245,7 @@ function bind() {
     const works = [...seek.querySelectorAll("input[name=works]:checked")].map((x) => x.value);
     const cities = [...seek.querySelectorAll("input[name=cities]:checked")].map((x) => x.value);
     const name = String(f.get("name") || "");
-    const phone = String(f.get("phone") || "");
+    const phone = myPhone() || String((store.profile() || {}).phone || "") || "";
     const workLabels = works.map((w) => {
       const [tr, wid] = String(w).split(":");
       return workName(tr, wid);
@@ -3230,16 +3326,39 @@ function bind() {
     alert(t("reviewSelf"));
   };
   const prof = document.getElementById("prof-form");
-  if (prof) prof.onsubmit = (e) => {
+  if (prof) prof.onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(prof);
+    const phones = profilePhones({
+      phone: f.get("phone"),
+      phone2: f.get("phone2"),
+      phone3: f.get("phone3")
+    });
+    if (!phones.length) return;
+    const name = String(f.get("name") || "").trim();
+    const city = f.get("city");
+    const oldUser = store.user() || {};
+    const next = {
+      ...oldUser,
+      name: name || oldUser.name,
+      city,
+      phone: phones[0],
+      phones,
+      lastAct: Date.now()
+    };
+    let users = store.users().filter((u) => normPhone(u.phone) !== normPhone(oldUser.phone) && normPhone(u.phone) !== phones[0]);
+    users.push(next);
+    store.saveUsers(users);
+    store.session = phones[0];
     store.saveProfile({
       ...store.profile(),
-      name: f.get("name"),
-      city: f.get("city"),
-      phone: f.get("phone"),
+      name: name || store.profile().name,
+      city,
+      phone: phones[0],
+      phones,
       lastAct: Date.now()
     });
+    try { await cloudSaveUser(next); } catch (err) {}
     touchAct();
     render();
   };
@@ -3269,6 +3388,7 @@ try { askGeoCity(); } catch (e) {}
 (async () => {
   try {
     await cloudLoadUsers();
+    await cloudLoadPhotosAll();
     await cloudLoad();
     await cloudPushLocal();
     try {
