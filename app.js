@@ -985,7 +985,14 @@ const store = {
   set admin(v) { localStorage.setItem("bil_admin", v ? "1" : ""); },
   get session() { return localStorage.getItem("bil_session") || ""; },
   set session(v) { localStorage.setItem("bil_session", v); },
-  user() { return this.users().find((u) => u.phone === this.session) || null; },
+  user() {
+    const s = normPhone(this.session);
+    if (!s) return null;
+    return this.users().find((u) => {
+      if (normPhone(u.phone) === s) return true;
+      return (u.phones || []).some((x) => normPhone(x) === s);
+    }) || null;
+  },
 };
 const FB = "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app";
 const FB_BUCKET = "kadlan-il.firebasestorage.app";
@@ -1983,8 +1990,14 @@ function renderSafe() {
     catch (e) { main = `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><p>${t("empty")}</p><p class="meta">${e.message}</p></div>`; }
   }
   else if (store.tab === "feed") main = store.board === "rules" ? viewRules() : store.board === "members" ? (user ? viewMembers() : viewAuth()) : store.board === "rating" ? (user ? viewRatingBoard() : viewAuth()) : viewFeed();
-  else if (store.tab === "new" || store.tab === "order") main = !user ? viewAuth() : viewNew();
-  else if (store.tab === "work") main = !user ? viewAuth() : viewSeek();
+  else if (store.tab === "new" || store.tab === "order") {
+    try { main = !user ? viewAuth() : viewNew(); }
+    catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`; }
+  }
+  else if (store.tab === "work") {
+    try { main = !user ? viewAuth() : viewSeek(); }
+    catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`; }
+  }
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
   else if (store.tab === "help") {
     try { main = viewHelp(); }
@@ -3295,6 +3308,7 @@ function bind() {
   const job = document.getElementById("job-form");
   if (job) job.onsubmit = async (e) => {
     e.preventDefault();
+    try {
     const f = new FormData(job);
     const trades = [...job.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
     if (!trades.length) { alert(t("pickOne")); return; }
@@ -3379,8 +3393,11 @@ function bind() {
       store.saveJobs(list);
     }
     store.tab = "mine";
-    await cloudLoad();
+    try { await cloudLoad(); } catch (err) {}
     render();
+    } catch (err) {
+      alert((err && err.message) || t("empty"));
+    }
   };
   const seek = document.getElementById("seek-form");
   if (seek) seek.onsubmit = async (e) => {
@@ -3532,6 +3549,7 @@ try { askGeoCity(); } catch (e) {}
 
 (async () => {
   try {
+    if (store.session) store.session = normPhone(store.session);
     await cloudLoadUsers();
     await cloudLoadPhotosAll();
     await cloudLoad();
