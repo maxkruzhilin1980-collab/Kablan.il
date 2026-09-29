@@ -2043,7 +2043,11 @@ function renderSafe() {
     catch (e) { main = `<div class="card"><p>${t("empty")}</p></div>`; }
   }
   else if (store.tab === "profile") {
-    try { main = user ? (store.admin ? viewAdmin() + viewProfile() : viewProfile()) : viewAuth(); }
+    try {
+      if (store.admin) main = viewAdmin() + (user ? viewProfile() : "");
+      else if (wantAdminLink()) main = viewAdminGate();
+      else main = user ? viewProfile() : viewAuth();
+    }
     catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p><button class="btn" data-tab="feed">${t("feed")}</button></div>`; }
   }
   else main = `<div class="card"><p>${t("ad")}</p><p class="meta">${t("demo")}</p></div>`;
@@ -2797,16 +2801,25 @@ function viewWaClicks() {
     ${rows || `<div class="meta">${t("waEmpty")}</div>`}
   </div>`;
 }
+function viewAdminGate() {
+  return `<form class="card" id="admin-gate">
+    <h2>${t("admin")}</h2>
+    <label>${t("adminPin")}</label>
+    <input name="pin" type="password" autocomplete="current-password" required />
+    <div style="height:10px"></div>
+    <button class="btn" type="submit">${t("login")}</button>
+  </form>`;
+}
+async function enterAdmin() {
+  store.admin = true;
+  store.tab = "profile";
+  try { await loadGuests(); } catch (e) {}
+  try { await loadWaClicks(); } catch (e) {}
+  render();
+}
 async function openAdminLogin() {
-  const pin = prompt(t("adminPin"));
-  if (pin === ADMIN_PIN) {
-    store.admin = true;
-    await loadGuests();
-    await loadWaClicks();
-    store.tab = "profile";
-    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-    render();
-  } else if (pin != null) alert(t("adminBad"));
+  store.tab = "profile";
+  render();
 }
 function wantAdminLink() {
   const h = String(location.hash || "").replace("#", "").toLowerCase();
@@ -2985,8 +2998,16 @@ function bind() {
     render();
   });
   document.querySelectorAll("[data-admin-in]").forEach((b) => b.onclick = () => openAdminLogin());
+  const gate = document.getElementById("admin-gate");
+  if (gate) gate.onsubmit = async (e) => {
+    e.preventDefault();
+    const pin = String(new FormData(gate).get("pin") || "");
+    if (pin === ADMIN_PIN) await enterAdmin();
+    else alert(t("adminBad"));
+  };
   document.querySelectorAll("[data-admin-out]").forEach((b) => b.onclick = () => {
     store.admin = false;
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
     render();
   });
   document.querySelectorAll("[data-filter]").forEach((b) => b.onclick = () => { store.filter = b.dataset.filter; store.panel = ""; render(); });
