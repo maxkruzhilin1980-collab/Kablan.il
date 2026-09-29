@@ -2123,8 +2123,8 @@ function memberCard(m) {
         <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
-        <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
         ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code)}</div>` : ""}
+        <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
       </div>
     </div>
   </article>`;
@@ -2237,12 +2237,11 @@ function viewFeed() {
     const pic = jobPhoto(j);
     return `<article class="card job tt-card slim ${offer ? "offer" : "order"}">
       <div class="tt-row">
-        <span class="file-open picwrap big" data-view-src="${pic}"><img class="tt-photo" src="${pic}" alt="" />${starOnPhoto(j)}</span>
+        <span class="picwrap big tap-open" data-open-job="${j.id}"><img class="tt-photo" src="${pic}" alt="" />${starOnPhoto(j)}</span>
         <div class="tt-body">
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
-          <h3>${title}</h3>
+          <h3 class="tap-open" data-open-job="${j.id}">${title}</h3>
           <div class="meta">${ico("city")}${cities}${!offer && j.budget ? " · " + shekel(j.budget) : ""}</div>
-          <button class="btn ghost sm details-sep" type="button" data-open-job="${j.id}">${t("details")}</button>
           <div class="wa-row">${waBtn(j.phone, j.posterCode || text)}</div>
         </div>
       </div>

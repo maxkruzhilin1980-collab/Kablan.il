@@ -397,3 +397,6 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 }
 .install-bar .btn { width: auto; flex: 1; }
 .install-bar .btn.ghost { flex: 0; }
+
+.tap-open { cursor: pointer; }
+.picwrap.tap-open:active { opacity: .85; }
