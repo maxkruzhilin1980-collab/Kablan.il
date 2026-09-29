@@ -241,6 +241,12 @@ const I18N = {
     adminBad: "Неверный код",
     adminStats: "Статистика",
     statGuests: "Гостей",
+    statWa: "В WhatsApp",
+    statWaToday: "WhatsApp сегодня",
+    waClicks: "Кто открывал WhatsApp",
+    waFrom: "Кто нажал",
+    waTo: "Кому писали",
+    waEmpty: "Пока никто не нажимал WhatsApp.",
     statReg: "Регистраций",
     statJobs: "Заказов",
     statOffers: "Предложений мастеров",
@@ -481,6 +487,12 @@ const I18N = {
     adminBad: "קוד שגוי",
     adminStats: "סטטיסטיקה",
     statGuests: "אורחים",
+    statWa: "לוואטסאפ",
+    statWaToday: "וואטסאפ היום",
+    waClicks: "מי פתח וואטסאפ",
+    waFrom: "מי לחץ",
+    waTo: "למי כתבו",
+    waEmpty: "עדיין אין לחיצות וואטסאפ.",
     statReg: "נרשמים",
     statJobs: "הזמנות",
     statOffers: "הצעות בעלי מקצוע",
@@ -721,6 +733,12 @@ const I18N = {
     adminBad: "Wrong code",
     adminStats: "Statistics",
     statGuests: "Guests",
+    statWa: "WhatsApp taps",
+    statWaToday: "WhatsApp today",
+    waClicks: "Who opened WhatsApp",
+    waFrom: "Who tapped",
+    waTo: "Who they wrote",
+    waEmpty: "No WhatsApp taps yet.",
     statReg: "Signups",
     statJobs: "Jobs",
     statOffers: "Worker offers",
@@ -941,6 +959,7 @@ function normPhone(v) {
 const ADMIN_PIN = "kadlan1";
 let cloudCache = [];
 let guestCache = [];
+let waClickCache = [];
 let privDocsCache = {};
 let docReqCache = {};
 let showGuests = false;
@@ -2602,6 +2621,54 @@ function fmtWhen(ms) {
   const p = (n) => String(n).padStart(2, "0");
   return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear() + " " + p(d.getHours()) + ":" + p(d.getMinutes());
 }
+async function pingWaClick(toPhone, toCode) {
+  const user = store.user && store.user();
+  const p = store.profile ? store.profile() : {};
+  const row = {
+    id: "w" + Date.now() + Math.random().toString(36).slice(2, 6),
+    at: Date.now(),
+    vid: visitorId(),
+    fromPhone: (user && user.phone) || store.session || p.phone || "",
+    fromName: (user && user.name) || p.name || t("guestAnon"),
+    fromCode: (user && user.code) || p.code || "",
+    toPhone: toPhone || "",
+    toCode: toCode || ""
+  };
+  waClickCache = [row].concat(waClickCache).slice(0, 300);
+  try { localStorage.setItem("bil_waclicks", JSON.stringify(waClickCache.slice(0, 80))); } catch (e) {}
+  try {
+    await fetch(fb("/waclicks/" + row.id), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(row)
+    });
+  } catch (e) {}
+}
+async function loadWaClicks() {
+  try {
+    const res = await fetch(fb("/waclicks"));
+    const data = res.ok ? await res.json() : null;
+    waClickCache = data && typeof data === "object" ? Object.values(data) : [];
+  } catch (e) {
+    waClickCache = safeParse(localStorage.getItem("bil_waclicks") || "[]");
+  }
+  waClickCache.sort((a, b) => Number(b.at || 0) - Number(a.at || 0));
+}
+function viewWaClicks() {
+  const today = waClickCache.filter((x) => Number(x.at || 0) >= startOfToday()).length;
+  const rows = waClickCache.slice(0, 80).map((x) => {
+    const who = esc(x.fromName || x.fromPhone || t("guestAnon"));
+    const code = x.fromCode ? " · " + esc(x.fromCode) : "";
+    const phone = x.fromPhone ? " · " + esc(x.fromPhone) : "";
+    const to = esc(x.toCode || x.toPhone || "—");
+    return `<div class="review-item"><b>${who}</b>${code}${phone}<div class="meta">${t("waTo")}: ${to} · ${fmtWhen(x.at)}</div></div>`;
+  }).join("");
+  return `<div class="card">
+    <b>${t("waClicks")}</b>
+    <div class="meta">${t("statWa")}: ${waClickCache.length} · ${t("statWaToday")}: ${today}</div>
+    ${rows || `<div class="meta">${t("waEmpty")}</div>`}
+  </div>`;
+}
 async function loadGuests() {
   try {
     const res = await fetch(fb("/visits"));
@@ -2647,9 +2714,12 @@ function viewAdmin() {
         <div><b>${users.length}</b><span>${t("statReg")}</span></div>
         <div><b>${orders.length}</b><span>${t("statJobs")}</span></div>
         <div><b>${offers.length}</b><span>${t("statOffers")}</span></div>
+        <div><b>${waClickCache.length}</b><span>${t("statWa")}</span></div>
+        <div><b>${waClickCache.filter((x) => Number(x.at || 0) >= startOfToday()).length}</b><span>${t("statWaToday")}</span></div>
       </div>
       <button class="btn ghost" type="button" data-admin-out="1">${t("adminOut")}</button>
     </div>
+    ${viewWaClicks()}
     ${viewGuests()}`;
 }
 
@@ -2768,7 +2838,7 @@ function bind() {
   });
   document.querySelectorAll("[data-guests]").forEach((b) => b.onclick = async () => {
     showGuests = !showGuests;
-    if (showGuests) await loadGuests();
+    if (showGuests) { await loadGuests(); await loadWaClicks(); }
     render();
   });
   document.querySelectorAll("[data-admin-in]").forEach((b) => b.onclick = async () => {
@@ -2776,6 +2846,7 @@ function bind() {
     if (pin === ADMIN_PIN) {
       store.admin = true;
       await loadGuests();
+      await loadWaClicks();
       store.tab = "profile";
       render();
     } else if (pin != null) alert(t("adminBad"));
@@ -2948,7 +3019,7 @@ function bind() {
     };
   });
   document.querySelectorAll("a[data-contact]").forEach((a) => {
-    a.addEventListener("click", () => markWorked(a.getAttribute("data-contact"), a.getAttribute("data-contact-code")));
+    a.addEventListener("click", () => { markWorked(a.getAttribute("data-contact"), a.getAttribute("data-contact-code")); pingWaClick(a.getAttribute("data-contact"), a.getAttribute("data-contact-code")); });
   });
   document.querySelectorAll("form[data-complain-target]").forEach((form) => {
     form.onsubmit = async (e) => {
