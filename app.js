@@ -116,7 +116,7 @@ const FLAG_MARK = {
 const I18N = {
   ru: {
     brand: "Kadlan",
-    waHello: "Здравствуйте! Пишу с приложения Kadlan.\nПо объявлению: {topic}\nЯ: {me}\nkadlan.co.il",
+    waHello: "Здравствуйте! Интересует размещённое вами на Kadlan.\nЭто: {kind}\nКатегория: {cat}\nОбъявление: {topic}\nЯ: {me}\nkadlan.co.il",
     heroTitle: "Кабланы и мастера находят друг друга",
     heroText: "Биржа стройки для Израиля. Пока бесплатно — заявка, отклик, WhatsApp.",
     iAmContractor: "Я каблан / заказчик",
@@ -131,6 +131,9 @@ const I18N = {
     more: "Ещё",
     all: "Все",
     filterJobs: "Мастера",
+    waKindJob: "заказ",
+    waKindOffer: "анкета мастера",
+    waKindMember: "анкета",
     sortNew: "Новые",
     sortBest: "Сначала лучшие",
     cityPick: "Город",
@@ -388,7 +391,7 @@ const I18N = {
   },
   he: {
     brand: "Kadlan",
-    waHello: "שלום, כותב דרך האפליקציה Kadlan.\nלגבי המודעה: {topic}\nאני: {me}\nkadlan.co.il",
+    waHello: "שלום, מעניין אותי מה שפרסמתם ב-Kadlan.\nזה: {kind}\nקטגוריה: {cat}\nמודעה: {topic}\nאני: {me}\nkadlan.co.il",
     heroTitle: "קבלנים ומקצוענים מוצאים אחד את השני",
     heroText: "בורסת בנייה לישראל. בינתיים בחינם — מודעה, פנייה, וואטסאפ.",
     iAmContractor: "אני קבלן / מזמין",
@@ -403,6 +406,9 @@ const I18N = {
     more: "עוד",
     all: "הכל",
     filterJobs: "מקצוענים",
+    waKindJob: "הזמנה",
+    waKindOffer: "כרטיס מקצוען",
+    waKindMember: "כרטיס",
     sortNew: "חדשים",
     sortBest: "הכי טובים",
     cityPick: "עיר",
@@ -660,7 +666,7 @@ const I18N = {
   },
   en: {
     brand: "Kadlan",
-    waHello: "Hello, I am writing from the Kadlan app.\nAbout: {topic}\nI am: {me}\nkadlan.co.il",
+    waHello: "Hello! I am interested in what you posted on Kadlan.\nThis is: {kind}\nCategory: {cat}\nListing: {topic}\nI am: {me}\nkadlan.co.il",
     heroTitle: "Contractors and tradespeople find each other",
     heroText: "A construction board for Israel. Free for now — post, reply, WhatsApp.",
     iAmContractor: "I am a contractor",
@@ -675,6 +681,9 @@ const I18N = {
     more: "More",
     all: "All",
     filterJobs: "Pros",
+    waKindJob: "an order",
+    waKindOffer: "a master listing",
+    waKindMember: "a profile",
     sortNew: "Newest",
     sortBest: "Best first",
     cityPick: "City",
@@ -1991,12 +2000,29 @@ function notifyOwnerWa(owner, kind, extra) {
   }
 }
 
-function waHelloText(code, topic) {
+function waKindLabel(kind, role) {
+  if (kind === "job") return t("waKindJob");
+  if (kind === "offer") return t("waKindOffer");
+  if (role === "worker") return t("waKindOffer");
+  if (role === "contractor") return t("waKindJob");
+  return t("waKindMember");
+}
+function waCats(trades) {
+  const ids = Array.isArray(trades) ? trades : (trades ? [trades] : []);
+  return ids.map((id) => tradeLabel(id)).filter(Boolean).join(", ");
+}
+function waHelloText(code, topic, kind, trades, role) {
   const p = store.profile() || {};
   const u = store.user ? store.user() : null;
   const me = [p.name || (u && u.name) || "", p.code || (u && u.code) || ""].filter(Boolean).join(", ") || t("guestAnon");
   const subj = String(topic || code || "").trim() || "Kadlan";
-  return t("waHello").replace("{topic}", subj).replace("{me}", me);
+  const cat = waCats(trades) || subj;
+  const type = waKindLabel(kind, role);
+  return t("waHello")
+    .replace("{kind}", type)
+    .replace("{cat}", cat)
+    .replace("{topic}", subj)
+    .replace("{me}", me);
 }
 function waLink(phone, text) {
   const num = String(phone || "").replace(/\D/g, "");
@@ -2005,9 +2031,9 @@ function waLink(phone, text) {
   return `https://wa.me/${full}?text=${encodeURIComponent(text || "")}`;
 }
 
-function waBtn(phone, code, topic) {
+function waBtn(phone, code, topic, kind, trades, role) {
   if (!phone) return "";
-  const msg = code === "support" ? t("helpWrite") : waHelloText(code, topic);
+  const msg = code === "support" ? t("helpWrite") : waHelloText(code, topic, kind, trades, role);
   return `<a class="btn wa-btn" data-contact="${phone}" data-contact-code="${code || ""}" href="${waLink(phone, msg)}">${ico("wa")}<span>WhatsApp</span></a>`;
 }
 
@@ -2303,7 +2329,7 @@ function memberCard(m) {
         <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
-        ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code, m.name)}</div>` : ""}
+        ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code, m.name, m.role === "worker" ? "offer" : "job", m.trades, m.role)}</div>` : ""}
         <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
       </div>
     </div>
@@ -2432,7 +2458,7 @@ function viewFeed() {
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
           <h3 class="tap-open" data-open-job="${j.id}">${title}</h3>
           <div class="meta">${ico("city")}${cities}${!offer && j.budget ? " · " + shekel(j.budget) : ""}</div>
-          <div class="wa-row">${waBtn(j.phone, j.posterCode, text)}</div>
+          <div class="wa-row">${waBtn(j.phone, j.posterCode, text, j.kind, j.trades || j.trade, "")}</div>
         </div>
       </div>
     </article>`;
@@ -2542,7 +2568,7 @@ function viewMemberDetail(code) {
       <b>${t("documents")}</b>
       ${docs}
       ${revs}
-      ${phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(phone, m.code, m.name)}</div>` : ""}
+      ${phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(phone, m.code, m.name, m.role === "worker" ? "offer" : "job", m.trades, m.role)}</div>` : ""}
     </article>`;
   } catch (e) {
     return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><h3>${esc(code)}</h3><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`;
