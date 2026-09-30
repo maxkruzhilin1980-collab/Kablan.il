@@ -116,6 +116,7 @@ const FLAG_MARK = {
 const I18N = {
   ru: {
     brand: "Kadlan",
+    waHello: "Здравствуйте! Пишу с приложения Kadlan.\nПо объявлению: {topic}\nЯ: {me}\nkadlan.co.il",
     heroTitle: "Кабланы и мастера находят друг друга",
     heroText: "Биржа стройки для Израиля. Пока бесплатно — заявка, отклик, WhatsApp.",
     iAmContractor: "Я каблан / заказчик",
@@ -387,6 +388,7 @@ const I18N = {
   },
   he: {
     brand: "Kadlan",
+    waHello: "שלום, כותב דרך האפליקציה Kadlan.\nלגבי המודעה: {topic}\nאני: {me}\nkadlan.co.il",
     heroTitle: "קבלנים ומקצוענים מוצאים אחד את השני",
     heroText: "בורסת בנייה לישראל. בינתיים בחינם — מודעה, פנייה, וואטסאפ.",
     iAmContractor: "אני קבלן / מזמין",
@@ -658,6 +660,7 @@ const I18N = {
   },
   en: {
     brand: "Kadlan",
+    waHello: "Hello, I am writing from the Kadlan app.\nAbout: {topic}\nI am: {me}\nkadlan.co.il",
     heroTitle: "Contractors and tradespeople find each other",
     heroText: "A construction board for Israel. Free for now — post, reply, WhatsApp.",
     iAmContractor: "I am a contractor",
@@ -1988,6 +1991,13 @@ function notifyOwnerWa(owner, kind, extra) {
   }
 }
 
+function waHelloText(code, topic) {
+  const p = store.profile() || {};
+  const u = store.user ? store.user() : null;
+  const me = [p.name || (u && u.name) || "", p.code || (u && u.code) || ""].filter(Boolean).join(", ") || t("guestAnon");
+  const subj = String(topic || code || "").trim() || "Kadlan";
+  return t("waHello").replace("{topic}", subj).replace("{me}", me);
+}
 function waLink(phone, text) {
   const num = String(phone || "").replace(/\D/g, "");
   if (!num) return "#";
@@ -1995,9 +2005,10 @@ function waLink(phone, text) {
   return `https://wa.me/${full}?text=${encodeURIComponent(text || "")}`;
 }
 
-function waBtn(phone, code) {
+function waBtn(phone, code, topic) {
   if (!phone) return "";
-  return `<a class="btn wa-btn" data-contact="${phone}" data-contact-code="${code || ""}" href="${waLink(phone, code)}">${ico("wa")}<span>WhatsApp</span></a>`;
+  const msg = code === "support" ? t("helpWrite") : waHelloText(code, topic);
+  return `<a class="btn wa-btn" data-contact="${phone}" data-contact-code="${code || ""}" href="${waLink(phone, msg)}">${ico("wa")}<span>WhatsApp</span></a>`;
 }
 
 
@@ -2292,7 +2303,7 @@ function memberCard(m) {
         <div class="tags">${badgesHtml(m)}</div>
         <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}</div>
         ${m.role === "worker" ? `<div class="flags">${flagsHtml(m.flags)}</div>` : ""}
-        ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code)}</div>` : ""}
+        ${m.phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(m.phone, m.code, m.name)}</div>` : ""}
         <button class="btn ghost sm details-sep" type="button" data-open-member="${m.code}">${t("details")}</button>
       </div>
     </div>
@@ -2421,7 +2432,7 @@ function viewFeed() {
           <div class="badge-row">${demo ? `<span class="badge demo">${t("demoTag")}</span>` : ""}<span class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</span></div>
           <h3 class="tap-open" data-open-job="${j.id}">${title}</h3>
           <div class="meta">${ico("city")}${cities}${!offer && j.budget ? " · " + shekel(j.budget) : ""}</div>
-          <div class="wa-row">${waBtn(j.phone, j.posterCode || text)}</div>
+          <div class="wa-row">${waBtn(j.phone, j.posterCode, text)}</div>
         </div>
       </div>
     </article>`;
@@ -2531,7 +2542,7 @@ function viewMemberDetail(code) {
       <b>${t("documents")}</b>
       ${docs}
       ${revs}
-      ${phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(phone, m.code)}</div>` : ""}
+      ${phone && !isSelfTarget(m.code) ? `<div class="wa-row">${waBtn(phone, m.code, m.name)}</div>` : ""}
     </article>`;
   } catch (e) {
     return `<div class="card"><button class="btn ghost" data-close-job="1">${t("back")}</button><h3>${esc(code)}</h3><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`;
