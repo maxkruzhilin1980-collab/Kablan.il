@@ -2606,7 +2606,6 @@ function viewJobDetail(id) {
   const extraHtml = extra.map((f) => fileView(f.name || f, f.data)).filter(Boolean).join("")
     || (j.docFiles || []).map((n) => `<div class="plan-name">📄 ${n}</div>`).join("");
   return `${boardNav()}
-    <button class="btn ghost" data-close-job="1">${t("back")}</button>
     <article class="card job ${offer ? "offer" : "order"}">
       <div class="badge ${offer ? "offer" : "order"}">${offer ? t("badgeOffer") : t("badgeJob")}</div>
       <h3>${title}</h3>
