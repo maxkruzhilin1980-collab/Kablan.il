@@ -129,7 +129,7 @@ const I18N = {
     profile: "Профиль",
     more: "Ещё",
     all: "Все",
-    filterJobs: "Ищу мастера",
+    filterJobs: "Мастера",
     sortNew: "Новые",
     sortBest: "Сначала лучшие",
     cityPick: "Город",
@@ -143,7 +143,7 @@ const I18N = {
     pickTrade: "Профессия",
     allTrades: "Все профессии",
     demoTag: "Пример",
-    filterOffers: "Ищу заказ",
+    filterOffers: "Заказы",
     badgeJob: "Заказ",
     badgeOffer: "Мастер свободен",
     emptyJobs: "Заказов пока нет.",
@@ -169,12 +169,12 @@ const I18N = {
     pay3: "₪15,000–50,000",
     pay4: "₪50,000–150,000",
     pay5: "от ₪150,000",
-    plan: "Чертёж / проект",
+    plan: "Чертёж / фото объекта",
     pickFile: "Выбрать файл",
     pickFiles: "Выбрать файлы",
     planHint: "Лучше JPG или PDF, до 2 МБ. Не HEIC и не видео.",
-    extraDocs: "Другие документы",
-    extraDocsHint: "Договор, счёт, фото объекта. Формат: PDF или JPG, до 2 МБ.",
+    extraDocs: "Документы",
+    extraDocsHint: "Правила, требования. Формат: PDF или JPG, до 2 МБ.",
     noPlan: "Чертёж не приложен",
     noExtraDocs: "Других документов нет",
     openFile: "Открыть",
@@ -198,6 +198,11 @@ const I18N = {
     flag_crew: "Работаем бригадой",
     flag_crew_h: "Выходит не один человек, а бригада.",
     tradesNeed: "Какие работы нужны",
+    tradesCan: "Что умеете",
+    legalStatus: "Гражданин / житель / разрешение",
+    legalOne: "Можно выбрать только один вариант",
+    objectPhoto: "Фото объекта",
+    workRadius: "Радиус выезда",
     pickOne: "Отметьте хотя бы одну работу",
     phone: "WhatsApp",
     name: "Имя / компания",
@@ -395,7 +400,7 @@ const I18N = {
     profile: "פרופיל",
     more: "עוד",
     all: "הכל",
-    filterJobs: "מחפש מקצוען",
+    filterJobs: "מקצוענים",
     sortNew: "חדשים",
     sortBest: "הכי טובים",
     cityPick: "עיר",
@@ -409,7 +414,7 @@ const I18N = {
     pickTrade: "מקצוע",
     allTrades: "כל המקצועות",
     demoTag: "דוגמה",
-    filterOffers: "מחפש עבודה",
+    filterOffers: "הזמנות",
     badgeJob: "הזמנה",
     badgeOffer: "מקצוען פנוי",
     emptyJobs: "אין הזמנות עדיין.",
@@ -435,12 +440,12 @@ const I18N = {
     pay3: "₪15,000–50,000",
     pay4: "₪50,000–150,000",
     pay5: "מ־₪150,000",
-    plan: "שרטוט / תוכנית",
+    plan: "שרטוט / תמונת האתר",
     pickFile: "בחר קובץ",
     pickFiles: "בחר קבצים",
     planHint: "עדיף JPG או PDF עד 2MB. לא HEIC ולא וידאו.",
-    extraDocs: "מסמכים אחרים",
-    extraDocsHint: "חוזה או חשבונית: PDF או JPG עד 2MB.",
+    extraDocs: "מסמכים",
+    extraDocsHint: "כללים ודרישות. PDF או JPG עד 2MB.",
     noPlan: "אין שרטוט",
     noExtraDocs: "אין מסמכים נוספים",
     openFile: "פתיחה",
@@ -464,6 +469,11 @@ const I18N = {
     flag_crew: "עובדים כצוות",
     flag_crew_h: "מגיעה קבוצה / בריגדה, לא אדם אחד.",
     tradesNeed: "אילו עבודות צריך",
+    tradesCan: "מה אתם יודעים לעשות",
+    legalStatus: "אזרח / תושב / היתר",
+    legalOne: "אפשר לבחור אפשרות אחת",
+    objectPhoto: "תמונת האתר",
+    workRadius: "רדיוס נסיעה",
     pickOne: "סמנו לפחות מקצוע אחד",
     phone: "וואטסאפ",
     name: "שם / חברה",
@@ -661,7 +671,7 @@ const I18N = {
     profile: "Profile",
     more: "More",
     all: "All",
-    filterJobs: "Looking for a pro",
+    filterJobs: "Pros",
     sortNew: "Newest",
     sortBest: "Best first",
     cityPick: "City",
@@ -675,7 +685,7 @@ const I18N = {
     pickTrade: "Trade",
     allTrades: "All trades",
     demoTag: "Sample",
-    filterOffers: "Looking for a job",
+    filterOffers: "Jobs",
     badgeJob: "Job",
     badgeOffer: "Pro available",
     emptyJobs: "No jobs yet.",
@@ -701,12 +711,12 @@ const I18N = {
     pay3: "₪15,000–50,000",
     pay4: "₪50,000–150,000",
     pay5: "₪150,000+",
-    plan: "Drawing / project",
+    plan: "Drawing / site photo",
     pickFile: "Choose file",
     pickFiles: "Choose files",
     planHint: "Best: JPG or PDF, under 2 MB. No HEIC or video.",
-    extraDocs: "Other documents",
-    extraDocsHint: "Contract or invoice: PDF or JPG, under 2 MB.",
+    extraDocs: "Documents",
+    extraDocsHint: "Rules and requirements. PDF or JPG, under 2 MB.",
     noPlan: "No drawing attached",
     noExtraDocs: "No other documents",
     openFile: "Open",
@@ -730,6 +740,11 @@ const I18N = {
     flag_crew: "Works as a crew",
     flag_crew_h: "Comes as a crew, not one person.",
     tradesNeed: "Which trades",
+    tradesCan: "What you can do",
+    legalStatus: "Citizen / resident / permit",
+    legalOne: "Pick only one",
+    objectPhoto: "Site photo",
+    workRadius: "Travel radius",
     pickOne: "Select at least one trade",
     phone: "WhatsApp",
     name: "Name / company",
@@ -1532,6 +1547,20 @@ function flagChecks(name, selected) {
   const on = selected || [];
   return FLAG_IDS.map((id) =>
     `<label class="check"><input type="checkbox" name="${name}" value="${id}" ${on.includes(id) ? "checked" : ""} /> ${FLAG_MARK[id]} ${flagLabel(id)}</label>`
+  ).join("");
+}
+const LEGAL_IDS = ["citizen", "resident", "permit"];
+const EXTRA_FLAG_IDS = ["height", "tools", "car", "crew"];
+function legalChecks(selected) {
+  const on = (selected || []).find((id) => LEGAL_IDS.includes(id)) || "";
+  return LEGAL_IDS.map((id) =>
+    `<label class="check"><input type="radio" name="legal" value="${id}" ${on === id ? "checked" : ""} /> ${FLAG_MARK[id]} ${flagLabel(id)}</label>`
+  ).join("");
+}
+function extraFlagChecks(selected) {
+  const on = selected || [];
+  return EXTRA_FLAG_IDS.map((id) =>
+    `<label class="check"><input type="checkbox" name="flags" value="${id}" ${on.includes(id) ? "checked" : ""} /> ${FLAG_MARK[id]} ${flagLabel(id)}</label>`
   ).join("");
 }
 function workName(trade, id) {
@@ -2573,6 +2602,9 @@ function viewNew() {
     <label class="filebtn">${ico("plan")}${t("pickFile")}
       <input type="file" name="plan" accept="image/*,.pdf,application/pdf" />
     </label>
+    <label class="filebtn">${t("objectPhoto")}
+      <input type="file" name="objectPhoto" accept="image/*" multiple />
+    </label>
     <div class="plan-name">${t("planHint")}</div>
     <label>${t("extraDocs")}</label>
     <label class="filebtn">${t("pickFiles")}
@@ -2580,8 +2612,6 @@ function viewNew() {
     </label>
     <div class="plan-name">${t("extraDocsHint")}</div>
     <label>${ico("city")}${t("city")}</label><select name="city">${cities}</select>
-    <label>${ico("date")}${t("dateFrom")}</label><input type="date" name="dateFrom" required />
-    <label>${ico("date")}${t("dateTo")}</label><input type="date" name="dateTo" />
     <label>${ico("money")}${t("budget")}</label>
     <div class="checkgrid">
       <label class="check"><input type="radio" name="budgetType" value="talk" checked /> ${t("budgetTalk")}</label>
@@ -2596,21 +2626,29 @@ function viewNew() {
 
 function viewSeek() {
   const p = store.profile() || {};
-  const picked = Array.isArray(p.cities) ? p.cities : (p.city ? [p.city] : []);
+  const picked = p.city || ((Array.isArray(p.cities) && p.cities[0]) || "");
   const selected = Array.isArray(p.trades) ? p.trades : [];
+  const shotN = Array.isArray(p.workPhotos) ? p.workPhotos.length : 0;
+  const rad = String(p.workRadius || "40");
   const checks = TRADES.filter(([id]) => id !== "other").map(([id]) => `<label class="check"><input type="checkbox" name="trades" value="${id}" ${selected.includes(id) ? "checked" : ""} /> ${tradeLabel(id)}</label>`).join("");
-  const cityChecks = CITIES.map((row) => `<label class="check"><input type="checkbox" name="cities" value="${row[0]}" ${picked.includes(row[0]) ? "checked" : ""} /> ${loc(row)}</label>`).join("");
+  const cityOpts = CITIES.map((row) => `<option value="${row[0]}" ${picked === row[0] ? "selected" : ""}>${loc(row)}</option>`).join("");
+  const rads = [["0","radius0"],["20","radius20"],["40","radius40"],["80","radius80"],["999","radiusAll"]].map(([v,k]) => `<label class="check"><input type="radio" name="workRadius" value="${v}" ${rad === v ? "checked" : ""} /> ${t(k)}</label>`).join("");
   return `<form class="card" id="seek-form">
     <p>${t("seekHint")}</p>
     <label>${ico("name")}${t("name")}</label><input name="name" value="${esc(p.name)}" />
-    <label>${t("tradesNeed")}</label>
+    <label>${t("tradesCan")}</label>
     <div class="checkgrid">${checks}</div>
     <div id="works-box"></div>
     <label>${ico("city")}${t("city")}</label>
-    <div class="checkgrid">${cityChecks}</div>
+    <select name="city">${cityOpts}</select>
+    <label>${t("workRadius")}</label>
+    <div class="checkgrid">${rads}</div>
     <p class="meta">${ico("phone")} ${esc(p.phone || myPhone() || t("phone"))}</p>
+    <label>${t("legalStatus")}</label>
+    <div class="checkgrid">${legalChecks(p.flags || [])}</div>
+    <div class="plan-name">${t("legalOne")}</div>
     <label>${t("flagsHave")}</label>
-    <div class="checkgrid">${flagChecks("flags", p.flags || [])}</div>
+    <div class="checkgrid">${extraFlagChecks(p.flags || [])}</div>
     <div class="plan-name">${t("flagsHint")}</div>
     <label>${t("workPhotos")}</label>
     <label class="filebtn">${t("pickFiles")}
@@ -3423,10 +3461,15 @@ function bind() {
       img.onerror = () => { URL.revokeObjectURL(url); done(""); };
       img.src = url;
     });
-    const planFile = job.querySelector("input[name=plan]").files[0];
-    const plan = await readOne(planFile);
+    const planFile = job.querySelector("input[name=plan]")?.files[0];
+    let plan = await readOne(planFile);
+    const objectFiles = [...(job.querySelector("input[name=objectPhoto]")?.files || [])];
     const extraFiles = [...(job.querySelector("input[name=docs]")?.files || [])];
     const extraDocs = [];
+    for (const file of objectFiles.slice(0, 4)) extraDocs.push(await readOne(file));
+    if (!plan.data && extraDocs[0] && extraDocs[0].data) {
+      plan = extraDocs.shift();
+    }
     for (const file of extraFiles.slice(0, 4)) extraDocs.push(await readOne(file));
     const descText = [...workLabels, other].filter(Boolean).join(". ");
     const list = store.jobs();
@@ -3485,7 +3528,9 @@ function bind() {
     const f = new FormData(seek);
     const trades = [...seek.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
     const works = [...seek.querySelectorAll("input[name=works]:checked")].map((x) => x.value);
-    const cities = [...seek.querySelectorAll("input[name=cities]:checked")].map((x) => x.value);
+    const city = String(f.get("city") || "");
+    const cities = city ? [city] : [];
+    const workRadius = String(f.get("workRadius") || "40");
     const name = String(f.get("name") || "");
     const phone = myPhone() || String((store.profile() || {}).phone || "") || "";
     if (recentlyPosted("offer", phone)) { postingLock = false; if (seekBtn) seekBtn.disabled = false; return; }
@@ -3494,12 +3539,15 @@ function bind() {
       return workName(tr, wid);
     });
     const title = workLabels.filter(Boolean).join(", ") || trades.map(tradeName).join(", ") || name;
-    const flags = [...seek.querySelectorAll("input[name=flags]:checked")].map((x) => x.value);
+    const extraFlags = [...seek.querySelectorAll("input[name=flags]:checked")].map((x) => x.value);
+    const legal = String(f.get("legal") || "");
+    const flags = extraFlags.concat(legal ? [legal] : []);
     store.saveProfile({
       ...store.profile(),
       name,
       city: cities[0] || "",
       cities,
+      workRadius,
       phone,
       trades,
       works,

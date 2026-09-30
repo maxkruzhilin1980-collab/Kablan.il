@@ -379,7 +379,7 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
   border-radius: 16px; padding: 12px 12px; font: inherit; cursor: pointer;
 }
 .kind-btn.on, .city-btn.on { border-color: #009fd9; background: #eef8fc; }
-.kind-btn b, .city-btn b { display: block; font-size: 14px; }
+.kind-btn b, .city-btn b { display: block; font-size: 17px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
 .kind-btn small, .city-btn small { display: block; color: var(--muted); font-size: 12px; }
 .city-btn { margin-bottom: 8px; min-height: 56px; }
 .sheet { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px; margin: 0 0 12px; }
