@@ -1375,8 +1375,7 @@ function recentlyPosted(kind, phone) {
   });
 }
 function isLogged() {
-  if (store.user()) return true;
-  return !!(store.session || (store.profile() && store.profile().phone));
+  return !!store.session;
 }
 function ensureUserRow() {
   if (store.user()) return store.user();
@@ -3135,7 +3134,7 @@ function viewProfile() {
   </form>
   ${viewReputation()}
   <div class="card">
-    <button class="btn ghost" data-logout="1">${t("logout")}</button>
+    <button class="btn ghost" type="button" data-logout="1">${t("logout")}</button>
   </div>`;
 }
 
@@ -3520,7 +3519,7 @@ function bind() {
       render();
     };
   });
-  document.querySelectorAll("[data-logout]").forEach((b) => b.onclick = () => { store.session = ""; store.tab = "feed"; render(); });
+  document.querySelectorAll("[data-logout]").forEach((b) => b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); store.session = ""; store.tab = "profile"; render(); });
   const reg = document.getElementById("reg-form");
   if (reg) reg.onsubmit = async (e) => {
     e.preventDefault();
