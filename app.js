@@ -2007,15 +2007,18 @@ function waKindLabel(kind, role) {
   if (role === "contractor") return t("waKindJob");
   return t("waKindMember");
 }
+function plainText(value) {
+  return String(value || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+}
 function waCats(trades) {
   const ids = Array.isArray(trades) ? trades : (trades ? [trades] : []);
-  return ids.map((id) => tradeLabel(id)).filter(Boolean).join(", ");
+  return ids.map((id) => plainText(tradeLabel(id))).filter(Boolean).join(", ");
 }
 function waHelloText(code, topic, kind, trades, role) {
   const p = store.profile() || {};
   const u = store.user ? store.user() : null;
-  const me = [p.name || (u && u.name) || "", p.code || (u && u.code) || ""].filter(Boolean).join(", ") || t("guestAnon");
-  const subj = String(topic || code || "").trim() || "Kadlan";
+  const me = p.name || (u && u.name) || t("guestAnon");
+  const subj = plainText(topic || code || "") || "Kadlan";
   const cat = waCats(trades) || subj;
   const type = waKindLabel(kind, role);
   return t("waHello")
@@ -2548,7 +2551,6 @@ function viewMemberDetail(code) {
     let revs = "";
     try { revs = reviewsBox(m.code, worker ? "worker" : "contractor") + complainBox(m.code); } catch (e3) { revs = ""; }
     return `${boardNav()}
-    <button class="btn ghost" data-close-job="1">${t("back")}</button>
     <article class="card job ${worker ? "offer" : "order"}">
       <div class="tt-row">
         <span class="picwrap big file-open" data-view-src="${faceSrc}"><img class="tt-photo" src="${faceSrc}" alt="" /></span>
