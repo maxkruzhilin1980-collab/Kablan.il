@@ -1253,7 +1253,10 @@ async function cloudLoadUsers() {
     Object.values(data).forEach((u) => {
       if (!u || !u.phone) return;
       const k = normPhone(u.phone);
-      map[k] = { ...(map[k] || {}), ...u, phone: k };
+      const clean = { ...u, phone: k };
+      delete clean.password;
+      map[k] = { ...(map[k] || {}), ...clean };
+      delete map[k].password;
     });
     store.saveUsers(Object.values(map));
   } catch (e) {}
@@ -1306,6 +1309,31 @@ async function cloudLoadPhotos(phone) {
     return await res.json();
   } catch (e) { return null; }
 }
+async function passHash(phone, password) {
+  const data = new TextEncoder().encode(normPhone(phone) + ":" + String(password || ""));
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function cloudSaveSecret(phone, password) {
+  const hash = await passHash(phone, password);
+  await fetch(fb("/secrets/" + normPhone(phone) + "/hash"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(hash),
+  });
+}
+async function cloudCheckSecret(phone, password) {
+  const hash = await passHash(phone, password);
+  const url = fb("/secrets/" + normPhone(phone)) + '?orderBy="hash"&equalTo=' + encodeURIComponent('"' + hash + '"');
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.hash === hash) return true;
+    }
+  } catch (e) {}
+  return false;
+}
 async function cloudSaveUser(user) {
   if (!user || !user.phone) return;
   try {
@@ -1314,6 +1342,7 @@ async function cloudSaveUser(user) {
     const workPhotos = slim.workPhotos;
     delete slim.workPhotos;
     delete slim.photo;
+    delete slim.password;
     await fetch(fb("/users/" + normPhone(user.phone)), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -3493,20 +3522,21 @@ function bind() {
   });
   document.querySelectorAll("[data-logout]").forEach((b) => b.onclick = () => { store.session = ""; store.tab = "feed"; render(); });
   const reg = document.getElementById("reg-form");
-  if (reg) reg.onsubmit = (e) => {
+  if (reg) reg.onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(reg);
     const phone = normPhone(f.get("phone"));
     if (store.users().some((u) => normPhone(u.phone) === phone)) { alert(t("hasAccount")); return; }
     const trades = [...reg.querySelectorAll("input[name=trades]:checked")].map((x) => x.value);
+    const password = String(f.get("password") || "");
     const user = {
       name: String(f.get("name") || ""),
       phone,
-      password: String(f.get("password") || ""),
       role: String(f.get("role") || "contractor"),
       trades,
       code: nextCode(),
     };
+    await cloudSaveSecret(phone, password);
     store.saveUsers(store.users().concat(user));
     cloudSaveUser(user);
     store.session = phone;
@@ -3521,11 +3551,12 @@ function bind() {
     const f = new FormData(login);
     const phone = normPhone(f.get("phone"));
     const password = String(f.get("password") || "");
+    const ok = await cloudCheckSecret(phone, password);
+    if (!ok) { alert(t("badPassword")); return; }
     await cloudLoadUsers();
     await cloudLoadPhotosAll();
     const known = store.users().find((u) => normPhone(u.phone) === phone);
     if (!known) { alert(t("notRegistered")); return; }
-    if (String(known.password || "") !== password) { alert(t("badPassword")); return; }
     const user = known;
     store.session = phone;
     store.role = user.role;
