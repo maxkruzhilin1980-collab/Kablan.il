@@ -367,7 +367,8 @@ const I18N = {
     newsTitle: "Стройка в Израиле",
     newsLead: "Заголовки ynet по стройке. На экране — язык приложения, статья открывается на иврите.",
     newsOpen: "Открыть",
-    newsEmpty: "Сейчас лента не открылась. Нажмите ещё раз.",
+    newsEmpty: "Сейчас лента не открылась.",
+    newsRetry: "Обновить",
     helpTitle: "Вопрос — ответ",
     helpLead: "Коротко, как пользоваться Kadlan. Если не нашли ответ — напишите в поддержку.",
     helpWrite: "Написать в поддержку",
@@ -647,7 +648,8 @@ const I18N = {
     newsTitle: "בנייה בישראל",
     newsLead: "כותרות ynet על בנייה. על המסך בשפה שבחרתם, הכתבה נפתחת בעברית.",
     newsOpen: "לכתבה",
-    newsEmpty: "העדכון לא נטען. נסו שוב.",
+    newsEmpty: "העדכון לא נטען.",
+    newsRetry: "רענון",
     helpTitle: "שאלה — תשובה",
     helpLead: "בקצרה איך משתמשים ב-Kadlan. לא מצאתם תשובה? כתבו לתמיכה.",
     helpWrite: "כתבו לתמיכה",
@@ -927,7 +929,8 @@ const I18N = {
     newsTitle: "Construction in Israel",
     newsLead: "ynet construction headlines in the app language. The article opens in Hebrew.",
     newsOpen: "Open",
-    newsEmpty: "Feed did not load. Try again.",
+    newsEmpty: "Feed did not load.",
+    newsRetry: "Refresh",
     helpTitle: "Questions",
     helpLead: "Short answers. If you need more, message support.",
     helpWrite: "Message support",
@@ -2449,13 +2452,13 @@ function newsTitle(it) {
 }
 function translateNews() {
   const lang = newsLang();
-  if (lang === "he") {
-    if (store.tab === "news") renderSafe();
-    return;
-  }
-  Promise.all(newsItems.map((it) => {
+  if (lang === "he" || !newsItems.length) return;
+  const pending = newsItems.filter((it) => {
     it.tr = it.tr || {};
-    if (it.tr[lang]) return Promise.resolve();
+    return !it.tr[lang];
+  });
+  if (!pending.length) return;
+  Promise.all(pending.map((it) => {
     const key = lang + "|" + it.title;
     if (newsCache[key]) {
       it.tr[lang] = newsCache[key];
@@ -2473,30 +2476,44 @@ function translateNews() {
     if (store.tab === "news") renderSafe();
   });
 }
+function applyNews(items) {
+  newsItems = (items || []).slice(0, 12).map((it) => ({
+    title: it.title || "",
+    link: it.link || "",
+    date: String(it.pubDate || "").slice(0, 16),
+    tr: {},
+  })).filter((it) => it.title);
+  if (store.tab === "news") renderSafe();
+  translateNews();
+}
 function loadNews() {
   fetch(NEWS_URL).then((r) => r.json()).then((data) => {
-    newsItems = (data && data.items || []).slice(0, 12).map((it) => ({
-      title: it.title || "",
-      link: it.link || "",
-      date: (it.pubDate || "").slice(0, 16),
-      tr: {},
-    }));
-    translateNews();
+    if (data && data.items && data.items.length) applyNews(data.items);
+    else throw new Error("empty");
   }).catch(() => {
-    newsItems = [];
-    if (store.tab === "news") renderSafe();
+    const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://www.ynet.co.il/Integration/StoryRss8315.xml");
+    fetch(proxy).then((r) => r.text()).then((xml) => {
+      const doc = new DOMParser().parseFromString(xml, "text/xml");
+      const items = [...doc.querySelectorAll("item")].map((node) => ({
+        title: (node.querySelector("title") || {}).textContent || "",
+        link: (node.querySelector("link") || {}).textContent || "",
+        pubDate: (node.querySelector("pubDate") || {}).textContent || "",
+      }));
+      if (!items.length) throw new Error("empty");
+      applyNews(items);
+    }).catch(() => {
+      if (store.tab === "news" && !newsItems.length) renderSafe();
+    });
   });
 }
 function viewNews() {
   if (!newsTimer) {
     loadNews();
     newsTimer = setInterval(loadNews, 15 * 60 * 1000);
-  } else {
-    translateNews();
   }
   const list = newsItems.length
     ? newsItems.map((it) => `<article class="card news-card"><b>${esc(newsTitle(it))}</b><p class="meta">${esc(it.date)}</p><a class="btn ghost" href="${esc(it.link)}" target="_blank" rel="noopener">${t("newsOpen")}</a></article>`).join("")
-    : `<div class="card"><p>${t("newsEmpty")}</p></div>`;
+    : `<div class="card"><p>${t("newsEmpty")}</p><button class="btn" type="button" data-news-retry>${t("newsRetry")}</button></div>`;
   return `<div class="card"><h3>${t("newsTitle")}</h3><p class="meta">${t("newsLead")}</p></div>${list}`;
 }
 
@@ -3136,7 +3153,8 @@ function bindViewer() {
 }
 
 function bind() {
-  document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); if (store.tab === "news") translateNews(); render(); });
+  document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); render(); if (store.tab === "news") translateNews(); });
+  document.querySelectorAll("[data-news-retry]").forEach((b) => b.onclick = () => loadNews());
   document.querySelectorAll("[data-install]").forEach((b) => b.onclick = async () => {
     if (!deferredInstall) return;
     deferredInstall.prompt();
