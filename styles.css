@@ -420,5 +420,10 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .faq summary { cursor: pointer; font-weight: 700; }
 .faq p { margin: 8px 0 0; color: #444; }
 
-.price-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #e8eef2; font-size:15px; }
-.price-row b { color:#0b6e99; white-space:nowrap; }
+.news-card b { display:block; margin-bottom:6px; }
+.news-card .btn { margin-top:8px; }
+
+.mine-tile.live { background:#e8f7ee; border-color:#2e9e57; color:#146c36; }
+.mine-tile.done { background:#fdecea; border-color:#d32f2f; color:#b71c1c; }
+.live-card { border: 2px solid #2e9e57; }
+.done-card { border: 2px solid #d32f2f; }

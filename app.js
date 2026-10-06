@@ -262,10 +262,10 @@ const I18N = {
     statToday: "Заходили сегодня",
     cloudOn: "Общая лента включена — заявки видят все.",
     cloudOff: "Нет сети. Пока видны только заявки с этого телефона.",
-    myActive: "Актуальные",
-    myHistory: "История",
+    myActive: "Актуально",
+    myHistory: "Завершённые",
     myActiveHint: "То, что сейчас в ленте",
-    myHistoryHint: "То, что вы уже снимали с ленты",
+    myHistoryHint: "Снятые и законченные заявки",
     toHistory: "В историю",
     toActive: "Вернуть в ленту",
     emptyMine: "Вы ещё ничего не выставляли",
@@ -543,10 +543,10 @@ const I18N = {
     statToday: "נכנסו היום",
     cloudOn: "לוח משותף פעיל — כולם רואים את המודעות.",
     cloudOff: "אין רשת. רואים רק מודעות מהטלפון הזה.",
-    myActive: "פעילים",
-    myHistory: "היסטוריה",
+    myActive: "בתוקף",
+    myHistory: "הושלמו",
     myActiveHint: "מה שמופיע בלוח עכשיו",
-    myHistoryHint: "מה שהורדתם מהלוח",
+    myHistoryHint: "מודעות שהוסרו או הסתיימו",
     toHistory: "להיסטוריה",
     toActive: "להחזיר ללוח",
     emptyMine: "עדיין לא פרסמתם",
@@ -825,9 +825,9 @@ const I18N = {
     cloudOn: "Shared feed is on — everyone can see posts.",
     cloudOff: "Offline. Only posts from this phone are visible.",
     myActive: "Active",
-    myHistory: "History",
+    myHistory: "Completed",
     myActiveHint: "What is live on the feed",
-    myHistoryHint: "What you took off the feed",
+    myHistoryHint: "Listings you removed or finished",
     toHistory: "Move to history",
     toActive: "Put back on feed",
     emptyMine: "You have not posted yet",
@@ -1954,7 +1954,7 @@ function reviewsBox(id, kind) {
   }
   form = lastLine + form;
   return `<button class="btn ghost" type="button" data-open-rev="${id}">${open ? t("hideReviews") : t("viewReviews")}</button>
-    ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}${complainBox(id)}</div>` : ""}`;
+    ${open ? `<div class="reviews">${shown || `<div class="meta">${t("noRating")}</div>`}${form}</div>` : ""}`;
 }
 function complainBox(id) {
   if (isSelfTarget(id)) return "";
@@ -2514,7 +2514,7 @@ function viewNews() {
   const list = newsItems.length
     ? newsItems.map((it) => `<article class="card news-card"><b>${esc(newsTitle(it))}</b><p class="meta">${esc(it.date)}</p><a class="btn ghost" href="${esc(it.link)}" target="_blank" rel="noopener">${t("newsOpen")}</a></article>`).join("")
     : `<div class="card"><p>${t("newsEmpty")}</p><button class="btn" type="button" data-news-retry>${t("newsRetry")}</button></div>`;
-  return `<div class="card"><h3>${t("newsTitle")}</h3><p class="meta">${t("newsLead")}</p></div>${list}`;
+  return `<div class="card"><h3>${t("newsTitle")}</h3></div>${list}`;
 }
 
 function viewFeed() {
@@ -2902,7 +2902,7 @@ function viewMine(history) {
     ? list.map((j) => {
         const offer = j.kind === "offer";
         const title = j.titleRu || j.titleHe || "";
-        return `<article class="card job tt-card ${offer ? "offer" : "order"}">
+        return `<article class="card job tt-card ${history ? "done-card" : "live-card"} ${offer ? "offer" : "order"}">
           <div class="tt-row">
             <span class="file-open picwrap big" data-view-src="${jobPhoto(j)}"><img class="tt-photo" src="${jobPhoto(j)}" alt="" /></span>
             <div class="tt-body">
@@ -3089,8 +3089,8 @@ function viewProfile() {
     <div class="plan-name">${t("workPhotosHint")}</div>
     ${lightGallery(p.workPhotos) || (shotN ? `<div class="meta">${shotN} фото</div>` : "")}
     <div class="mine-row">
-      <button type="button" class="mine-tile" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
-      <button type="button" class="mine-tile" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
+      <button type="button" class="mine-tile live" data-tab="mine">${ico("job")}<b>${t("myActive")}</b><span>${t("myActiveHint")}</span></button>
+      <button type="button" class="mine-tile done" data-tab="history">${ico("date")}<b>${t("myHistory")}</b><span>${t("myHistoryHint")}</span></button>
     </div>
     <button type="button" class="btn ghost" data-board="rules">${t("rulesTab")}</button>
   </div>
