@@ -365,7 +365,7 @@ const I18N = {
     helpTab: "Помощь",
     newsTab: "Новости",
     newsTitle: "Стройка в Израиле",
-    newsLead: "Заголовки ynet — недвижимость. Обновляются при открытии и каждые 15 минут.",
+    newsLead: "Заголовки ynet по стройке. На экране — язык приложения, статья открывается на иврите.",
     newsOpen: "Открыть",
     newsEmpty: "Сейчас лента не открылась. Нажмите ещё раз.",
     helpTitle: "Вопрос — ответ",
@@ -645,7 +645,7 @@ const I18N = {
     helpTab: "עזרה",
     newsTab: "חדשות",
     newsTitle: "בנייה בישראל",
-    newsLead: "כותרות ynet — נדל״ן. מתעדכן בפתיחה וכל 15 דקות.",
+    newsLead: "כותרות ynet על בנייה. על המסך בשפה שבחרתם, הכתבה נפתחת בעברית.",
     newsOpen: "לכתבה",
     newsEmpty: "העדכון לא נטען. נסו שוב.",
     helpTitle: "שאלה — תשובה",
@@ -925,7 +925,7 @@ const I18N = {
     helpTab: "Help",
     newsTab: "News",
     newsTitle: "Construction in Israel",
-    newsLead: "ynet real-estate headlines. Refresh on open and every 15 minutes.",
+    newsLead: "ynet construction headlines in the app language. The article opens in Hebrew.",
     newsOpen: "Open",
     newsEmpty: "Feed did not load. Try again.",
     helpTitle: "Questions",
@@ -2438,14 +2438,50 @@ function filterPanel() {
 const NEWS_URL = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://www.ynet.co.il/Integration/StoryRss8315.xml");
 let newsItems = [];
 let newsTimer = 0;
+const newsCache = {};
+function newsLang() {
+  return store.lang === "en" ? "en" : store.lang === "he" ? "he" : "ru";
+}
+function newsTitle(it) {
+  const lang = newsLang();
+  if (lang === "he") return it.title;
+  return (it.tr && it.tr[lang]) || it.title;
+}
+function translateNews() {
+  const lang = newsLang();
+  if (lang === "he") {
+    if (store.tab === "news") renderSafe();
+    return;
+  }
+  Promise.all(newsItems.map((it) => {
+    it.tr = it.tr || {};
+    if (it.tr[lang]) return Promise.resolve();
+    const key = lang + "|" + it.title;
+    if (newsCache[key]) {
+      it.tr[lang] = newsCache[key];
+      return Promise.resolve();
+    }
+    const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(String(it.title || "").slice(0, 400)) + "&langpair=he|" + lang;
+    return fetch(url).then((r) => r.json()).then((data) => {
+      const text = data && data.responseData && data.responseData.translatedText;
+      if (text && !/INVALID|QUERY LENGTH|MYMEMORY WARNING/i.test(text)) {
+        it.tr[lang] = text;
+        newsCache[key] = text;
+      }
+    }).catch(() => {});
+  })).then(() => {
+    if (store.tab === "news") renderSafe();
+  });
+}
 function loadNews() {
   fetch(NEWS_URL).then((r) => r.json()).then((data) => {
     newsItems = (data && data.items || []).slice(0, 12).map((it) => ({
       title: it.title || "",
       link: it.link || "",
       date: (it.pubDate || "").slice(0, 16),
+      tr: {},
     }));
-    if (store.tab === "news") renderSafe();
+    translateNews();
   }).catch(() => {
     newsItems = [];
     if (store.tab === "news") renderSafe();
@@ -2455,9 +2491,11 @@ function viewNews() {
   if (!newsTimer) {
     loadNews();
     newsTimer = setInterval(loadNews, 15 * 60 * 1000);
+  } else {
+    translateNews();
   }
   const list = newsItems.length
-    ? newsItems.map((it) => `<article class="card news-card"><b>${esc(it.title)}</b><p class="meta">${esc(it.date)}</p><a class="btn ghost" href="${esc(it.link)}" target="_blank" rel="noopener">${t("newsOpen")}</a></article>`).join("")
+    ? newsItems.map((it) => `<article class="card news-card"><b>${esc(newsTitle(it))}</b><p class="meta">${esc(it.date)}</p><a class="btn ghost" href="${esc(it.link)}" target="_blank" rel="noopener">${t("newsOpen")}</a></article>`).join("")
     : `<div class="card"><p>${t("newsEmpty")}</p></div>`;
   return `<div class="card"><h3>${t("newsTitle")}</h3><p class="meta">${t("newsLead")}</p></div>${list}`;
 }
@@ -3098,7 +3136,7 @@ function bindViewer() {
 }
 
 function bind() {
-  document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); render(); });
+  document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => { setLang(b.dataset.lang); if (store.tab === "news") translateNews(); render(); });
   document.querySelectorAll("[data-install]").forEach((b) => b.onclick = async () => {
     if (!deferredInstall) return;
     deferredInstall.prompt();
