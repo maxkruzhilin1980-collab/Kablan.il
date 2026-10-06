@@ -363,6 +363,11 @@ const I18N = {
     installIos: "На iPhone: Поделиться → На экран «Домой»",
     installLater: "Позже",
     helpTab: "Помощь",
+    newsTab: "Новости",
+    newsTitle: "Стройка в Израиле",
+    newsLead: "Заголовки ynet — недвижимость. Обновляются при открытии и каждые 15 минут.",
+    newsOpen: "Открыть",
+    newsEmpty: "Сейчас лента не открылась. Нажмите ещё раз.",
     helpTitle: "Вопрос — ответ",
     helpLead: "Коротко, как пользоваться Kadlan. Если не нашли ответ — напишите в поддержку.",
     helpWrite: "Написать в поддержку",
@@ -638,6 +643,11 @@ const I18N = {
     installIos: "באייפון: שיתוף → הוסף למסך הבית",
     installLater: "אחר כך",
     helpTab: "עזרה",
+    newsTab: "חדשות",
+    newsTitle: "בנייה בישראל",
+    newsLead: "כותרות ynet — נדל״ן. מתעדכן בפתיחה וכל 15 דקות.",
+    newsOpen: "לכתבה",
+    newsEmpty: "העדכון לא נטען. נסו שוב.",
     helpTitle: "שאלה — תשובה",
     helpLead: "בקצרה איך משתמשים ב-Kadlan. לא מצאתם תשובה? כתבו לתמיכה.",
     helpWrite: "כתבו לתמיכה",
@@ -913,6 +923,11 @@ const I18N = {
     installIos: "iPhone: Share → Add to Home Screen",
     installLater: "Later",
     helpTab: "Help",
+    newsTab: "News",
+    newsTitle: "Construction in Israel",
+    newsLead: "ynet real-estate headlines. Refresh on open and every 15 minutes.",
+    newsOpen: "Open",
+    newsEmpty: "Feed did not load. Try again.",
     helpTitle: "Questions",
     helpLead: "Short answers. If you need more, message support.",
     helpWrite: "Message support",
@@ -2107,6 +2122,10 @@ function renderSafe() {
     catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`; }
   }
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
+  else if (store.tab === "news") {
+    try { main = viewNews(); }
+    catch (e) { main = `<div class="card"><p>${t("newsEmpty")}</p></div>`; }
+  }
   else if (store.tab === "help") {
     try { main = viewHelp(); }
     catch (e) { main = `<div class="card"><p>${t("empty")}</p></div>`; }
@@ -2123,7 +2142,7 @@ function renderSafe() {
 
   app.innerHTML = `
     <div class="app">
-      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}<button type="button" class="help-mini" data-tab="help">${t("helpTab")}</button></div>
+      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}<button type="button" class="help-mini" data-tab="news">${t("newsTab")}</button><button type="button" class="help-mini" data-tab="help">${t("helpTab")}</button></div>
       ${installBanner()}
       ${main}
       <nav class="nav">
@@ -2414,6 +2433,34 @@ function filterPanel() {
   return "";
 }
 
+
+
+const NEWS_URL = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://www.ynet.co.il/Integration/StoryRss8315.xml");
+let newsItems = [];
+let newsTimer = 0;
+function loadNews() {
+  fetch(NEWS_URL).then((r) => r.json()).then((data) => {
+    newsItems = (data && data.items || []).slice(0, 12).map((it) => ({
+      title: it.title || "",
+      link: it.link || "",
+      date: (it.pubDate || "").slice(0, 16),
+    }));
+    if (store.tab === "news") renderSafe();
+  }).catch(() => {
+    newsItems = [];
+    if (store.tab === "news") renderSafe();
+  });
+}
+function viewNews() {
+  if (!newsTimer) {
+    loadNews();
+    newsTimer = setInterval(loadNews, 15 * 60 * 1000);
+  }
+  const list = newsItems.length
+    ? newsItems.map((it) => `<article class="card news-card"><b>${esc(it.title)}</b><p class="meta">${esc(it.date)}</p><a class="btn ghost" href="${esc(it.link)}" target="_blank" rel="noopener">${t("newsOpen")}</a></article>`).join("")
+    : `<div class="card"><p>${t("newsEmpty")}</p></div>`;
+  return `<div class="card"><h3>${t("newsTitle")}</h3><p class="meta">${t("newsLead")}</p></div>${list}`;
+}
 
 function viewFeed() {
   const own = publicJobs().filter((j) => !j.archived && !jobExpired(j))
