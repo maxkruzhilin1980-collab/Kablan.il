@@ -419,3 +419,6 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .faq { border-top: 1px solid var(--line); padding: 8px 0; }
 .faq summary { cursor: pointer; font-weight: 700; }
 .faq p { margin: 8px 0 0; color: #444; }
+
+.price-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #e8eef2; font-size:15px; }
+.price-row b { color:#0b6e99; white-space:nowrap; }

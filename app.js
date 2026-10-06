@@ -363,6 +363,9 @@ const I18N = {
     installIos: "На iPhone: Поделиться → На экран «Домой»",
     installLater: "Позже",
     helpTab: "Помощь",
+    pricesTab: "Цены",
+    pricesTitle: "Цены работ",
+    pricesLead: "Ориентир по рынку Израиля, работа без материала. Не смета.",
     helpTitle: "Вопрос — ответ",
     helpLead: "Коротко, как пользоваться Kadlan. Если не нашли ответ — напишите в поддержку.",
     helpWrite: "Написать в поддержку",
@@ -638,6 +641,9 @@ const I18N = {
     installIos: "באייפון: שיתוף → הוסף למסך הבית",
     installLater: "אחר כך",
     helpTab: "עזרה",
+    pricesTab: "מחירים",
+    pricesTitle: "מחירי עבודה",
+    pricesLead: "טווח שוק בישראל, עבודה בלי חומר. לא הצעת מחיר.",
     helpTitle: "שאלה — תשובה",
     helpLead: "בקצרה איך משתמשים ב-Kadlan. לא מצאתם תשובה? כתבו לתמיכה.",
     helpWrite: "כתבו לתמיכה",
@@ -913,6 +919,9 @@ const I18N = {
     installIos: "iPhone: Share → Add to Home Screen",
     installLater: "Later",
     helpTab: "Help",
+    pricesTab: "Prices",
+    pricesTitle: "Job prices",
+    pricesLead: "Israel market range, labor without materials. Not a quote.",
     helpTitle: "Questions",
     helpLead: "Short answers. If you need more, message support.",
     helpWrite: "Message support",
@@ -2107,6 +2116,10 @@ function renderSafe() {
     catch (e) { main = `<div class="card"><p>${t("empty")}</p><p class="meta">${esc(e && e.message)}</p></div>`; }
   }
   else if (store.tab === "mine" || store.tab === "history") main = user ? viewMine(store.tab === "history") : viewAuth();
+  else if (store.tab === "prices") {
+    try { main = viewPrices(); }
+    catch (e) { main = `<div class="card"><p>${t("empty")}</p></div>`; }
+  }
   else if (store.tab === "help") {
     try { main = viewHelp(); }
     catch (e) { main = `<div class="card"><p>${t("empty")}</p></div>`; }
@@ -2123,7 +2136,7 @@ function renderSafe() {
 
   app.innerHTML = `
     <div class="app">
-      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}<button type="button" class="help-mini" data-tab="help">${t("helpTab")}</button></div>
+      <div class="top"><div class="logo"><img class="brand-face" src="icons/hero.jpg?v=30" alt="" /><span>${t("brand")}</span></div>${langBar}<button type="button" class="help-mini" data-tab="prices">${t("pricesTab")}</button><button type="button" class="help-mini" data-tab="help">${t("helpTab")}</button></div>
       ${installBanner()}
       ${main}
       <nav class="nav">
@@ -2412,6 +2425,26 @@ function filterPanel() {
       ${cities.join("")}</div>`;
   }
   return "";
+}
+
+
+const PRICE_GUIDE = [
+  ["gypsum", [["Стена", "קיר", "Wall", "180–280 ₪/м²"], ["Потолок", "תקרה", "Ceiling", "220–350 ₪/м²"], ["Перегородка с двух сторон", "מחיצה דו-צדדית", "Double partition", "250–400 ₪/м²"]]],
+  ["tile", [["Пол", "רצפה", "Floor", "150–280 ₪/м²"], ["Стена", "קיר", "Wall", "160–320 ₪/м²"], ["Душевая под ключ", "מקלחון", "Shower", "2 500–6 000 ₪"]]],
+  ["paint", [["Стены", "קירות", "Walls", "35–70 ₪/м²"], ["Потолок", "תקרה", "Ceiling", "40–80 ₪/м²"], ["Квартира 80 м²", "דירת 80 מ״ר", "80 m² flat", "4 000–8 000 ₪"]]],
+  ["elec", [["Точка", "נקודה", "Point", "250–450 ₪"], ["Щиток", "לוח חשמל", "Panel", "1 800–4 500 ₪"], ["Квартира новостройка", "דירה חדשה", "New flat", "8 000–18 000 ₪"]]],
+  ["plumb", [["Точка", "נקודה", "Point", "350–700 ₪"], ["Замена труб в санузле", "החלפת צנרת", "Bathroom pipes", "4 000–9 000 ₪"]]],
+  ["ac", [["Установка сплита", "התקנת מזגן", "Split install", "800–1 500 ₪"], ["Трасса за метр", "צנרת למטר", "Line per meter", "150–250 ₪"]]],
+  ["alum", [["Окно", "חלון", "Window", "1 800–4 500 ₪"], ["Дверь балкона", "דלת יציאה", "Balcony door", "2 500–6 000 ₪"]]],
+  ["frame", [["Каркас перегородки", "שלד מחיצה", "Partition frame", "80–150 ₪/м²"], ["Обрешётка потолка", "שלד תקרה", "Ceiling frame", "90–160 ₪/м²"]]],
+];
+function viewPrices() {
+  const lang = store.lang === "he" ? 1 : store.lang === "en" ? 2 : 0;
+  const blocks = PRICE_GUIDE.map(([id, rows]) => {
+    const lines = rows.map((row) => `<div class="price-row"><span>${esc(row[lang])}</span><b>${esc(row[3])}</b></div>`).join("");
+    return `<article class="card"><h3>${tradeLabel(id)}</h3>${lines}</article>`;
+  }).join("");
+  return `<div class="card"><h3>${t("pricesTitle")}</h3><p class="meta">${t("pricesLead")}</p></div>${blocks}`;
 }
 
 function viewFeed() {
