@@ -2928,6 +2928,54 @@ async function sendResetSms(phone) {
   resetConfirm = await firebase.auth().signInWithPhoneNumber(ilPhone(phone), window.kadlanRecaptcha);
   alert(t("smsSent"));
 }
+
+const FB_CONFIG = {
+  apiKey: "AIzaSyA2N0gKoA7xQyqbXAzHjX-FSFC74TT26Po",
+  authDomain: "kadlan-il.firebaseapp.com",
+  databaseURL: "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kadlan-il",
+  storageBucket: "kadlan-il.firebasestorage.app",
+  messagingSenderId: "339317931424",
+  appId: "1:339317931424:web:c2bc1842a40a6ce74eb8c5",
+};
+function initAuth() {
+  if (!window.firebase) return false;
+  if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+  return true;
+}
+async function googleLogin() {
+  if (!initAuth()) { alert(t("googleNeed")); return; }
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const cred = await firebase.auth().signInWithPopup(provider);
+    const g = cred.user || {};
+    await cloudLoadUsers();
+    let user = store.users().find((u) => u.email && u.email === g.email);
+    if (!user) {
+      const phone = normPhone(prompt(t("phone")) || "");
+      if (!phone) return;
+      user = store.users().find((u) => normPhone(u.phone) === phone) || {
+        name: g.displayName || "Google",
+        phone,
+        email: g.email || "",
+        role: "contractor",
+        trades: [],
+        code: nextCode(),
+      };
+      user.email = g.email || user.email || "";
+      user.name = user.name || g.displayName || "Google";
+      if (!store.users().some((u) => normPhone(u.phone) === phone)) store.saveUsers(store.users().concat(user));
+      cloudSaveUser(user);
+    }
+    store.session = normPhone(user.phone);
+    store.role = user.role || "contractor";
+    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || "" });
+    store.tab = "profile";
+    render();
+  } catch (e) {
+    alert(t("googleNeed"));
+  }
+}
 function viewReputation() {
   const p = store.profile();
   const r = myRep();
@@ -3578,7 +3626,7 @@ function bind() {
   });
   document.querySelectorAll("[data-logout]").forEach((b) => b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); store.session = ""; store.tab = "profile"; render(); });
   document.querySelectorAll("[data-forgot]").forEach((b) => b.onclick = () => { store.reset = !store.reset; render(); });
-  document.querySelectorAll("[data-google]").forEach((b) => b.onclick = () => alert(t("googleNeed")));
+  document.querySelectorAll("[data-google]").forEach((b) => b.onclick = () => googleLogin());
   document.querySelectorAll("[data-show-pass]").forEach((b) => b.onclick = () => { const input = b.parentElement.querySelector("input"); const on = input.type === "password"; input.type = on ? "text" : "password"; b.textContent = on ? "скрыть" : "показать"; });
   const sendSms = document.getElementById("send-sms");
   if (sendSms) sendSms.onclick = async () => { const form = document.getElementById("reset-form"); const phone = normPhone(new FormData(form).get("phone")); if (!phone) return; try { await sendResetSms(phone); } catch (e) { alert(t("smsNeed")); } };
