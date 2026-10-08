@@ -427,3 +427,9 @@ body[dir="rtl"] .job.offer { border-right: 0; border-left: 5px solid #2f9e44; }
 .mine-tile.done { background:#fdecea; border-color:#d32f2f; color:#b71c1c; }
 .live-card { border: 2px solid #2e9e57; }
 .done-card { border: 2px solid #d32f2f; }
+
+.live-label, .done-label { display:block; margin:12px 0 6px; }
+.live-label { color:#146c36; }
+.done-label { color:#b71c1c; }
+.btn.ghost.live { background:#e8f7ee; border-color:#2e9e57; color:#146c36; }
+.btn.ghost.done { background:#fdecea; border-color:#d32f2f; color:#b71c1c; }

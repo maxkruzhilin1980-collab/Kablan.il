@@ -346,6 +346,7 @@ const I18N = {
     back: "Назад в ленту",
     postedBy: "Кто выставил",
     jobDetails: "О заказе",
+    aboutProfile: "О профиле",
     offerDetails: "Об анкете",
     documents: "Документы",
     noDocs: "Документов пока нет",
@@ -627,6 +628,7 @@ const I18N = {
     back: "חזרה ללוח",
     postedBy: "מי פרסם",
     jobDetails: "על ההזמנה",
+    aboutProfile: "על הפרופיל",
     offerDetails: "על הכרטיס",
     documents: "מסמכים",
     noDocs: "אין מסמכים עדיין",
@@ -908,6 +910,7 @@ const I18N = {
     back: "Back to feed",
     postedBy: "Posted by",
     jobDetails: "About the job",
+    aboutProfile: "About the profile",
     offerDetails: "About the profile",
     documents: "Documents",
     noDocs: "No documents yet",
@@ -2669,11 +2672,13 @@ function viewMemberDetail(code) {
     let posts = "";
     try {
       const his = jobsForMember(m);
-      posts = his.map((j) => {
+      const line = (j, done) => {
         const title = jobTitle(j);
-        const mark = j.archived ? " · " + t("myHistory") : jobExpired(j) ? " · " + t("toHistory") : "";
-        return `<button type="button" class="btn ghost" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${esc(title || j.id)}${j.budget ? " · " + shekel(j.budget) : ""}${mark}</button>`;
-      }).join("");
+        return `<button type="button" class="btn ghost ${done ? "done" : "live"}" data-open-job="${j.id}">${j.kind === "offer" ? t("badgeOffer") : t("badgeJob")} · ${esc(title || j.id)}${j.budget ? " · " + shekel(j.budget) : ""}</button>`;
+      };
+      const live = his.filter((j) => !j.archived && !jobExpired(j));
+      const done = his.filter((j) => j.archived || jobExpired(j));
+      posts = `<b class="live-label">${t("myActive")}</b>${live.length ? live.map((j) => line(j, false)).join("") : `<div class="meta">${t("emptyMine")}</div>`}<b class="done-label">${t("myHistory")}</b>${done.length ? done.map((j) => line(j, true)).join("") : `<div class="meta">${t("emptyHistory")}</div>`}`;
     } catch (e1) { posts = ""; }
     const emptyPosts = worker ? t("noMemberPostsWorker") : t("noMemberPostsKablan");
     const faceSrc = safeFace(m.name, m.photo, worker ? "worker" : "contractor", m.trades);
@@ -2694,9 +2699,8 @@ function viewMemberDetail(code) {
       </div>
       <div class="tags">${(m.trades || []).map((id) => `<span class="tag">${tradeLabel(id)}</span>`).join("")}${badgesHtml({ ...m, ...seed })}</div>
       ${galleryHtml(m.workPhotos)}
-      <b>${worker ? t("offerDetails") : t("jobDetails")}</b>
+      <b>${t("aboutProfile")}</b>
       <p>${text || t("empty")}</p>
-      <b>${t("boardFeed")}</b>
       ${posts || `<div class="meta">${emptyPosts}</div>`}
       <b>${t("documents")}</b>
       ${docs}
