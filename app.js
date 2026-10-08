@@ -230,6 +230,10 @@ const I18N = {
     seekingIn: "Ищу работу",
     login: "Вход",
     forgot: "Забыли пароль",
+    email: "Почта",
+    sendMail: "Отправить письмо",
+    mailSent: "Письмо отправлено. Откройте его и задайте пароль, затем войдите телефоном и новым паролем.",
+    mailNeed: "Почта не отправилась. В Firebase включите Authentication → Email/Password.",
     google: "Войти через Google",
     loginFail: "Неверный телефон или пароль.",
     notRegistered: "Этот номер не зарегистрирован. Нажмите Регистрация вверху.",
@@ -1505,7 +1509,8 @@ async function removeMyJob(id) {
   cloudCache = cloudCache.filter((j) => j && j.id !== id);
   if (store.openJob === id) store.openJob = "";
   await cloudLoad();
-  render();
+  resumeGoogle();
+render();
 }
 async function cloudPushLocal() {
   const list = store.jobs();
@@ -2902,10 +2907,9 @@ function viewAuth() {
   <form class="card" id="reset-form" ${store.reset ? "" : "hidden"}>
     <b>${t("forgotTitle")}</b>
     <label>${ico("phone")}${t("phone")}</label><input name="phone" required />
-    <button class="btn" type="button" id="send-sms">${t("sendSms")}</button>
-    <label>${t("smsCode")}</label><input name="code" inputmode="numeric" />
-    <label>${t("newPassword")}</label><span class="passbox"><input name="password" type="password" /><button type="button" class="eye" data-show-pass="1">показать</button></span>
-    <button class="btn ghost" type="submit">${t("savePassword")}</button>
+    <label>${t("email")}</label><input name="email" type="email" required />
+    <label>${t("newPassword")}</label><span class="passbox"><input name="password" type="password" required /><button type="button" class="eye" data-show-pass="1">показать</button></span>
+    <button class="btn" type="submit">${t("sendMail")}</button>
   </form>`;
 }
 
@@ -2938,42 +2942,54 @@ const FB_CONFIG = {
   messagingSenderId: "339317931424",
   appId: "1:339317931424:web:c2bc1842a40a6ce74eb8c5",
 };
+function resumeGoogle() {
+  if (!initAuth()) return;
+  firebase.auth().getRedirectResult().then((cred) => { if (cred && cred.user) finishGoogle(cred.user); }).catch(() => {});
+}
 function initAuth() {
   if (!window.firebase) return false;
   if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
   return true;
 }
+async function finishGoogle(g) {
+  if (!g) return;
+  await cloudLoadUsers();
+  let user = store.users().find((u) => u.email && u.email === g.email);
+  if (!user) {
+    const phone = normPhone(prompt(t("phone")) || "");
+    if (!phone) return;
+    user = store.users().find((u) => normPhone(u.phone) === phone) || {
+      name: g.displayName || "Google",
+      phone,
+      email: g.email || "",
+      role: "contractor",
+      trades: [],
+      code: nextCode(),
+    };
+    user.email = g.email || user.email || "";
+    user.name = user.name || g.displayName || "Google";
+    if (!store.users().some((u) => normPhone(u.phone) === phone)) store.saveUsers(store.users().concat(user));
+    cloudSaveUser(user);
+  }
+  store.session = normPhone(user.phone);
+  store.role = user.role || "contractor";
+  store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || "" });
+  store.tab = "profile";
+  render();
+}
 async function googleLogin() {
   if (!initAuth()) { alert(t("googleNeed")); return; }
+  const provider = new firebase.auth.GoogleAuthProvider();
   try {
-    const provider = new firebase.auth.GoogleAuthProvider();
     const cred = await firebase.auth().signInWithPopup(provider);
-    const g = cred.user || {};
-    await cloudLoadUsers();
-    let user = store.users().find((u) => u.email && u.email === g.email);
-    if (!user) {
-      const phone = normPhone(prompt(t("phone")) || "");
-      if (!phone) return;
-      user = store.users().find((u) => normPhone(u.phone) === phone) || {
-        name: g.displayName || "Google",
-        phone,
-        email: g.email || "",
-        role: "contractor",
-        trades: [],
-        code: nextCode(),
-      };
-      user.email = g.email || user.email || "";
-      user.name = user.name || g.displayName || "Google";
-      if (!store.users().some((u) => normPhone(u.phone) === phone)) store.saveUsers(store.users().concat(user));
-      cloudSaveUser(user);
-    }
-    store.session = normPhone(user.phone);
-    store.role = user.role || "contractor";
-    store.saveProfile({ ...store.profile(), name: user.name, phone: user.phone, trades: user.trades || [], code: user.code || "" });
-    store.tab = "profile";
-    render();
+    await finishGoogle(cred.user || {});
   } catch (e) {
-    alert(t("googleNeed"));
+    const code = e && e.code || "";
+    if (code === "auth/popup-blocked" || code === "auth/cancelled-popup-request" || code === "auth/popup-closed-by-user") {
+      firebase.auth().signInWithRedirect(provider);
+      return;
+    }
+    alert((e && e.message) || t("googleNeed"));
   }
 }
 function viewReputation() {
@@ -3628,10 +3644,36 @@ function bind() {
   document.querySelectorAll("[data-forgot]").forEach((b) => b.onclick = () => { store.reset = !store.reset; render(); });
   document.querySelectorAll("[data-google]").forEach((b) => b.onclick = () => googleLogin());
   document.querySelectorAll("[data-show-pass]").forEach((b) => b.onclick = () => { const input = b.parentElement.querySelector("input"); const on = input.type === "password"; input.type = on ? "text" : "password"; b.textContent = on ? "скрыть" : "показать"; });
-  const sendSms = document.getElementById("send-sms");
-  if (sendSms) sendSms.onclick = async () => { const form = document.getElementById("reset-form"); const phone = normPhone(new FormData(form).get("phone")); if (!phone) return; try { await sendResetSms(phone); } catch (e) { alert(t("smsNeed")); } };
   const reset = document.getElementById("reset-form");
-  if (reset) reset.onsubmit = async (e) => { e.preventDefault(); const f = new FormData(reset); const phone = normPhone(f.get("phone")); const code = String(f.get("code") || ""); const password = String(f.get("password") || ""); if (!resetConfirm) { alert(t("smsNeed")); return; } try { await resetConfirm.confirm(code); await cloudSaveSecret(phone, password); resetConfirm = null; store.reset = false; alert(t("resetOk")); render(); } catch (err) { alert(t("badPassword")); } };
+  if (reset) reset.onsubmit = async (e) => {
+    e.preventDefault();
+    const f = new FormData(reset);
+    const phone = normPhone(f.get("phone"));
+    const email = String(f.get("email") || "").trim();
+    const password = String(f.get("password") || "");
+    if (!phone || !email || !password) return;
+    await cloudLoadUsers();
+    const known = store.users().find((u) => normPhone(u.phone) === phone);
+    if (!known) { alert(t("notRegistered")); return; }
+    try {
+      await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + FB_CONFIG.apiKey, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, returnSecureToken: true }),
+      });
+      const res = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + FB_CONFIG.apiKey, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestType: "PASSWORD_RESET", email }),
+      });
+      if (!res.ok) throw new Error("mail");
+      known.email = email;
+      cloudSaveUser(known);
+      await cloudSaveSecret(phone, password);
+      store.reset = false;
+      alert(t("mailSent"));
+    } catch (err) {
+      alert(t("mailNeed"));
+    }
+  };
   const reg = document.getElementById("reg-form");
   if (reg) reg.onsubmit = async (e) => {
     e.preventDefault();
