@@ -511,6 +511,17 @@ const I18N = {
     seekSave: "שמירת כרטיס",
     seekingIn: "מחפש עבודה",
     login: "כניסה",
+    google: "כניסה עם Google",
+    googleNeed: "Google עדיין לא פעיל. ב-Firebase: Authentication → Google → Enable, דומיין kadlan.co.il.",
+    forgot: "שכחתי סיסמה",
+    forgotTitle: "שחזור",
+    sendSms: "קבלת SMS",
+    smsCode: "קוד מה-SMS",
+    newPassword: "סיסמה חדשה",
+    savePassword: "שמירת סיסמה",
+    smsSent: "הקוד נשלח לטלפון.",
+    smsNeed: "SMS עדיין לא מחובר. ב-Firebase הפעילו Authentication → Phone.",
+    resetOk: "הסיסמה עודכנה. היכנסו מחדש.",
     loginFail: "טלפון או סיסמה שגויים.",
     notRegistered: "המספר לא רשום. לחץ על הרשמה למעלה.",
     badPassword: "סיסמה שגויה.",
@@ -793,6 +804,17 @@ const I18N = {
     seekSave: "Post to feed",
     seekingIn: "Looking for work",
     login: "Log in",
+    google: "Continue with Google",
+    googleNeed: "Google is not enabled yet. Firebase: Authentication → Google → Enable, domain kadlan.co.il.",
+    forgot: "Forgot password",
+    forgotTitle: "Reset",
+    sendSms: "Send SMS",
+    smsCode: "SMS code",
+    newPassword: "New password",
+    savePassword: "Save password",
+    smsSent: "Code sent to the phone.",
+    smsNeed: "SMS is not connected yet. In Firebase enable Authentication → Phone.",
+    resetOk: "Password updated. Sign in again.",
     loginFail: "Wrong phone or password.",
     notRegistered: "This number is not registered. Use Sign up above.",
     badPassword: "Wrong password.",
@@ -2872,9 +2894,38 @@ function viewAuth() {
     <label>${ico("phone")}${t("phone")}</label><input name="phone" required />
     <label>${t("password")}</label><input name="password" type="password" required />
     <button class="btn ghost" type="submit">${t("login")}</button>
+    <button class="btn ghost" type="button" data-forgot="1">${t("forgot")}</button>
+    <button class="btn" type="button" data-google="1">${t("google")}</button>
+  </form>
+  <form class="card" id="reset-form" ${store.reset ? "" : "hidden"}>
+    <b>${t("forgotTitle")}</b>
+    <label>${ico("phone")}${t("phone")}</label><input name="phone" required />
+    <button class="btn" type="button" id="send-sms">${t("sendSms")}</button>
+    <label>${t("smsCode")}</label><input name="code" inputmode="numeric" />
+    <label>${t("newPassword")}</label><input name="password" type="password" />
+    <button class="btn ghost" type="submit">${t("savePassword")}</button>
   </form>`;
 }
 
+
+let resetConfirm = null;
+function ilPhone(phone) {
+  const d = String(phone || "").replace(/\D/g, "");
+  if (d.startsWith("972")) return "+" + d;
+  if (d.startsWith("0")) return "+972" + d.slice(1);
+  return "+972" + d;
+}
+async function sendResetSms(phone) {
+  if (!window.kadlanAuth || !window.firebase) {
+    alert(t("smsNeed"));
+    return;
+  }
+  if (!window.kadlanRecaptcha) {
+    window.kadlanRecaptcha = new firebase.auth.RecaptchaVerifier("send-sms", { size: "invisible" });
+  }
+  resetConfirm = await firebase.auth().signInWithPhoneNumber(ilPhone(phone), window.kadlanRecaptcha);
+  alert(t("smsSent"));
+}
 function viewReputation() {
   const p = store.profile();
   const r = myRep();
@@ -3524,6 +3575,12 @@ function bind() {
     };
   });
   document.querySelectorAll("[data-logout]").forEach((b) => b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); store.session = ""; store.tab = "profile"; render(); });
+  document.querySelectorAll("[data-forgot]").forEach((b) => b.onclick = () => { store.reset = !store.reset; render(); });
+  document.querySelectorAll("[data-google]").forEach((b) => b.onclick = () => alert(t("googleNeed")));
+  const sendSms = document.getElementById("send-sms");
+  if (sendSms) sendSms.onclick = async () => { const form = document.getElementById("reset-form"); const phone = normPhone(new FormData(form).get("phone")); if (!phone) return; try { await sendResetSms(phone); } catch (e) { alert(t("smsNeed")); } };
+  const reset = document.getElementById("reset-form");
+  if (reset) reset.onsubmit = async (e) => { e.preventDefault(); const f = new FormData(reset); const phone = normPhone(f.get("phone")); const code = String(f.get("code") || ""); const password = String(f.get("password") || ""); if (!resetConfirm) { alert(t("smsNeed")); return; } try { await resetConfirm.confirm(code); await cloudSaveSecret(phone, password); resetConfirm = null; store.reset = false; alert(t("resetOk")); render(); } catch (err) { alert(t("badPassword")); } };
   const reg = document.getElementById("reg-form");
   if (reg) reg.onsubmit = async (e) => {
     e.preventDefault();
