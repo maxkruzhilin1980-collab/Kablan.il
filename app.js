@@ -2934,7 +2934,7 @@ async function sendResetSms(phone) {
 }
 
 const FB_CONFIG = {
-  apiKey: "AIzaSyA2N0gKoA7xQyqbXAzHjX-FSFC74TT26Po",
+  apiKey: "AIzaSyA2NOgKoA7xQyqbXAzHjX-FSFC74TT26Po",
   authDomain: "kadlan-il.firebaseapp.com",
   databaseURL: "https://kadlan-il-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "kadlan-il",
